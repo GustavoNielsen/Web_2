@@ -1,0 +1,338 @@
+<!-- auto-cadastro.component.html -->
+<div class="cadastro-wrapper">
+  <!-- Background elements -->
+  <div class="bg-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <div class="cadastro-container">
+    <!-- Left Panel -->
+    <div class="panel-left">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 2L28 8V16C28 22.627 22.627 28 16 30C9.373 28 4 22.627 4 16V8L16 2Z" fill="currentColor" opacity="0.9"/>
+            <path d="M11 16L14.5 19.5L21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">SecureID</span>
+      </div>
+
+      <div class="panel-content">
+        <h1 class="panel-title">Crie sua<br><span class="highlight">conta segura</span></h1>
+        <p class="panel-subtitle">
+          Cadastre-se em segundos. Sua senha será gerada automaticamente e enviada ao seu e-mail.
+        </p>
+
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-dot"></div>
+            <span>CEP preenchido automaticamente</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-dot"></div>
+            <span>Senha enviada por e-mail</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-dot"></div>
+            <span>Dados protegidos com segurança</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <span>Já possui conta?</span>
+        <a href="/login" class="login-link">Entrar agora →</a>
+      </div>
+    </div>
+
+    <!-- Right Panel - Form -->
+    <div class="panel-right">
+      <div class="form-header">
+        <h2 class="form-title">Novo Cadastro</h2>
+        <p class="form-subtitle">Preencha os dados abaixo para criar sua conta</p>
+      </div>
+
+      <!-- Success State -->
+      <div class="success-state" *ngIf="cadastroRealizado">
+        <div class="success-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="24" fill="#10b981" opacity="0.15"/>
+            <path d="M14 24L21 31L34 18" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="success-title">Cadastro realizado!</h3>
+        <p class="success-msg">
+          Uma senha de 4 dígitos foi enviada para <strong>{{ form.get('email')?.value }}</strong>.<br>
+          Use-a para fazer seu primeiro acesso.
+        </p>
+        <button class="btn-primary btn-full" (click)="irParaLogin()">
+          Ir para o Login
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!cadastroRealizado" class="cadastro-form" novalidate>
+
+        <!-- Dados Pessoais -->
+        <div class="section-label">
+          <span class="section-num">01</span>
+          <span>Dados Pessoais</span>
+        </div>
+
+        <div class="form-row">
+          <!-- Nome -->
+          <div class="form-group full">
+            <label class="form-label" for="nome">Nome Completo</label>
+            <div class="input-wrapper" [class.error]="isInvalid('nome')" [class.success]="isValid('nome')">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </span>
+              <input
+                id="nome"
+                type="text"
+                class="form-control"
+                formControlName="nome"
+                placeholder="Seu nome completo"
+                autocomplete="name"
+              />
+              <span class="valid-icon" *ngIf="isValid('nome')">✓</span>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('nome')">
+              {{ getError('nome') }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <!-- CPF -->
+          <div class="form-group">
+            <label class="form-label" for="cpf">CPF</label>
+            <div class="input-wrapper" [class.error]="isInvalid('cpf')" [class.success]="isValid('cpf')">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="5" width="20" height="14" rx="2"/>
+                  <line x1="2" y1="10" x2="22" y2="10"/>
+                </svg>
+              </span>
+              <input
+                id="cpf"
+                type="text"
+                class="form-control"
+                formControlName="cpf"
+                placeholder="000.000.000-00"
+                maxlength="14"
+                (input)="maskCPF($event)"
+              />
+              <span class="valid-icon" *ngIf="isValid('cpf')">✓</span>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('cpf')">{{ getError('cpf') }}</span>
+          </div>
+
+          <!-- Telefone -->
+          <div class="form-group">
+            <label class="form-label" for="telefone">Telefone</label>
+            <div class="input-wrapper" [class.error]="isInvalid('telefone')" [class.success]="isValid('telefone')">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </span>
+              <input
+                id="telefone"
+                type="text"
+                class="form-control"
+                formControlName="telefone"
+                placeholder="(00) 00000-0000"
+                maxlength="15"
+                (input)="maskTelefone($event)"
+              />
+              <span class="valid-icon" *ngIf="isValid('telefone')">✓</span>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('telefone')">{{ getError('telefone') }}</span>
+          </div>
+        </div>
+
+        <!-- E-mail -->
+        <div class="form-group full">
+          <label class="form-label" for="email">E-mail</label>
+          <div class="input-wrapper" [class.error]="isInvalid('email')" [class.success]="isValid('email')">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <input
+              id="email"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+            />
+            <span class="valid-icon" *ngIf="isValid('email')">✓</span>
+          </div>
+          <span class="error-msg" *ngIf="isInvalid('email')">{{ getError('email') }}</span>
+          <span class="hint-msg">Sua senha de acesso será enviada para este e-mail</span>
+        </div>
+
+        <!-- Endereço -->
+        <div class="section-label" style="margin-top: 8px;">
+          <span class="section-num">02</span>
+          <span>Endereço</span>
+        </div>
+
+        <div class="form-row two-cols-sm">
+          <!-- CEP -->
+          <div class="form-group">
+            <label class="form-label" for="cep">CEP</label>
+            <div class="input-wrapper cep-wrapper" [class.error]="isInvalid('cep')" [class.success]="isValid('cep')">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </span>
+              <input
+                id="cep"
+                type="text"
+                class="form-control"
+                formControlName="cep"
+                placeholder="00000-000"
+                maxlength="9"
+                (input)="maskCEP($event)"
+                (blur)="buscarCEP()"
+              />
+              <div class="cep-loading" *ngIf="buscandoCEP">
+                <div class="spinner-sm"></div>
+              </div>
+              <span class="valid-icon" *ngIf="isValid('cep') && !buscandoCEP">✓</span>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('cep')">{{ getError('cep') }}</span>
+            <span class="error-msg" *ngIf="erroCEP">{{ erroCEP }}</span>
+          </div>
+
+          <!-- Número -->
+          <div class="form-group">
+            <label class="form-label" for="numero">Número</label>
+            <div class="input-wrapper" [class.error]="isInvalid('numero')" [class.success]="isValid('numero')">
+              <input
+                id="numero"
+                type="text"
+                class="form-control"
+                formControlName="numero"
+                placeholder="Ex: 123"
+              />
+              <span class="valid-icon" *ngIf="isValid('numero')">✓</span>
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('numero')">{{ getError('numero') }}</span>
+          </div>
+        </div>
+
+        <!-- Logradouro -->
+        <div class="form-group full">
+          <label class="form-label" for="logradouro">Logradouro</label>
+          <div class="input-wrapper" [class.success]="isValid('logradouro')" [class.filled]="!!form.get('logradouro')?.value">
+            <input
+              id="logradouro"
+              type="text"
+              class="form-control"
+              formControlName="logradouro"
+              placeholder="Rua, Avenida..."
+            />
+            <span class="valid-icon" *ngIf="isValid('logradouro')">✓</span>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <!-- Bairro -->
+          <div class="form-group">
+            <label class="form-label" for="bairro">Bairro</label>
+            <div class="input-wrapper" [class.filled]="!!form.get('bairro')?.value">
+              <input
+                id="bairro"
+                type="text"
+                class="form-control"
+                formControlName="bairro"
+                placeholder="Bairro"
+              />
+            </div>
+          </div>
+
+          <!-- Complemento -->
+          <div class="form-group">
+            <label class="form-label" for="complemento">Complemento <span class="optional">(opcional)</span></label>
+            <div class="input-wrapper">
+              <input
+                id="complemento"
+                type="text"
+                class="form-control"
+                formControlName="complemento"
+                placeholder="Apto, Sala..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row two-cols">
+          <!-- Cidade -->
+          <div class="form-group">
+            <label class="form-label" for="cidade">Cidade</label>
+            <div class="input-wrapper" [class.filled]="!!form.get('cidade')?.value">
+              <input
+                id="cidade"
+                type="text"
+                class="form-control"
+                formControlName="cidade"
+                placeholder="Cidade"
+              />
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="form-group">
+            <label class="form-label" for="estado">Estado</label>
+            <div class="input-wrapper" [class.filled]="!!form.get('estado')?.value">
+              <input
+                id="estado"
+                type="text"
+                class="form-control"
+                formControlName="estado"
+                placeholder="UF"
+                maxlength="2"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn-primary btn-full"
+            [disabled]="form.invalid || loading"
+          >
+            <span *ngIf="!loading">Criar minha conta</span>
+            <span class="btn-loading" *ngIf="loading">
+              <div class="spinner-btn"></div>
+              Cadastrando...
+            </span>
+          </button>
+        </div>
+
+        <p class="terms-text">
+          Ao se cadastrar, você concorda com nossa
+          <a href="#">Política de Privacidade</a> e
+          <a href="#">Termos de Uso</a>.
+        </p>
+
+      </form>
+    </div>
+  </div>
+</div>
