@@ -1,0 +1,20 @@
+<div class="background">
+    <form class="form-requisicao">
+        <h1 class="titulo">{{titulo}}</h1>
+        
+        <input type="text" name="descEquip" [(ngModel)]="descricaoEquipamento" class="inputManutencao" placeholder="Descrição do equipamento">
+        
+        <select [(ngModel)]="tipoEquipamento" name="tipoEquipamento">
+            <option value="">Selecione seu equipamento...</option>
+            <option value="notebook">Notebook</option>
+        </select>
+
+        @if (erroTipoEquipamento) {
+            <span class="error-msg">{{ mensagemErroEquipamentoSelect }}</span>
+        }
+
+        <input type="text" name="descProb" [(ngModel)]="descricaoProblema" class="inputManutencao" placeholder="Descrição do problema">
+        
+        <button type="button" (click)="enviarSolicitacao()">Realizar solicitação</button>
+    </form>
+</div>
