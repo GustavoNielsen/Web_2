@@ -1,0 +1,122 @@
+.fundo {
+    background-color: #f0f2f8; 
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.container-central {
+    width: 100%;
+    max-width: 750px; 
+}
+
+.borda-primaria {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.cabecalho-primario {
+    background-color: #4f46e5; 
+    color: #ffffff;
+    text-align: center;
+    padding: 1.25rem;
+    border-radius: 0;
+    border-bottom: none;
+    margin: -1px -1px 0 -1px;
+}
+
+.titulo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+.subtitulo-secao {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: #1e1b4b;
+    font-size: 1.1rem;
+}
+
+.secao-dados {
+    background-color: #fafbfc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.caixa-texto-simples {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: #1e1b4b;
+    margin-bottom: 0;
+}
+
+.orcamento-destaque {
+    background: linear-gradient(135deg, #ecfeff, #cffafe);
+    border: 2px solid #a5f3fc;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.orcamento-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0891b2;
+    margin-bottom: 0.5rem;
+}
+
+.orcamento-valor {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #0e7490;
+    margin: 0;
+}
+
+.aviso-orcamento {
+    color: #0891b2;
+    font-weight: 500;
+}
+
+.texto-cancelar {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.texto-cancelar:hover {
+    color: #1e1b4b;
+    text-decoration: underline;
+}
+
+/* --- Responsividade --- */
+@media (max-width: 576px) {
+    .botoes-acao {
+        flex-direction: column;
+    }
+    
+    .botoes-acao .btn {
+        width: 100% !important;
+    }
+
+    .orcamento-valor {
+        font-size: 2rem;
+    }
+}

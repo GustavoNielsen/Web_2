@@ -1,0 +1,62 @@
+<div class="fundo">
+  <div class="container-central">
+    <div class="card borda-primaria">
+      
+      <div class="card-header cabecalho-primario">
+        <h2 class="titulo">AVALIAÇÃO DE ORÇAMENTO</h2>
+      </div>
+
+      <div class="card-body">
+        
+        <div class="secao-dados mb-4">
+          <h5 class="subtitulo-secao mb-3">Detalhes da Solicitação</h5>
+          <div class="row gy-3">
+            <div class="col-md-6">
+              <p class="mb-1"><span class="fw-bold text-muted">Equipamento:</span> Notebook Dell Inspiron</p>
+              <p class="mb-1"><span class="fw-bold text-muted">Categoria:</span> Computador</p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-1"><span class="fw-bold text-muted">Data de Abertura:</span> 15/10/2023 14:30</p>
+              <p class="mb-1"><span class="fw-bold text-muted">Status Atual:</span> <span class="badge bg-warning text-dark">ORÇADA</span></p>
+            </div>
+            <div class="col-12 mt-3">
+              <p class="mb-1"><span class="fw-bold text-muted">Defeito Relatado:</span></p>
+              <p class="caixa-texto-simples">Tela piscando intermitentemente e a bateria não segura carga por mais de 10 minutos após desconectar da tomada.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="orcamento-destaque mb-4 text-center">
+          <p class="orcamento-label">Valor Total Orçado</p>
+          <h3 class="orcamento-valor">R$ 525,00</h3>
+          <p class="aviso-orcamento mt-2 mb-0">
+            <small>Técnico responsável: João Silva | Validade: 7 dias</small>
+          </p>
+        </div>
+
+        <div class="botoes-acao d-flex justify-content-center gap-3 mt-4">
+          <button 
+            type="button" 
+            class="btn btn-outline-danger btn-lg w-50 fw-bold"
+            (click)="redirecionarParaRejeicao()">
+            Rejeitar Serviço
+          </button>
+
+          <button 
+            type="button" 
+            class="btn btn-success btn-lg w-50 fw-bold d-flex align-items-center justify-content-center gap-2"
+            (click)="aprovarServico()">
+            Aprovar Serviço
+          </button>
+        </div>
+
+        <div class="text-center mt-4">
+          <a href="#" class="texto-cancelar">
+            Voltar para a página anterior
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
