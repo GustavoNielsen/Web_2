@@ -1,0 +1,51 @@
+<div class="fundo">
+  <div class="container-central">
+    <div class="card borda-laranja">
+      
+      <div class="card-header cabecalho-laranja">
+        <h2 class="titulo">REJEITAR SERVIÇO</h2>
+      </div>
+
+      <div class="card-body corpo-card">
+        
+        <div class="caixa-informativa rounded">
+          <p class="linha-equipamento"><strong>Equipamento:</strong> Notebook Positivo</p>
+          <p class="mb-0"><strong>Status Atual:</strong> Orçado (R$ 525,00)</p>
+        </div>
+
+        <form>
+          <div class="campo-motivo">
+            <label class="pergunta-motivo">Por que deseja rejeitar esse orçamento?</label>
+            <textarea 
+              class="form-control" 
+              rows="5" 
+              placeholder="Por favor, escreva aqui o motivo da rejeição." 
+              [(ngModel)]="motivoRejeicao" 
+              name="motivoRejeicao">
+            </textarea>
+          </div>
+          
+          <div class="area-botao">
+            <button 
+              type="button" 
+              class="btn btn-outline-dark botao-confirmar" 
+              (click)="confirmarRejeicao()" 
+              [disabled]="!motivoRejeicao.trim()">
+                Confirmar Rejeição
+            </button>
+
+            <p class="aviso" [class.invisible]="motivoRejeicao.trim() !== ''">
+                * O motivo é obrigatório para confirmar a rejeição.
+            </p>
+          </div>
+
+          <div class="link-voltar">
+            <a href="#" class="texto-cancelar">
+                Cancelar e voltar para a página anterior
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
