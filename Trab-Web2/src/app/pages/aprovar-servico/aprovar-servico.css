@@ -1,0 +1,46 @@
+.modal {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    text-align: center;
+    min-width: 320px;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+    display: block;
+}
+
+.ok-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 10px 28px;
+    background: #1976D2;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-family: var(--fonteFamilia);
+    transition: background 0.2s;
+}
+
+.ok-btn:hover {
+    background: #1565C0;
+}
