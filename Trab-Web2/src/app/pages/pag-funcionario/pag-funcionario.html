@@ -1,0 +1,86 @@
+
+<div class="page">
+  <div class="container">
+
+    <!-- Topo -->
+    <div class="top">
+      <div>
+        <h1>Solicitações</h1>
+        <p>Bem-vindo, {{ nomeUsuario }}</p>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters">
+      <button class="filter-btn" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
+      <button class="filter-btn" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+      <button class="filter-btn" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
+
+      @if (filtro === 'PERIODO') {
+        <div class="date-inputs">
+          <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltro()" />
+          <span class="date-sep">até</span>
+          <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltro()" />
+        </div>
+      }
+    </div>
+
+    <!-- Tabela -->
+    <div class="card">
+
+      @if (loading) {
+        <div class="loading">
+          <div class="spinner"></div>
+          <span>Carregando...</span>
+        </div>
+      } @else {
+        @if (solicitacoesFiltradas.length > 0) {
+          <table>
+            <thead>
+              <tr>
+                <th>Data / Hora</th>
+                <th>Cliente</th>
+                <th>Equipamento</th>
+                <th>Estado</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of solicitacoesFiltradas; track s.id) {
+                <tr>
+                  <td class="td-data">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="td-cliente">{{ s.nomeCliente }}</td>
+                  <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
+                  <td><span class="badge" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span></td>
+                  <td>
+                    <div class="td-acoes">
+                      <button class="btn btn-ghost" (click)="visualizar(s.id)">Ver</button>
+
+                      @if (s.estado === 'ABERTA') {
+                        <button class="btn btn-amber" (click)="efetuarOrcamento(s.id)">Orçar</button>
+                      }
+
+                      @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
+                        <button class="btn btn-rose" (click)="efetuarManutencao(s.id)">Manutenção</button>
+                      }
+
+                      @if (s.estado === 'PAGA') {
+                        <button class="btn btn-green" (click)="finalizar(s.id)">Finalizar</button>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="empty">
+            <span>Nenhuma solicitação encontrada.</span>
+          </div>
+        }
+      }
+
+    </div>
+
+  </div>
+</div>
