@@ -1,10 +1,5 @@
-<p>visualizar-servico works!</p>
 <!-- mostrar-servico.component.html -->
-<div class="page-wrapper">
-  <div class="bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-  </div>
+<div class="page">
 
   <!-- Loading -->
   <div class="loading-state" *ngIf="loading">
@@ -18,7 +13,7 @@
     <!-- Header -->
     <div class="page-header">
       <button class="btn-back" (click)="voltar()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
         Voltar
@@ -31,299 +26,222 @@
         </span>
       </div>
 
-      <div class="header-actions">
+      <div class="actions">
         <!-- Botões de ação conforme estado (perfil CLIENTE) -->
         <ng-container *ngIf="perfil === 'CLIENTE'">
           <button class="btn-action btn-approve"
             *ngIf="solicitacao.estado === 'ORÇADA'"
-            (click)="irParaOrcamento()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
-            Aprovar / Rejeitar
+            (click)="aprovarOrcamento()">
+           
+            Aprovar Orçamento
+          </button>
+          <button class="btn btn-rose"
+            *ngIf="solicitacao.estado === 'ORÇADA'"
+            (click)="rejeitarOrcamento()">
+            Rejeitar 
           </button>
 
-          <button class="btn-action btn-rescue"
+          <button class="btn btn-violet"
             *ngIf="solicitacao.estado === 'REJEITADA'"
             (click)="resgatarServico()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.54"/>
-            </svg>
-            Resgatar Serviço
+              Resgatar 
           </button>
-
-          <button class="btn-action btn-pay"
-            *ngIf="solicitacao.estado === 'ARRUMADA'"
-            (click)="irParaPagamento()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
-            </svg>
-            Pagar Serviço
+       Resgatar
+          </button>
+          <button class="btn btn-blue" *ngIf="solicitacao.estado === 'ARRUMADA'" (click)="pagar()">
+            Pagar serviço
           </button>
         </ng-container>
-
-        <!-- Botões de ação conforme estado (perfil FUNCIONÁRIO) -->
+ 
+        <!-- FUNCIONARIO -->
         <ng-container *ngIf="perfil === 'FUNCIONARIO'">
-          <button class="btn-action btn-budget"
-            *ngIf="solicitacao.estado === 'ABERTA'"
-            (click)="irParaOrcamento()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-            </svg>
-            Efetuar Orçamento
+          <button class="btn btn-amber" *ngIf="solicitacao.estado === 'ABERTA'" (click)="efetuarOrcamento()">
+            Efetuar orçamento
           </button>
-
-          <button class="btn-action btn-maintenance"
-            *ngIf="solicitacao.estado === 'APROVADA' || solicitacao.estado === 'REDIRECIONADA'"
-            (click)="irParaManutencao()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-            </svg>
-            Efetuar Manutenção
+          <button class="btn btn-rose" *ngIf="solicitacao.estado === 'APROVADA' || solicitacao.estado === 'REDIRECIONADA'" (click)="efetuarManutencao()">
+            Efetuar manutenção
           </button>
-
-          <button class="btn-action btn-finalize"
-            *ngIf="solicitacao.estado === 'PAGA'"
-            (click)="finalizarSolicitacao()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Finalizar Solicitação
+          <button class="btn btn-green" *ngIf="solicitacao.estado === 'PAGA'" (click)="finalizarSolicitacao()">
+            ✓ Finalizar
           </button>
         </ng-container>
+ 
       </div>
     </div>
-
-    <!-- Grid de conteúdo -->
-    <div class="content-grid">
-
+ 
+    <!-- Grid -->
+    <div class="grid">
+ 
       <!-- Coluna esquerda -->
-      <div class="col-left">
-
-        <!-- Card: Dados do Equipamento -->
+      <div class="col">
+ 
+        <!-- Equipamento -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Dados do Equipamento</h2>
+          <div class="card-head">
+            <h2>Equipamento</h2>
+            <span class="badge sm" [ngClass]="getStatusClass(solicitacao.estado)">{{ solicitacao.estado }}</span>
           </div>
           <div class="card-body">
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="info-label">Descrição</span>
-                <span class="info-value">{{ solicitacao.descricaoEquipamento }}</span>
+            <div class="fields">
+              <div class="field">
+                <label>Equipamento</label>
+                <span>{{ solicitacao.descricaoEquipamento }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Categoria</span>
-                <span class="info-value">
-                  <span class="tag">{{ solicitacao.categoria }}</span>
-                </span>
+              <div class="field">
+                <label>Categoria</label>
+                <span>{{ solicitacao.categoria }}</span>
               </div>
-              <div class="info-item full">
-                <span class="info-label">Descrição do Defeito</span>
-                <span class="info-value text-block">{{ solicitacao.descricaoDefeito }}</span>
+              <div class="field span2">
+                <label>Descrição do defeito</label>
+                <span class="block">{{ solicitacao.descricaoDefeito }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Data / Hora da Abertura</span>
-                <span class="info-value">{{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Estado Atual</span>
-                <span class="info-value">
-                  <span class="status-badge sm" [ngClass]="getStatusClass(solicitacao.estado)">
-                    {{ solicitacao.estado }}
-                  </span>
-                </span>
+              <div class="field">
+                <label>Aberta em</label>
+                <span>{{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Card: Orçamento (quando existir) -->
-        <div class="card card-orcamento" *ngIf="solicitacao.valorOrcamento">
-          <div class="card-header">
-            <div class="card-icon accent">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Orçamento</h2>
+ 
+        <!-- Orçamento -->
+        <div class="card" *ngIf="solicitacao.valorOrcamento">
+          <div class="card-head">
+            <h2>Orçamento</h2>
           </div>
           <div class="card-body">
-            <div class="orcamento-destaque">
-              <span class="orcamento-label">Valor Orçado</span>
-              <span class="orcamento-valor">{{ solicitacao.valorOrcamento | currency:'BRL':'symbol':'1.2-2' }}</span>
+            <div class="orcamento-valor">
+              <span class="currency">R$</span>
+              <span class="amount">{{ solicitacao.valorOrcamento | number:'1.2-2' }}</span>
             </div>
-            <div class="info-grid" *ngIf="solicitacao.funcionarioOrcamento">
-              <div class="info-item">
-                <span class="info-label">Orçado por</span>
-                <span class="info-value">{{ solicitacao.funcionarioOrcamento }}</span>
+            <div class="fields" *ngIf="solicitacao.funcionarioOrcamento">
+              <div class="field">
+                <label>Orçado por</label>
+                <span>{{ solicitacao.funcionarioOrcamento }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Data do Orçamento</span>
-                <span class="info-value">{{ solicitacao.dataOrcamento | date:'dd/MM/yyyy HH:mm' }}</span>
+              <div class="field">
+                <label>Data</label>
+                <span>{{ solicitacao.dataOrcamento | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Card: Manutenção realizada -->
+ 
+        <!-- Manutenção -->
         <div class="card" *ngIf="solicitacao.descricaoManutencao">
-          <div class="card-header">
-            <div class="card-icon success">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Manutenção Realizada</h2>
+          <div class="card-head">
+            <h2>Manutenção realizada</h2>
           </div>
           <div class="card-body">
-            <div class="info-grid">
-              <div class="info-item full">
-                <span class="info-label">Descrição da Manutenção</span>
-                <span class="info-value text-block">{{ solicitacao.descricaoManutencao }}</span>
+            <div class="fields">
+              <div class="field span2">
+                <label>O que foi feito</label>
+                <span class="block">{{ solicitacao.descricaoManutencao }}</span>
               </div>
-              <div class="info-item full">
-                <span class="info-label">Orientações ao Cliente</span>
-                <span class="info-value text-block highlight-info">{{ solicitacao.orientacoesCliente }}</span>
+              <div class="field span2">
+                <label>Orientações ao cliente</label>
+                <span class="block info">{{ solicitacao.orientacoesCliente }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Técnico Responsável</span>
-                <span class="info-value">{{ solicitacao.funcionarioManutencao }}</span>
+              <div class="field">
+                <label>Técnico</label>
+                <span>{{ solicitacao.funcionarioManutencao }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Data da Manutenção</span>
-                <span class="info-value">{{ solicitacao.dataManutencao | date:'dd/MM/yyyy HH:mm' }}</span>
+              <div class="field">
+                <label>Data</label>
+                <span>{{ solicitacao.dataManutencao | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
             </div>
           </div>
         </div>
-
+ 
       </div>
-
+ 
       <!-- Coluna direita -->
-      <div class="col-right">
-
-        <!-- Card: Dados do Cliente -->
+      <div class="col">
+ 
+        <!-- Cliente -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-icon purple">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Cliente</h2>
+          <div class="card-head">
+            <h2>Cliente</h2>
           </div>
           <div class="card-body">
-            <div class="cliente-avatar">
-              <div class="avatar-circle">{{ getInitials(solicitacao.cliente.nome) }}</div>
-              <div>
-                <p class="cliente-nome">{{ solicitacao.cliente.nome }}</p>
-                <p class="cliente-email">{{ solicitacao.cliente.email }}</p>
+            <div class="avatar-row">
+              <div class="avatar">{{ getInitials(solicitacao.cliente.nome) }}</div>
+              <div class="avatar-info">
+                <p>{{ solicitacao.cliente.nome }}</p>
+                <small>{{ solicitacao.cliente.email }}</small>
               </div>
             </div>
-            <div class="info-grid" style="margin-top: 16px;">
-              <div class="info-item">
-                <span class="info-label">CPF</span>
-                <span class="info-value">{{ solicitacao.cliente.cpf }}</span>
+            <div class="fields">
+              <div class="field">
+                <label>CPF</label>
+                <span>{{ solicitacao.cliente.cpf }}</span>
               </div>
-              <div class="info-item">
-                <span class="info-label">Telefone</span>
-                <span class="info-value">{{ solicitacao.cliente.telefone }}</span>
+              <div class="field">
+                <label>Telefone</label>
+                <span>{{ solicitacao.cliente.telefone }}</span>
               </div>
-              <div class="info-item full">
-                <span class="info-label">Endereço</span>
-                <span class="info-value">
+              <div class="field span2">
+                <label>Endereço</label>
+                <span>
                   {{ solicitacao.cliente.logradouro }}, {{ solicitacao.cliente.numero }}
-                  <ng-container *ngIf="solicitacao.cliente.complemento">
-                    — {{ solicitacao.cliente.complemento }}
-                  </ng-container>
-                  <br>
-                  {{ solicitacao.cliente.bairro }} · {{ solicitacao.cliente.cidade }}/{{ solicitacao.cliente.estado }}
-                  <br>
-                  CEP {{ solicitacao.cliente.cep }}
+                  <ng-container *ngIf="solicitacao.cliente.complemento"> — {{ solicitacao.cliente.complemento }}</ng-container>
+                  <br>{{ solicitacao.cliente.bairro }}, {{ solicitacao.cliente.cidade }}/{{ solicitacao.cliente.estado }}
+                  <br>CEP {{ solicitacao.cliente.cep }}
                 </span>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Card: Histórico de Alterações -->
-        <div class="card card-historico">
-          <div class="card-header">
-            <div class="card-icon orange">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-            </div>
-            <h2 class="card-title">Histórico</h2>
-            <span class="badge-count">{{ historico.length }}</span>
+ 
+        <!-- Histórico -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Histórico</h2>
+            <span class="badge sm s-arrumada">{{ historico.length }}</span>
           </div>
           <div class="card-body">
             <div class="timeline">
-              <div
-                class="timeline-item"
-                *ngFor="let item of historico; let last = last"
-                [class.last]="last"
-              >
-                <div class="timeline-left">
-                  <div class="timeline-dot" [ngClass]="getStatusClass(item.estadoNovo)"></div>
-                  <div class="timeline-line" *ngIf="!last"></div>
+ 
+              <div class="t-item" *ngFor="let item of historico; let last = last" [class.last]="last">
+                <div class="t-left">
+                  <div class="t-dot" [ngClass]="getStatusClass(item.estadoNovo)"></div>
+                  <div class="t-line" *ngIf="!last"></div>
                 </div>
-                <div class="timeline-content">
-                  <div class="timeline-header">
-                    <span class="timeline-transition">
-                      <span class="status-badge xs" [ngClass]="getStatusClass(item.estadoAnterior)" *ngIf="item.estadoAnterior">
-                        {{ item.estadoAnterior }}
-                      </span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" *ngIf="item.estadoAnterior">
-                        <polyline points="9 18 15 12 9 6"/>
-                      </svg>
-                      <span class="status-badge xs" [ngClass]="getStatusClass(item.estadoNovo)">
-                        {{ item.estadoNovo }}
-                      </span>
+                <div class="t-content">
+                  <div class="t-states">
+                    <span class="badge sm" [ngClass]="getStatusClass(item.estadoAnterior)" *ngIf="item.estadoAnterior">
+                      {{ item.estadoAnterior }}
                     </span>
+                    <svg *ngIf="item.estadoAnterior" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2.5">
+                      <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                    <span class="badge sm" [ngClass]="getStatusClass(item.estadoNovo)">{{ item.estadoNovo }}</span>
                   </div>
-                  <p class="timeline-desc" *ngIf="item.descricao">{{ item.descricao }}</p>
-                  <div class="timeline-meta">
-                    <span class="timeline-user">
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                      {{ item.responsavel }}
-                    </span>
-                    <span class="timeline-date">{{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <p class="t-desc" *ngIf="item.descricao">{{ item.descricao }}</p>
+                  <div class="t-meta">
+                    <span>{{ item.responsavel }}</span>
+                    <span>{{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
                   </div>
                 </div>
               </div>
-
-              <div class="timeline-empty" *ngIf="historico.length === 0">
-                <p>Nenhuma alteração registrada.</p>
+ 
+              <div class="t-empty" *ngIf="historico.length === 0">
+                Nenhuma alteração registrada.
               </div>
+ 
             </div>
           </div>
         </div>
-
+ 
       </div>
     </div>
   </div>
-
-  <!-- Estado vazio -->
-  <div class="empty-state" *ngIf="!loading && !solicitacao">
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
+ 
+  <!-- Vazio -->
+  <div class="empty" *ngIf="!loading && !solicitacao">
     <h3>Solicitação não encontrada</h3>
     <p>Verifique o ID e tente novamente.</p>
-    <button class="btn-action btn-budget" (click)="voltar()">Voltar</button>
+    <button class="btn btn-amber" (click)="voltar()">Voltar</button>
   </div>
+ 
 </div>
