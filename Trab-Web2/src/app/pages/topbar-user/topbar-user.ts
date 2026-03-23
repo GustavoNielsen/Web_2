@@ -6,4 +6,22 @@ import { Component } from '@angular/core';
   templateUrl: './topbar-user.html',
   styleUrl: './topbar-user.css',
 })
-export class TopbarUser {}
+export class TopbarUser {
+
+  username : string = "";
+
+
+  getHome(){
+
+  }
+
+  getManutencao(){
+
+  }
+
+
+  getLogout(){
+
+  }
+
+}
