@@ -3,12 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-topbar-user',
+  selector: 'app-navbar-executor',
   imports: [RouterOutlet],
-  templateUrl: './topbar-user.html',
-  styleUrl: './topbar-user.css',
+  templateUrl: './navbar-executor.html',
+  styleUrl: './navbar-executor.css',
 })
-export class TopbarUser {
+export class NavbarExecutor {
 
   username : string = "";
 
@@ -27,5 +27,4 @@ export class TopbarUser {
   getLogout(){
     this.router.navigate([''])
   }
-
 }

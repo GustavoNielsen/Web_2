@@ -7,14 +7,14 @@ export const routes: Routes = [{
       import('./pages/login/login').then(m => m.Login),
 },
 {
-    path: 'Registrar',
+    path: 'registrar',
     loadComponent: () =>
       import("./pages/tela-autocadastro/tela-autocadastro").then(m => m.TelaAutocadastro),
 },
 
 
 {
-    path: 'HomeFuncionario',
+    path: 'homefuncionario',
     loadComponent: () =>
       import("./pages/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
 },
@@ -25,13 +25,13 @@ export const routes: Routes = [{
       import('./pages/topbar-user/topbar-user').then(m => m.TopbarUser),
     children: [
       {
-        path: 'Solicitacao',
+        path: 'solicitacao',
         loadComponent: () =>
           import('./pages/solicitacao-manutencao/solicitacao-manutencao')
             .then(m => m.SolicitacaoManutencao),
       },
       {
-        path: 'Home',
+        path: 'home',
         loadComponent: () =>
         import("./pages/pag-cliente/pag-cliente").then(m => m.PagCliente),
     },
