@@ -1,20 +1,53 @@
-<div class="background">
-    <form class="form-requisicao">
-        <h1 class="titulo">{{titulo}}</h1>
+<div class="container-fluid d-flex justify-content-center align-items-center min-vh-100 p-3">
+    <form class="card shadow-sm w-100" style="max-width: 700px; border: 1px solid #0d6efd;">
         
-        <input type="text" name="descEquip" [(ngModel)]="descricaoEquipamento" class="inputManutencao" placeholder="Descrição do equipamento">
-        
-        <select [(ngModel)]="tipoEquipamento" name="tipoEquipamento">
-            <option value="">Selecione seu equipamento...</option>
-            <option value="notebook">Notebook</option>
-        </select>
+        <div class="card-header bg-primary text-white p-3">
+            <h1 class="h5 mb-0 fw-bold text-center">{{titulo}}</h1>
+        </div>
 
-        @if (erroTipoEquipamento) {
-            <span class="error-msg">{{ mensagemErroEquipamentoSelect }}</span>
-        }
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-uppercase text-muted">Equipamento</label>
+                <input type="text" 
+                       name="descEquip" 
+                       [(ngModel)]="descricaoEquipamento" 
+                       class="form-control" 
+                       placeholder="Ex: Notebook Lenovo Yoga">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold small text-uppercase text-muted">Tipo</label>
+                <select [(ngModel)]="tipoEquipamento" 
+                        name="tipoEquipamento" 
+                        class="form-select"
+                        [class.is-invalid]="erroTipoEquipamento">
+                    <option value="">Selecione o tipo...</option>
+                    <option value="notebook">Notebook</option>
+                    <option value="smartphone">Smartphone</option>
+                    <option value="monitor">Monitor</option>
+                    <option value="impressora">Impressora</option>
+                </select>
+                @if (erroTipoEquipamento) {
+                    <div class="invalid-feedback">
+                        {{ mensagemErroEquipamentoSelect }}
+                    </div>
+                }
+            </div>
 
-        <input type="text" name="descProb" [(ngModel)]="descricaoProblema" class="inputManutencao" placeholder="Descrição do problema">
-        
-        <button type="button" (click)="enviarSolicitacao()">Realizar solicitação</button>
+            <div class="mb-4">
+                <label class="form-label fw-bold small text-uppercase text-muted">Descrição do Problema</label>
+                <textarea name="descProb" 
+                        [(ngModel)]="descricaoProblema" 
+                        class="form-control" 
+                        placeholder="Descreva o defeito detalhadamente..."
+                        rows="5"></textarea>
+            </div>
+            
+            <button type="button" 
+                    (click)="enviarSolicitacao()" 
+                    class="btn btn-primary w-100 fw-bold py-2">
+                Realizar Solicitação
+            </button>
+        </div>
     </form>
 </div>
