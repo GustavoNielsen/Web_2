@@ -1,49 +1,24 @@
-<div class="fundo">
-  <div class="container-central">
-    <div class="card borda-laranja">
-      
-      <div class="card-header cabecalho-laranja">
-        <h2 class="titulo">REJEITAR SERVIÇO</h2>
+<div class="row justify-content-center">
+  <div class="col-5">
+    <div class="card shadow border-0 mt-5">
+      <div class="card-header bg-danger text-white text-center py-3">
+        <h2 class="mb-0 h4 fw-bold">MOTIVO DA REJEIÇÃO</h2>
       </div>
 
-      <div class="card-body corpo-card">
-        
-        <div class="caixa-informativa rounded">
-          <p class="linha-equipamento"><strong>Equipamento:</strong> Notebook Positivo</p>
-          <p class="mb-0"><strong>Status Atual:</strong> Orçado (R$ 525,00)</p>
-        </div>
-
-        <form>
-          <div class="campo-motivo">
-            <label class="pergunta-motivo">Por que deseja rejeitar esse orçamento?</label>
-            <textarea 
-              class="form-control" 
-              rows="5" 
-              placeholder="Por favor, escreva aqui o motivo da rejeição." 
-              [(ngModel)]="motivoRejeicao" 
-              name="motivoRejeicao">
-            </textarea>
-          </div>
+      <div class="card-body p-4 bg-light">
+        <form #rejeicaoForm="ngForm">
           
-          <div class="area-botao">
-            <button 
-              type="button" 
-              class="btn btn-outline-dark botao-confirmar" 
-              (click)="confirmarRejeicao()" 
-              [disabled]="!motivoRejeicao.trim()">
-                Confirmar Rejeição
-            </button>
-
-            <p class="aviso" [class.invisible]="motivoRejeicao.trim() !== ''">
-                * O motivo é obrigatório para confirmar a rejeição.
-            </p>
+          <div class="mb-4">
+            <label for="motivo" class="form-label fw-bold text-dark">Descreva o motivo da rejeição (obrigatório)</label>
+            <textarea class="form-control" id="motivo" name="motivo" rows="4" placeholder="Ex: Desisti de consertar o aparelho." minlength="10" [(ngModel)]="motivoRejeicao" required></textarea>
+            <p class="text-muted small mt-1">OBS: Mínimo de 10 caracteres para confirmar a rejeição.</p>
           </div>
 
-          <div class="link-voltar">
-            <a href="#" class="texto-cancelar">
-                Cancelar e voltar para a página anterior
-            </a>
+          <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-outline-secondary px-5 shadow" (click)="cancelar()">CANCELAR</button>
+            <button type="submit" class="btn btn-danger btn-lg px-5 shadow" [disabled]="!rejeicaoForm.valid" (click)="confirmarRejeicao()">CONFIRMAR REJEIÇÃO</button>
           </div>
+
         </form>
       </div>
     </div>
