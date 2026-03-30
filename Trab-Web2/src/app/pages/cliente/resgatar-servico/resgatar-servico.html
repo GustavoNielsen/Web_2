@@ -1,64 +1,51 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm"> <!-- navbar: cria a base da barra; navbar-expand-lg: faz a barra sr responsiva; bg-dark: deixa o fundo preto; shadow-sm: cria uma sombra para a nav bar -->
-  <div class="container-fluid"> <!-- container-fluid: faz a barra ocupar toda a largura da tela -->
-    <a class="navbar-brand fw-bold" href="#">Teste navbar</a> <!-- navbar-brand: destaque da navbar; fw-bold: faz o texto ficar em negrito -->
-    <div class="navbar-nav ms-auto"> <!-- navbar-nav: estrutura e alinha os itens; ms-auto: alinha os itens da navbar tudo para a direita -->
-      <span class="nav-link active fw-bold">Resgatar Serviço</span> <!-- nav-link: estilo de link; active: indica aba selecionada agora -->
-    </div>
-  </div>
-</nav>
+<div class="row justify-content-center"> <!-- linha do grid do Bootstrap -->
+  <div class="col-10"> <!-- a coluna ocupa as 12 divisões -->
 
-<div class="container-fluid mt-2 px-5"> <!-- container-fluid: faz ocupar toda a largura; mt-2: margem superior; px-5: espaço lateral -->
-  <div class="row"> <!-- linha do grid do Bootstrap -->
-    <div class="col-12"> <!-- a coluna ocupa as 12 divisões -->
+    <div class="card shadow border-0 mt-5"> <!-- card: painel branco; shadow: cria uma sombra ao redor do card; border-0: tira a borda; mt-5: margem superior -->
 
-      <div class="card shadow border-0"> <!-- card: painel branco; shadow: cria uma sombra ao redor do card; border-0: tira a borda -->
+      <div class="card-header bg-primary text-white text-center py-3"> <!-- card-header: titulo do card; bg-primary: define a cor de fundo como azul; text-white: define a cr da letra como branca; py-3: padding -->
+        <h2 class="mb-0 h4 fw-bold">Resgate de Orçamento - Ordem de Serviço #0001</h2> <!-- mb-0: margem inferior zero; h4: tamanho de título médio -->
+      </div>
 
-        <div class="card-header bg-primary text-white py-3"> <!-- card-header: titulo do card; bg-primary: define a cor de fundo como azul; text-white: define a cr da letra como branca; py-3: padding -->
-          <h2 class="mb-0 h4">Resgate de Orçamento - Ordem de Serviço #0001</h2> <!-- mb-0: margem inferior zero; h4: tamanho de título médio -->
+      <div class="card-body bg-light p-4"> <!-- card-body: corpo do card; p-4: espaçamento interno de nível 4 em todos os lados -->
+        <p class="text-dark mb-4">Revise as informações abaixo para confirmar o resgate do serviço.</p> <!-- text-dark: texto preto; mb-4: margem inferior -->
+
+        <div class="table-responsive"> <!-- table-responsive: cria barra de rolagem se a tabela for maior que a tela mantendo ela responsiva -->
+          <table class="table border"> <!-- table: cria a base da tabela; border: faz uma borda externa -->
+            <thead class="table-secondary"> <!-- table-secondary: faz o cabeçalho ter fundo cinza -->
+              <tr>
+                <th class="w-25">Descrição</th> <!-- w-25: força essa coluna a ter 25% da largura total da tabela -->
+                <th>Detalhes Técnicos</th> <!-- th: cabeçalho -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-bold">Equipamento:</td> <!-- fw-bold: faz o rotulo ficar em negrito  -->
+                <td>Desktop Gamer (Gabinete retangular, Fonte 600W, Ryzen i3,Nvidia rx580, 9GB RAM)</td> <!-- td: dados da tabela -->
+              </tr>
+              <tr>
+                <td class="fw-bold">Serviço:</td>
+                <td>Manutenção preventiva, substituição de pasta térmica e organização de cabos.</td>
+              </tr>
+              <tr class="table-info"> <!-- table-info: pinta a linha de azul claro -->
+                <td class="fw-bold h5">VALOR TOTAL:</td> <!-- h5: aumenta o tamanho do texto para destaque -->
+                <td class="fw-bold text-primary h5">R$ 350,00</td> <!-- text-primary: daixa o valor azul -->
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="card-body p-4"> <!-- card-body: corpo do card; p-4: espaçamento interno de nível 4 em todos os lados -->
-          <p class="text-dark mb-4">Revise as informações abaixo para confirmar o resgate do serviço.</p> <!-- text-dark: texto preto; mb-4: margem inferior -->
+        <div class="alert alert-warning mt-4 border-0 shadow-sm"> <!-- alert: estrutura da caixa de aviso; alert-warning: cor amarela; border-0: sem borda -->
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> <!-- bi: fonte de ícones do bootstrap; bi-exclamation-triangle-fill: ícone de aviso; me-2: cria uma margem à direita -->
+          Atenção: Ao aprovar e resgatar, o status do serviço mudará para <span class="fw-bold">EM MANUTENÇÃO</span>. <!-- span fw-bold: faz só uma parte do texto ficar em negrito -->
+        </div>
 
-          <div class="table-responsive"> <!-- table-responsive: cria barra de rolagem se a tabela for maior que a tela mantendo ela responsiva -->
-            <table class="table border"> <!-- table: cria a base da tabela; border: faz uma borda externa -->
-              <thead class="table-secondary"> <!-- table-secondary: faz o cabeçalho ter fundo cinza -->
-                <tr>
-                  <th class="w-25">Descrição</th> <!-- w-25: força essa coluna a ter 25% da largura total da tabela -->
-                  <th>Detalhes Técnicos</th> <!-- th: cabeçalho -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="fw-bold">Equipamento:</td> <!-- fw-bold: faz o rotulo ficar em negrito  -->
-                  <td>Desktop Gamer (Gabinete retangular, Fonte 600W, Ryzen i3,Nvidia rx580, 9GB RAM)</td> <!-- td: dados da tabela -->
-                </tr>
-                <tr>
-                  <td class="fw-bold">Serviço a realizar:</td>
-                  <td>Manutenção preventiva, substituição de pasta térmica e organização de cabos.</td>
-                </tr>
-                <tr class="table-info"> <!-- table-info: pinta a linha de azul claro -->
-                  <td class="fw-bold h5">VALOR TOTAL:</td> <!-- h5: aumenta o tamanho do texto para destaque -->
-                  <td class="fw-bold text-primary h5">R$ 350,00</td> <!-- text-primary: daixa o valor azul -->
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="d-flex justify-content-between mt-5"> <!-- d-flex: ativa flexbox alinhando os elementos; justify-content-between: alinha botões nos extremos opostos -->
+          <button class="btn btn-outline-secondary px-5" (click)="voltar()">Voltar</button> <!-- btn-outline-secondary: botão cinza; px-5: alarga o botão -->
+          <button class="btn btn-primary btn-lg px-5 shadow" (click)="confirmarResgate()">Aprovar e Resgatar</button> <!-- btn-primary: botão azul; btn-lg: botão grande; shadow: faz o botão escurecer -->
+        </div>
 
-          <div class="alert alert-warning mt-4 border-0 shadow-sm"> <!-- alert: estrutura da caixa de aviso; alert-warning: cor amarela; border-0: sem borda -->
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> <!-- bi: fonte de ícones do bootstrap; bi-exclamation-triangle-fill: ícone de aviso; me-2: cria uma margem à direita -->
-            Atenção: Ao aprovar e resgatar, o status do serviço mudará para <span class="fw-bold">EM MANUTENÇÃO</span>. <!-- span fw-bold: faz só uma parte do texto ficar em negrito -->
-          </div>
-
-          <div class="d-flex justify-content-between mt-5"> <!-- d-flex: ativa flexbox alinhando os elementos; justify-content-between: alinha botões nos extremos opostos -->
-            <button class="btn btn-outline-secondary px-5" (click)="voltar()">Voltar</button> <!-- btn-outline-secondary: botão cinza; px-5: alarga o botão -->
-            <button class="btn btn-primary btn-lg px-5 shadow" (click)="confirmarResgate()">Aprovar e Resgatar</button> <!-- btn-primary: botão azul; btn-lg: botão grande; shadow: faz o botão escurecer -->
-          </div>
-
-        </div> <!-- fim do card-body -->
-      </div> <!-- fim do card -->
-
-      <p class="text-center text-muted mt-3 small">Trabalho de Desenvolvimnto Web II</p> <!-- text-center: centraliza o texto; small: letra em tamanho reduzido -->
-    </div> <!-- fim da col-12 -->
-  </div> <!-- fim da row -->
-</div> <!-- fim do container-fluid, a largura da página -->
+      </div> <!-- fim do card-body -->
+    </div> <!-- fim do card -->
+  </div> <!-- fim da col-12 -->
+</div> <!-- fim da row -->
