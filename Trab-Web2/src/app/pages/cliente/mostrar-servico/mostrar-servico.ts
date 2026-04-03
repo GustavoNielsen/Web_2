@@ -1,19 +1,34 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { AprovarServico } from '../aprovar-servico/aprovar-servico';
+import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
 
 @Component({
   selector: 'app-mostrar-servico',
-  imports: [],
+  imports: [AprovarServico, RejeitarServico],
+  standalone: true,
   templateUrl: './mostrar-servico.html',
   styleUrl: './mostrar-servico.css',
 })
 export class MostrarServico {
+  estado : string = ""
+  valor : string = "R$ 525,00"
+  @Output() fechar = new EventEmitter<void>();
+
+
+  voltar(){
+    this.fechar.emit();
+  }
 
   redirecionarParaRejeicao(){
+    this.estado = "rejeitar"
+  }
 
-}
+  aprovarServico(){
+    this.estado = "aprovar"
+  }
 
-aprovarServico(){
-  
-}
+  closeModal(){
+    this.estado = ""
+  }
 
 }

@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, input, Input } from '@angular/core';
 
 @Component({
   selector: 'app-aprovar-servico',
-  imports: [],
+  standalone: true,
   templateUrl: './aprovar-servico.html',
   styleUrl: './aprovar-servico.css',
 })
-export class AprovarServico {}
+export class AprovarServico {
+  @Input() valor : string = "";
+}
