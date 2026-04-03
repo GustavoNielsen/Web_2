@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NavbarExecutor } from './navbar-executor';
+import { TopbarExecutorComponent } from './topbar-executor.component';
 
-describe('NavbarExecutor', () => {
-  let component: NavbarExecutor;
-  let fixture: ComponentFixture<NavbarExecutor>;
+describe('TopbarExecutorComponent', () => {
+  let component: TopbarExecutorComponent;
+  let fixture: ComponentFixture<TopbarExecutorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NavbarExecutor],
+      imports: [TopbarExecutorComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(NavbarExecutor);
+    fixture = TestBed.createComponent(TopbarExecutorComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

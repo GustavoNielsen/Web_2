@@ -16,11 +16,11 @@ export class TopbarUser {
 
 
   getHome(){
-    this.router.navigate(['/home'])
+    this.router.navigate(['/cliente/home'])
   }
 
   getManutencao(){
-    this.router.navigate(['/solicitacao'])
+    this.router.navigate(['/cliente/solicitacao'])
   }
 
 
