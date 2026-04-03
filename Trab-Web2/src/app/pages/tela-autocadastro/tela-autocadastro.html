@@ -1,338 +1,144 @@
-<!-- auto-cadastro.component.html -->
-<div class="cadastro-wrapper">
-  <!-- Background elements -->
-  <div class="bg-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-  </div>
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-11">
 
-  <div class="cadastro-container">
-    <!-- Left Panel -->
-    <div class="panel-left">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <path d="M16 2L28 8V16C28 22.627 22.627 28 16 30C9.373 28 4 22.627 4 16V8L16 2Z" fill="currentColor" opacity="0.9"/>
-            <path d="M11 16L14.5 19.5L21 13" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+      <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h1 class="mb-0 h4 fw-bold">CADASTRO DE USUÁRIO</h1>
         </div>
-        <span class="brand-name">SecureID</span>
-      </div>
 
-      <div class="panel-content">
-        <h1 class="panel-title">Crie sua<br><span class="highlight">conta segura</span></h1>
-        <p class="panel-subtitle">
-          Cadastre-se em segundos. Sua senha será gerada automaticamente e enviada ao seu e-mail.
-        </p>
+        <div class="card-body p-4 bg-light">
 
-        <div class="features">
-          <div class="feature-item">
-            <div class="feature-dot"></div>
-            <span>CEP preenchido automaticamente</span>
+          <!-- Sucesso -->
+          <div *ngIf="cadastroRealizado" class="text-center py-3">
+            <div class="mb-3 text-success" style="font-size: 3rem;">&#10004;</div>
+            <h5 class="fw-bold">Cadastro realizado com sucesso!</h5>
+            <p class="text-muted">Uma senha de 4 dígitos foi enviada para <strong>{{ form.get('email')?.value }}</strong>.</p>
+            <button class="btn btn-primary w-100 fw-bold" routerLink="/">Ir para o Login</button>
           </div>
-          <div class="feature-item">
-            <div class="feature-dot"></div>
-            <span>Senha enviada por e-mail</span>
-          </div>
-          <div class="feature-item">
-            <div class="feature-dot"></div>
-            <span>Dados protegidos com segurança</span>
-          </div>
-        </div>
-      </div>
 
-      <div class="panel-footer">
-        <span>Já possui conta?</span>
-        <a href="/login" class="login-link">Entrar agora →</a>
-      </div>
-    </div>
+          <!-- Formulário -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!cadastroRealizado" novalidate>
 
-    <!-- Right Panel - Form -->
-    <div class="panel-right">
-      <div class="form-header">
-        <h2 class="form-title">Novo Cadastro</h2>
-        <p class="form-subtitle">Preencha os dados abaixo para criar sua conta</p>
-      </div>
+            <!-- Dados Pessoais -->
+            <p class="fw-bold text-dark border-bottom pb-1 mb-3">Dados Pessoais</p>
 
-      <!-- Success State -->
-      <div class="success-state" *ngIf="cadastroRealizado">
-        <div class="success-icon">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <circle cx="24" cy="24" r="24" fill="#10b981" opacity="0.15"/>
-            <path d="M14 24L21 31L34 18" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3 class="success-title">Cadastro realizado!</h3>
-        <p class="success-msg">
-          Uma senha de 4 dígitos foi enviada para <strong>{{ form.get('email')?.value }}</strong>.<br>
-          Use-a para fazer seu primeiro acesso.
-        </p>
-        <button class="btn-primary btn-full" (click)="irParaLogin()">
-          Ir para o Login
-        </button>
-      </div>
-
-      <!-- Form -->
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!cadastroRealizado" class="cadastro-form" novalidate>
-
-        <!-- Dados Pessoais -->
-        <div class="section-label">
-          <span class="section-num">01</span>
-          <span>Dados Pessoais</span>
-        </div>
-
-        <div class="form-row">
-          <!-- Nome -->
-          <div class="form-group full">
-            <label class="form-label" for="nome">Nome Completo</label>
-            <div class="input-wrapper" [class.error]="isInvalid('nome')" [class.success]="isValid('nome')">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </span>
-              <input
-                id="nome"
-                type="text"
-                class="form-control"
-                formControlName="nome"
-                placeholder="Seu nome completo"
-                autocomplete="name"
-              />
-              <span class="valid-icon" *ngIf="isValid('nome')">✓</span>
+            <div class="mb-3">
+              <label for="nome" class="form-label fw-bold text-dark">Nome Completo</label>
+              <input type="text" class="form-control form-control-lg"
+                [class.is-invalid]="isInvalid('nome')"
+                [class.is-valid]="isValid('nome')"
+                id="nome" formControlName="nome" placeholder="Seu nome completo">
+              <div class="invalid-feedback">{{ getError('nome') }}</div>
             </div>
-            <span class="error-msg" *ngIf="isInvalid('nome')">
-              {{ getError('nome') }}
-            </span>
-          </div>
-        </div>
 
-        <div class="form-row two-cols">
-          <!-- CPF -->
-          <div class="form-group">
-            <label class="form-label" for="cpf">CPF</label>
-            <div class="input-wrapper" [class.error]="isInvalid('cpf')" [class.success]="isValid('cpf')">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="5" width="20" height="14" rx="2"/>
-                  <line x1="2" y1="10" x2="22" y2="10"/>
-                </svg>
-              </span>
-              <input
-                id="cpf"
-                type="text"
-                class="form-control"
-                formControlName="cpf"
-                placeholder="000.000.000-00"
-                maxlength="14"
-                (input)="maskCPF($event)"
-              />
-              <span class="valid-icon" *ngIf="isValid('cpf')">✓</span>
-            </div>
-            <span class="error-msg" *ngIf="isInvalid('cpf')">{{ getError('cpf') }}</span>
-          </div>
-
-          <!-- Telefone -->
-          <div class="form-group">
-            <label class="form-label" for="telefone">Telefone</label>
-            <div class="input-wrapper" [class.error]="isInvalid('telefone')" [class.success]="isValid('telefone')">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                </svg>
-              </span>
-              <input
-                id="telefone"
-                type="text"
-                class="form-control"
-                formControlName="telefone"
-                placeholder="(00) 00000-0000"
-                maxlength="15"
-                (input)="maskTelefone($event)"
-              />
-              <span class="valid-icon" *ngIf="isValid('telefone')">✓</span>
-            </div>
-            <span class="error-msg" *ngIf="isInvalid('telefone')">{{ getError('telefone') }}</span>
-          </div>
-        </div>
-
-        <!-- E-mail -->
-        <div class="form-group full">
-          <label class="form-label" for="email">E-mail</label>
-          <div class="input-wrapper" [class.error]="isInvalid('email')" [class.success]="isValid('email')">
-            <span class="input-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-            </span>
-            <input
-              id="email"
-              type="email"
-              class="form-control"
-              formControlName="email"
-              placeholder="seu@email.com"
-              autocomplete="email"
-            />
-            <span class="valid-icon" *ngIf="isValid('email')">✓</span>
-          </div>
-          <span class="error-msg" *ngIf="isInvalid('email')">{{ getError('email') }}</span>
-          <span class="hint-msg">Sua senha de acesso será enviada para este e-mail</span>
-        </div>
-
-        <!-- Endereço -->
-        <div class="section-label" style="margin-top: 8px;">
-          <span class="section-num">02</span>
-          <span>Endereço</span>
-        </div>
-
-        <div class="form-row two-cols-sm">
-          <!-- CEP -->
-          <div class="form-group">
-            <label class="form-label" for="cep">CEP</label>
-            <div class="input-wrapper cep-wrapper" [class.error]="isInvalid('cep')" [class.success]="isValid('cep')">
-              <span class="input-icon">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-              </span>
-              <input
-                id="cep"
-                type="text"
-                class="form-control"
-                formControlName="cep"
-                placeholder="00000-000"
-                maxlength="9"
-                (input)="maskCEP($event)"
-                (blur)="buscarCEP()"
-              />
-              <div class="cep-loading" *ngIf="buscandoCEP">
-                <div class="spinner-sm"></div>
+            <div class="row">
+              <div class="col-md-7 mb-3">
+                <label for="cpf" class="form-label fw-bold text-dark">CPF</label>
+                <input type="text" class="form-control form-control-lg"
+                  [class.is-invalid]="isInvalid('cpf')"
+                  [class.is-valid]="isValid('cpf')"
+                  id="cpf" formControlName="cpf" placeholder="000.000.000-00"
+                  maxlength="14" (input)="maskCPF($event)">
+                <div class="invalid-feedback">{{ getError('cpf') }}</div>
               </div>
-              <span class="valid-icon" *ngIf="isValid('cep') && !buscandoCEP">✓</span>
+              <div class="col-md-5 mb-3">
+                <label for="telefone" class="form-label fw-bold text-dark">Telefone</label>
+                <input type="text" class="form-control form-control-lg"
+                  [class.is-invalid]="isInvalid('telefone')"
+                  [class.is-valid]="isValid('telefone')"
+                  id="telefone" formControlName="telefone" placeholder="(00) 00000-0000"
+                  maxlength="15" (input)="maskTelefone($event)">
+                <div class="invalid-feedback">{{ getError('telefone') }}</div>
+              </div>
             </div>
-            <span class="error-msg" *ngIf="isInvalid('cep')">{{ getError('cep') }}</span>
-            <span class="error-msg" *ngIf="erroCEP">{{ erroCEP }}</span>
-          </div>
 
-          <!-- Número -->
-          <div class="form-group">
-            <label class="form-label" for="numero">Número</label>
-            <div class="input-wrapper" [class.error]="isInvalid('numero')" [class.success]="isValid('numero')">
-              <input
-                id="numero"
-                type="text"
-                class="form-control"
-                formControlName="numero"
-                placeholder="Ex: 123"
-              />
-              <span class="valid-icon" *ngIf="isValid('numero')">✓</span>
+            <div class="mb-3">
+              <label for="email" class="form-label fw-bold text-dark">E-mail</label>
+              <input type="email" class="form-control form-control-lg"
+                [class.is-invalid]="isInvalid('email')"
+                [class.is-valid]="isValid('email')"
+                id="email" formControlName="email" placeholder="seu@email.com">
+              <div class="form-text">Sua senha de acesso será enviada para este e-mail.</div>
+              <div class="invalid-feedback">{{ getError('email') }}</div>
             </div>
-            <span class="error-msg" *ngIf="isInvalid('numero')">{{ getError('numero') }}</span>
-          </div>
+
+            <!-- Endereço -->
+            <p class="fw-bold text-dark border-bottom pb-1 mb-3 mt-4">Endereço</p>
+
+            <div class="row">
+              <div class="col-md-5 mb-3">
+                <label for="cep" class="form-label fw-bold text-dark">CEP</label>
+                <div class="input-group">
+                  <input type="text" class="form-control form-control-lg"
+                    [class.is-invalid]="isInvalid('cep') || !!erroCEP"
+                    [class.is-valid]="isValid('cep') && !buscandoCEP"
+                    id="cep" formControlName="cep" placeholder="00000-000"
+                    maxlength="9" (input)="maskCEP($event)" (blur)="buscarCEP()">
+                  <span class="input-group-text bg-white" *ngIf="buscandoCEP">
+                    <span class="spinner-border spinner-border-sm text-primary"></span>
+                  </span>
+                </div>
+                <div class="text-danger small mt-1" *ngIf="isInvalid('cep')">{{ getError('cep') }}</div>
+                <div class="text-danger small mt-1" *ngIf="erroCEP">{{ erroCEP }}</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="numero" class="form-label fw-bold text-dark">Número</label>
+                <input type="text" class="form-control form-control-lg"
+                  [class.is-invalid]="isInvalid('numero')"
+                  [class.is-valid]="isValid('numero')"
+                  id="numero" formControlName="numero" placeholder="Ex: 123">
+                <div class="invalid-feedback">{{ getError('numero') }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="complemento" class="form-label fw-bold text-dark">Complemento</label>
+                <input type="text" class="form-control form-control-lg"
+                  id="complemento" formControlName="complemento" placeholder="Apto...">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="logradouro" class="form-label fw-bold text-dark">Logradouro</label>
+              <input type="text" class="form-control form-control-lg"
+                id="logradouro" formControlName="logradouro" placeholder="Rua, Avenida...">
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="bairro" class="form-label fw-bold text-dark">Bairro</label>
+                <input type="text" class="form-control form-control-lg"
+                  id="bairro" formControlName="bairro" placeholder="Bairro">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="cidade" class="form-label fw-bold text-dark">Cidade</label>
+                <input type="text" class="form-control form-control-lg"
+                  id="cidade" formControlName="cidade" placeholder="Cidade">
+              </div>
+              <div class="col-md-2 mb-3">
+                <label for="estado" class="form-label fw-bold text-dark">UF</label>
+                <input type="text" class="form-control form-control-lg"
+                  id="estado" formControlName="estado" placeholder="PR" maxlength="2">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 shadow fw-bold mt-2"
+              [disabled]="form.invalid || loading">
+              <span *ngIf="!loading">CADASTRAR</span>
+              <span *ngIf="loading">
+                <span class="spinner-border spinner-border-sm me-2"></span>Cadastrando...
+              </span>
+            </button>
+
+            <div class="text-center border-top mt-4">
+              <p class="mb-1 mt-3 text-muted small">Já possui uma conta?</p>
+              <a routerLink="/" class="text-primary fw-bold text-decoration-none">Entrar no sistema</a>
+            </div>
+
+          </form>
         </div>
+      </div>
 
-        <!-- Logradouro -->
-        <div class="form-group full">
-          <label class="form-label" for="logradouro">Logradouro</label>
-          <div class="input-wrapper" [class.success]="isValid('logradouro')" [class.filled]="!!form.get('logradouro')?.value">
-            <input
-              id="logradouro"
-              type="text"
-              class="form-control"
-              formControlName="logradouro"
-              placeholder="Rua, Avenida..."
-            />
-            <span class="valid-icon" *ngIf="isValid('logradouro')">✓</span>
-          </div>
-        </div>
-
-        <div class="form-row two-cols">
-          <!-- Bairro -->
-          <div class="form-group">
-            <label class="form-label" for="bairro">Bairro</label>
-            <div class="input-wrapper" [class.filled]="!!form.get('bairro')?.value">
-              <input
-                id="bairro"
-                type="text"
-                class="form-control"
-                formControlName="bairro"
-                placeholder="Bairro"
-              />
-            </div>
-          </div>
-
-          <!-- Complemento -->
-          <div class="form-group">
-            <label class="form-label" for="complemento">Complemento <span class="optional">(opcional)</span></label>
-            <div class="input-wrapper">
-              <input
-                id="complemento"
-                type="text"
-                class="form-control"
-                formControlName="complemento"
-                placeholder="Apto, Sala..."
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row two-cols">
-          <!-- Cidade -->
-          <div class="form-group">
-            <label class="form-label" for="cidade">Cidade</label>
-            <div class="input-wrapper" [class.filled]="!!form.get('cidade')?.value">
-              <input
-                id="cidade"
-                type="text"
-                class="form-control"
-                formControlName="cidade"
-                placeholder="Cidade"
-              />
-            </div>
-          </div>
-
-          <!-- Estado -->
-          <div class="form-group">
-            <label class="form-label" for="estado">Estado</label>
-            <div class="input-wrapper" [class.filled]="!!form.get('estado')?.value">
-              <input
-                id="estado"
-                type="text"
-                class="form-control"
-                formControlName="estado"
-                placeholder="UF"
-                maxlength="2"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Submit -->
-        <div class="form-actions">
-          <button
-            type="submit"
-            class="btn-primary btn-full"
-            [disabled]="form.invalid || loading"
-          >
-            <span *ngIf="!loading">Criar minha conta</span>
-            <span class="btn-loading" *ngIf="loading">
-              <div class="spinner-btn"></div>
-              Cadastrando...
-            </span>
-          </button>
-        </div>
-
-        <p class="terms-text">
-          Ao se cadastrar, você concorda com nossa
-          <a href="#">Política de Privacidade</a> e
-          <a href="#">Termos de Uso</a>.
-        </p>
-
-      </form>
+      <p class="text-center text-muted mt-3 small">Trabalho de Desenvolvimento Web II</p>
     </div>
   </div>
 </div>
