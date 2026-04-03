@@ -7,29 +7,35 @@
       <th>E-mail</th>
       <th>Data de Nascimento</th>
       <th class="text-center">
-        <a href="#" title="Novo" alt="Novo"
+        <a [routerLink]="['/funcionarios/novo']" title="Novo" alt="Novo"
            class="btn btn-xs btn-success">
           <i class="fa fa-plus" aria-hidden="true"></i> Novo
         </a>
       </th>
     </tr>
 
-    <tr>
-      <td> </td>
-      <td> </td>
-      <td> </td>
-      <td class="text-center" style="width: 200px">
-        <a href="#" title="Editar" alt="Editar"
-           class="btn btn-xs btn-info">
-          <i class="fa fa-edit" aria-hidden="true"></i> Editar
-        </a>
-        <a href="#" title="Remover" alt="Remover"
-           class="btn btn-xs btn-danger">
-          <i class="fa fa-times" aria-hidden="true"></i> Remover
-        </a>
-      </td>
-    </tr>
+    @for (funcionario of funcionarios; track $index) {
+      <tr>
+        <td>{{ funcionario.nome }}</td>
+        <td>{{ funcionario.email }}</td>
+        <td>{{ funcionario.nasc | date:'dd/MM/yyyy' }}</td>
+        <td class="text-center" style="width: 200px">
+          <a  title="Editar" alt="Editar"
+             class="btn btn-xs btn-info">
+            <i class="fa fa-edit" aria-hidden="true"></i> Editar
+          </a>
+          <a href="#" title="Remover" alt="Remover"
+             class="btn btn-xs btn-danger">
+            <i class="fa fa-times" aria-hidden="true"></i> Remover
+          </a>
+        </td>
+      </tr>
+    }
+    @empty {
+      <tr>
+        <td colspan="4" class="text-center">Nenhum funcionário cadastrado.</td>
+      </tr>
+    }
   </tbody>
 </table>
 
-<p>Nenhum funcionário cadastrado.</p>

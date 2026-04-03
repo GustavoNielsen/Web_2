@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FuncionarioService } from '../../../../services/funcionario.service';
 import { Funcionario } from '../../../../shared/models/funcionario.model';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-listar-funcionario',
-  imports: [],
+  imports: [CommonModule, RouterLink],
   templateUrl: './listar-funcionario.component.html',
   styleUrl: './listar-funcionario.component.css',
 })
@@ -13,10 +15,8 @@ export class ListarFuncionarioComponent implements OnInit {
   funcionarios: Funcionario[] = [];
 
   ngOnInit(): void {
-    // this.funcionarios = this.funcionarioService.listarTodos();
-    this.funcionarios = [
-      new Funcionario(1, 'Gustavo', 'gustavo@gmail.com', new Date('2004-03-16'))
-    ];
+    this.funcionarios = this.funcionarioService.listarTodos();
+   
   }
 }
 

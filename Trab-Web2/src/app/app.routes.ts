@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ListarFuncionarioComponent } from './pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component';
 
 export const routes: Routes = [{
     path: '',
@@ -38,7 +37,29 @@ export const routes: Routes = [{
       },
 
       { path: 'funcionarios/listar',
-        component: ListarFuncionarioComponent }
+        loadComponent: () =>
+        import('./pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component')
+          .then(m => m.ListarFuncionarioComponent)
+       }, 
+
+       {path: 'funcionarios/novo',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-funcionario/inserir-funcionario/inserir-funcionario.component')
+          .then(m => m.InserirFuncionarioComponent)
+       },
+
+       {path: 'categorias/listar',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-categoria/listar-categoria/listar-categoria.component')
+          .then(m => m.ListarCategoriaComponent)
+       },
+
+       {path: 'categorias/novo',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-categoria/inserir-categoria/inserir-categoria.component')
+          .then(m => m.InserirCategoriaComponent)
+       }
+  
 
     
     ]
