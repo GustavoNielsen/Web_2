@@ -1,6 +1,7 @@
 import { publishFacade } from "@angular/compiler";
 
 export class Funcionario {
+form: any;
     constructor(
         public id: number = 0,
         public email: string = "",

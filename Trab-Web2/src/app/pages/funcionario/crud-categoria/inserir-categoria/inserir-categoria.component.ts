@@ -21,7 +21,7 @@ export class InserirCategoriaComponent {
   inserir(): void {
 if (this.formulario.form.valid) {
 this.categoriasService.inserir(this.categoria);
-this.router.navigate( ["/categorias/listar"] );
+this.router.navigate( ["/funcionario/equipamento"] );
 }
 }
 }

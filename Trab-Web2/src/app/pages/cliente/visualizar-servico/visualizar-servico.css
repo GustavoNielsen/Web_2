@@ -532,3 +532,46 @@
   .orcamento-destaque { flex-direction: column; gap: 4px; text-align: center; }
   .orcamento-valor { font-size: 22px; }
 }
+
+
+/* FULLSCREEN LAYER */
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+/* overlay container */
+.overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+/* dark background */
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* modal box */
+.overlay-content {
+  position: relative;
+  z-index: 1;
+
+  width: 95%;
+  max-width: 1200px;
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  border-radius: 12px;
+
+    background-color: white;
+    padding: 20px;
+}

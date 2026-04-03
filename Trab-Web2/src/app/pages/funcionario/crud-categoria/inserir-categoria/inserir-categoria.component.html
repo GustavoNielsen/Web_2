@@ -23,7 +23,7 @@ O nome deve conter ao menos 2 caracteres.
 <button type="button" class="btn btn-primary" (click)="inserir()" [disabled]="!formCategoria.form.valid">
 <i class="fa fa-save"></i> Salvar
 </button>
-<a class="btn btn-secondary">
+<a class="btn btn-secondary" [routerLink]="['/funcionario/equipamento']">
 <i class="fa fa-arrow-left"></i> Voltar
 </a>
 </div>

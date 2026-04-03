@@ -18,5 +18,13 @@ export class ListarFuncionarioComponent implements OnInit {
     this.funcionarios = this.funcionarioService.listarTodos();
    
   }
+
+  remover($event: any, funcionario: Funcionario): void {
+    $event.preventDefault();
+    if (confirm(`Deseja realmente remover o funcionário ${funcionario.nome}?`)) {
+      this.funcionarioService.remover(funcionario.id!);
+      this.funcionarios = this.funcionarioService.listarTodos();
+    }
+  }
 }
 

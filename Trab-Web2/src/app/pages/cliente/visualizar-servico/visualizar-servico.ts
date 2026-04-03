@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -15,11 +15,11 @@ export class VisualizarServico implements OnInit {
   perfil = 'FUNCIONARIO'; // troque para 'CLIENTE' para testar
   solicitacao: any = null;
   historico: any[] = [];
+  @Output() fechar = new EventEmitter<void>();
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-    setTimeout(() => {
       this.solicitacao = {
         id: 1042,
         estado: 'ABERTA',
@@ -49,7 +49,6 @@ export class VisualizarServico implements OnInit {
         dataHora: new Date('2025-03-10T09:30:00'),
       }];
       this.loading = false;
-    }, 600);
   }
 
   getStatusClass(estado: string) {
@@ -66,7 +65,7 @@ export class VisualizarServico implements OnInit {
   }
 
   voltar() {
-    this.router.navigate(['/solicitacoes']);
+    this.fechar.emit();
   }
 
   private mudar(novoEstado: string, descricao: string, responsavel?: string) {

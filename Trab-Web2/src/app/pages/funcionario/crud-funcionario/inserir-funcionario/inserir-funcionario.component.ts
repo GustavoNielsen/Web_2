@@ -23,11 +23,11 @@ nasc: any;
   inserir(): void {
     if (this.formulario.form.valid) {
       if (typeof this.funcionario.nasc === 'string') {
-        // Form input tipo date fornece string no formato yyyy-MM-dd.
+        
         this.funcionario.nasc = new Date(this.funcionario.nasc);
       }
       this.funcionarioService.inserir(this.funcionario);
-      this.router.navigate(["/funcionarios/listar"]);
+      this.router.navigate(["/funcionario/users"]);
     }
   }
 }

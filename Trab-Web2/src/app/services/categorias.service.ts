@@ -26,7 +26,7 @@ export class CategoriasService {
   
   atualizar(categoria: Categoria): void {
     const categorias = this.listarTodos();
-    categoria.forEach( (obj, index, objs) => {
+    categorias.forEach( (obj, index, objs) => {
       if(categoria.id === obj.id){
         objs[index] = categoria;
       }

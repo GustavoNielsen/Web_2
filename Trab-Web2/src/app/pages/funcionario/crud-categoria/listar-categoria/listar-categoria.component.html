@@ -4,7 +4,7 @@
 <tr>
 <th>Nome</th>
 <th class="text-center">
-  <a [routerLink]="['/categorias/novo']" title="Novo" alt="Novo" class="btn btn-xs btn-success">
+  <a [routerLink]="['/funcionario/equipamento/novo']" title="Novo" alt="Novo" class="btn btn-xs btn-success">
     <i class="fa fa-plus" aria-hidden="true"></i> Novo
   </a>
 </th>
@@ -13,12 +13,14 @@
 <tr>
   <td>{{ categoria.nome }}</td>
   <td class="text-center" style="width: 300px">
-    <a href="#" title="Editar" alt="Editar" class="btn btn-xs btn-info">
+    <a href="#" title="Editar" alt="Editar" class="btn btn-xs btn-info"
+        [routerLink]="['/funcionario/equipamento/editar', categoria.id]">
       <i class="fa fa-edit" aria-hidden="true"></i> Editar
     </a>
-    <a href="#" title="Remover" alt="Remover" class="btn btn-xs btn-danger">
-      <i class="fa fa-times" aria-hidden="true"></i> Remover
-    </a>
+    <a href="#" title="Remover" alt="Remover" class="btn btn-xs btn-danger"
+            (click)="remover($event, categoria)">
+            <i class="fa fa-times"></i> Remover
+        </a>
   </td>
 </tr>
 }
