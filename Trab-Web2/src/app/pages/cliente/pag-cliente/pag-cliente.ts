@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { VisualizarServico } from '../visualizar-servico/visualizar-servico';
+import { MostrarServico } from '../mostrar-servico/mostrar-servico';
 @Component({
   selector: 'app-pag-cliente',
   standalone: true,
-  imports: [VisualizarServico],
+  imports: [VisualizarServico, MostrarServico],
   templateUrl: './pag-cliente.html',
   styleUrl: './pag-cliente.css',
 })
