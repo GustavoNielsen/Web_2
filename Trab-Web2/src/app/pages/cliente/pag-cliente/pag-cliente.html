@@ -53,7 +53,7 @@
                             <td class="px-4 py-3">
                                 <div class="d-flex gap-2 justify-content-center">
                                     <a href="visualizar_solicitacao.html?id=3" class="btn btn-sm btn-outline-secondary">Visualizar</a>
-                                    <a href="resgatar_servico.html?id=3" class="btn btn-sm btn-warning fw-bold">Resgatar Serviço</a>
+                                    <button (click)="openModal('resgatar')" class="btn btn-sm btn-warning fw-bold">Resgatar Serviço</button>
                                 </div>
                             </td>
                         </tr>
@@ -85,3 +85,9 @@
 @if(modal == 'a/r'){
     <app-mostrar-servico (fechar)="closeModal()"  />
 }
+
+@if(modal == "resgatar"){
+    <app-resgatar-servico (fechar)="closeModal()" />
+}
+
+

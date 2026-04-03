@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { VisualizarServico } from '../visualizar-servico/visualizar-servico';
 import { MostrarServico } from '../mostrar-servico/mostrar-servico';
+import { ResgatarServico } from '../resgatar-servico/resgatar-servico';
+
+
 @Component({
   selector: 'app-pag-cliente',
   standalone: true,
-  imports: [VisualizarServico, MostrarServico],
+  imports: [VisualizarServico, MostrarServico, ResgatarServico],
   templateUrl: './pag-cliente.html',
   styleUrl: './pag-cliente.css',
 })
