@@ -37,43 +37,40 @@ export const routes: Routes = [{
             .then(m => m.SolicitacaoManutencao),
       },
 
-      { path: 'funcionarios/listar',
-        component: ListarFuncionarioComponent }
-
     
     ]
 }, 
 
-  {
-    path: 'funcionario',
-    loadComponent: () =>
-      import('./pages/topbar-executor/topbar-executor.component').then(m => m.TopbarExecutorComponent),
-    children: [
-      {
-        path: 'home',
-        loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-      },
+{
+  path: 'funcionario',
+  loadComponent: () =>
+    import('./pages/topbar-executor/topbar-executor.component').then(m => m.TopbarExecutorComponent),
+  children: [
+    {
+      path: 'home',
+      loadComponent: () =>
+      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+    },
 
-      {
-        path: 'equipamento',
-        loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-      },
+    {
+      path: 'equipamento',
+      loadComponent: () =>
+      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+    },
 
-      {
-        path: 'users',
-        loadComponent: () =>
-        import("./pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component").then(m => m.ListarFuncionarioComponent),
-      },
+    {
+      path: 'users',
+      loadComponent: () =>
+      import("./pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component").then(m => m.ListarFuncionarioComponent),
+    },
 
-      {
-        path: 'financeiro',
-        loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-      },
-    
-    ]
+    {
+      path: 'financeiro',
+      loadComponent: () =>
+      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+    },
+  
+  ]
 },
 
 
