@@ -65,6 +65,7 @@
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
                         <button class="btn btn-sm btn-primary fw-bold" (click)="efetuarManutencao(s.id)">Manutenção</button>
+                        <button class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalRedirecionar" (click)="solicitacaoSelecionada = s; redirecionar(); componenteRedirecionar.funcionarioSelecionado = ''">Redirecionar</button>
                       }
 
                       @if (s.estado === 'PAGA') {
@@ -87,17 +88,32 @@
 
   </div>
 
-  <!-- Modal de Finalização -->
-  <div class="modal fade" id="modalFinalizar">
-  <div class="modal-dialog modal-dialog-centered"> <!-- modal-dialog centraliza o modal na tela e modal-dialog-centered alinha verticalmente -->
-    <div class="modal-content"> <!--modal-content é a estrutura do modal-->
-      <app-finalizar-solicitacao 
-        [solicitacao]="solicitacaoSelecionada"
-        (finalizada)="finalizar()"
-        (cancelado)="solicitacaoSelecionada = null">
-      </app-finalizar-solicitacao>
+  <!-- Modal de Redirecionamento -->
+  <div class="modal fade" id="modalRedirecionar">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-redirecionar-solicitcao 
+          #componenteRedirecionar
+          [solicitacao]="solicitacaoSelecionada"
+          [funcionarios]="funcionariosDisponiveis"
+          (redirecionado)="redirecionar($event)"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-redirecionar-solicitcao>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- Modal de Finalização -->
+  <div class="modal fade" id="modalFinalizar">
+    <div class="modal-dialog modal-dialog-centered"> <!-- modal-dialog centraliza o modal na tela e modal-dialog-centered alinha verticalmente -->
+      <div class="modal-content"> <!--modal-content é a estrutura do modal-->
+        <app-finalizar-solicitacao 
+          [solicitacao]="solicitacaoSelecionada"
+          (finalizada)="finalizar()"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-finalizar-solicitacao>
+      </div>
+    </div>
+  </div>
 
 </div>
