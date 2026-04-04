@@ -1,32 +1,33 @@
-
-<div class="page">
-  <div class="container">
-
-    <!-- Topo -->
-    <div class="top">
-      <div>
-        <h1>Solicitações</h1>
-        <p>Bem-vindo, {{ nomeUsuario }}</p>
+<div class="container-fluid d-flex justify-content-center p-3">
+  <div class="card shadow-sm border-primary col-11">
+    
+    <div class="card-header bg-primary text-white p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0 fw-bold text-uppercase">Painel de Solicitações</h1>
+        <span class="small fw-bold">Bem-vindo, {{ nomeUsuario }}</span>
       </div>
     </div>
 
-    <!-- Filtros -->
-    <div class="filters">
-      <button class="filter-btn" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
-      <button class="filter-btn" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
-      <button class="filter-btn" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
-
-      @if (filtro === 'PERIODO') {
-        <div class="date-inputs">
-          <input type="date" [(ngModel)]="dataInicio" (change)="aplicarFiltro()" />
-          <span class="date-sep">até</span>
-          <input type="date" [(ngModel)]="dataFim" (change)="aplicarFiltro()" />
+    <div class="card-body p-4" style="min-height: 70vh; display: flex; flex-direction: column;">
+      <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
+        <!-- Filtros -->
+        <div class="btn-group shadow-sm">
+          <button class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
+          <button class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+          <button class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
         </div>
-      }
-    </div>
+
+          @if (filtro === 'PERIODO') {
+            <div class="date-inputs d-flex align-items-center ms-3">
+              <input type="date" class="form-control" [(ngModel)]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
+              <span class="date-sep mx-2">até</span>
+              <input type="date" class="form-control" [(ngModel)]="dataFim" [max]="dataAtual" [min]="dataInicio" (ngModelChange)="aplicarFiltro()" />
+            </div>
+          }
+        </div>
 
     <!-- Tabela -->
-    <div class="card">
+    <div class="table-responsive table-scroll" style="max-height: 50vh; overflow-y: auto;">
 
       @if (loading) {
         <div class="loading">
@@ -35,37 +36,39 @@
         </div>
       } @else {
         @if (solicitacoesFiltradas.length > 0) {
-          <table>
-            <thead>
-              <tr>
-                <th>Data / Hora</th>
-                <th>Cliente</th>
-                <th>Equipamento</th>
-                <th>Estado</th>
-                <th>Ações</th>
+          <table class="table table-hover align-middle mb-0 border">
+            <thead class="table-light sticky-top">
+              <tr class="text-dark small fw-bold">
+                <th>DATA / HORA</th>
+                <th>CLIENTE</th>
+                <th>EQUIPAMENTO</th>
+                <th>ESTADO</th>
+                <th>AÇÕES</th>
               </tr>
             </thead>
             <tbody>
               @for (s of solicitacoesFiltradas; track s.id) {
                 <tr>
                   <td class="td-data">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
-                  <td class="td-cliente">{{ s.nomeCliente }}</td>
+                  <td class="td-cliente fw-bold">{{ s.nomeCliente }}</td>
                   <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
-                  <td><span class="badge" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span></td>
                   <td>
-                    <div class="td-acoes">
-                      <button class="btn btn-ghost" (click)="visualizar(s.id)">Ver</button>
+                    <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span>
+                  </td>
+                  <td>
+                    <div class="td-acoes d-flex gap-2">
+                      <button class="btn btn-sm btn-outline-secondary" (click)="visualizar(s.id)">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
-                        <button class="btn btn-amber" (click)="efetuarOrcamento(s.id)">Orçar</button>
+                        <button class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Orçar</button>
                       }
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
-                        <button class="btn btn-rose" (click)="efetuarManutencao(s.id)">Manutenção</button>
+                        <button class="btn btn-sm btn-primary fw-bold" (click)="efetuarManutencao(s.id)">Manutenção</button>
                       }
 
                       @if (s.estado === 'PAGA') {
-                        <button class="btn btn-green" (click)="finalizar(s.id)">Finalizar</button>
+                        <button class="btn btn-sm btn-success fw-bold  " (click)="finalizar(s.id)">Finalizar</button>
                       }
                     </div>
                   </td>
