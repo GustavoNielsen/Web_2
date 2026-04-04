@@ -68,7 +68,7 @@
                       }
 
                       @if (s.estado === 'PAGA') {
-                        <button class="btn btn-sm btn-success fw-bold  " (click)="finalizar(s.id)">Finalizar</button>
+                        <button class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">Finalizar</button>
                       }
                     </div>
                   </td>
@@ -86,4 +86,18 @@
     </div>
 
   </div>
+
+  <!-- Modal de Finalização -->
+  <div class="modal fade" id="modalFinalizar">
+  <div class="modal-dialog modal-dialog-centered"> <!-- modal-dialog centraliza o modal na tela e modal-dialog-centered alinha verticalmente -->
+    <div class="modal-content"> <!--modal-content é a estrutura do modal-->
+      <app-finalizar-solicitacao 
+        [solicitacao]="solicitacaoSelecionada"
+        (finalizada)="finalizar()"
+        (cancelado)="solicitacaoSelecionada = null">
+      </app-finalizar-solicitacao>
+    </div>
+  </div>
+</div>
+
 </div>
