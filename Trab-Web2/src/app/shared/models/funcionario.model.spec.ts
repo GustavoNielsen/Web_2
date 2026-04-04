@@ -1,4 +1,4 @@
-import { Funcionario } from './funcionariomodel';
+import { Funcionario } from './funcionario.model';
 
 describe('Funcionario', () => {
   it('should create an instance', () => {

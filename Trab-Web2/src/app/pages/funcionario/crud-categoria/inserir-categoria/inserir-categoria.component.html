@@ -1,0 +1,31 @@
+<h1>Nova Categoria</h1>
+
+<div class="well">
+<form #formCategoria="ngForm">
+<div class="form-group">
+<label for="nome">Nome:</label>
+<input type="text" class="form-control" id="nome" name="nome"
+[(ngModel)]="categoria.nome"
+#nome="ngModel"
+minlength="2" required>
+@if(nome.errors && (nome.dirty || nome.touched)) {
+<div class="alert alert-danger">
+<div [hidden]="!nome.errors['required']">
+Digite o nome da pessoa.
+</div>
+<div [hidden]="!nome.errors['minlength']">
+O nome deve conter ao menos 2 caracteres.
+</div>
+</div>
+}
+</div>
+<div class="form-group">
+<button type="button" class="btn btn-primary" (click)="inserir()" [disabled]="!formCategoria.form.valid">
+<i class="fa fa-save"></i> Salvar
+</button>
+<a class="btn btn-secondary" [routerLink]="['/funcionario/equipamento']">
+<i class="fa fa-arrow-left"></i> Voltar
+</a>
+</div>
+</form>
+</div>

@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { ListarFuncionarioComponent } from './pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component';
 
 export const routes: Routes = [{
     path: '',
@@ -36,36 +35,58 @@ export const routes: Routes = [{
           import('./pages/cliente/solicitacao-manutencao/solicitacao-manutencao')
             .then(m => m.SolicitacaoManutencao),
       },
-
-      { path: 'funcionarios/listar',
-        component: ListarFuncionarioComponent }
+ 
 
     
     ]
 }, 
 
-  {
-    path: 'funcionario',
-    loadComponent: () =>
-      import('./pages/topbar-executor/topbar-executor.component').then(m => m.TopbarExecutorComponent),
-    children: [
-      {
-        path: 'home',
-        loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-      },
+{
+  path: 'funcionario',
+  loadComponent: () =>
+    import('./pages/topbar-executor/topbar-executor.component').then(m => m.TopbarExecutorComponent),
+  children: [
+    {
+      path: 'home',
+      loadComponent: () =>
+      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+    },
 
       {
         path: 'equipamento',
         loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+        import('./pages/funcionario/crud-categoria/listar-categoria/listar-categoria.component').then(m => m.ListarCategoriaComponent),
       },
+
+      {path: 'equipamento/novo',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-categoria/inserir-categoria/inserir-categoria.component')
+          .then(m => m.InserirCategoriaComponent)
+       },
+
+        {path: 'equipamento/editar/:id',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-categoria/editar-categoria/editar-categoria.component')
+          .then(m => m.EditarCategoriaComponent)
+       },
 
       {
         path: 'users',
         loadComponent: () =>
         import("./pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component").then(m => m.ListarFuncionarioComponent),
       },
+
+      {path: 'users/novo',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-funcionario/inserir-funcionario/inserir-funcionario.component')
+          .then(m => m.InserirFuncionarioComponent)
+          
+       },
+        {path: 'users/editar/:id',
+        loadComponent: () =>
+        import('./pages/funcionario/crud-funcionario/editar-funcionario/editar-funcionario.component')
+          .then(m => m.EditarFuncionarioComponent)
+       },
 
       {
         path: 'financeiro',

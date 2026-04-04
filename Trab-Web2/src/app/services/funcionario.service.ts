@@ -26,7 +26,7 @@ export class FuncionarioService {
   
   atualizar(funcionario: Funcionario): void {
     const funcionarios = this.listarTodos();
-    funcionario.forEach( (obj, index, objs) => {
+    funcionarios.forEach( (obj, index, objs) => {
       if(funcionario.id === obj.id){
         objs[index] = funcionario;
       }
