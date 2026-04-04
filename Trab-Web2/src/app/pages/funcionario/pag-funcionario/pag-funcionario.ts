@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { FinalizarSolicitacao } from '../finalizar-solicitacao/finalizar-solicitacao';
 
 @Component({
   selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FinalizarSolicitacao],
   templateUrl: './pag-funcionario.html',
   styleUrl: './pag-funcionario.css',
 })
@@ -17,6 +18,8 @@ export class PagFuncionario implements OnInit {
   dataInicio: string = '';
   dataFim: string = '';
   dataAtual: string = '';
+
+  solicitacaoSelecionada: any = null; //variavel que guarda a s selecionada pra passar pro popup
 
   loading = false;
 
@@ -163,7 +166,22 @@ export class PagFuncionario implements OnInit {
     this.aplicarFiltro(); //reaplica o filtro para atualizar a lista exibida
   }
 
-  finalizar(id: number) {
-    alert('Finalizando e entregando equipamento da OS: ' + id);
+  finalizar() {
+    if(this.solicitacaoSelecionada) {
+      this.loading = true;
+      this.CDR.detectChanges(); //força a atualização para mostrar o carregamento antes de finalizar
+
+        setTimeout(() => { //simula carreagamento pra finalizar a OS
+          this.solicitacaoSelecionada.estado = 'FINALIZADA';
+          this.solicitacaoSelecionada.dataHoraFinalizacao = new Date();
+          this.solicitacaoSelecionada.funcionarioFinalizacao = this.nomeUsuario;
+
+          this.aplicarFiltro();
+          this.loading = false;
+          this.CDR.detectChanges(); //força a atualização para mostrar a OS finalizada
+          this.solicitacaoSelecionada = null; //limpa a seleção
+        },500); //delay para mostrar o carregamento
+      }
   }
+
 }
