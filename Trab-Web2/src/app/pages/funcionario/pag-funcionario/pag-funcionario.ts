@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FinalizarSolicitacao } from '../finalizar-solicitacao/finalizar-solicitacao';
+import { RedirecionarSolicitacao } from '../redirecionar-solicitcao/redirecionar-solicitacao';
 
 @Component({
   selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinalizarSolicitacao],
+  imports: [CommonModule, FormsModule, FinalizarSolicitacao, RedirecionarSolicitacao],
   templateUrl: './pag-funcionario.html',
   styleUrl: './pag-funcionario.css',
 })
@@ -57,7 +58,8 @@ export class PagFuncionario implements OnInit {
       dataHora: new Date('2026-03-31T08:40:00'),
       nomeCliente: 'Guilherme',
       descricaoEquipamento: 'Teclado - algumas teclas não respondem e outras digitam sozinhas',
-      estado: 'REDIRECIONADA'
+      estado: 'REDIRECIONADA',
+      funcionarioDestino: 'Mário'
     },
     {
       id: 1006,
@@ -83,7 +85,14 @@ export class PagFuncionario implements OnInit {
 
   ];
 
-  solicitacoesFiltradas: any[] = [];
+  solicitacoesFiltradas: any[] = []; //variavel que guard solicitações depois do filtro, é a lista exibida
+
+  listaFuncionarios: any[] = [ //lista de funcionários para redirecionamento
+    { id: 1, nome: 'Maria' },
+    { id: 2, nome: 'Mário' }
+  ];
+
+  funcionariosDisponiveis: any[] = []; //variavel que guarda funcionários disponiveis para não mostrar o funcionário logado na lista de redirecionamento
 
   ngOnInit() {
     this.dataAtual = new Date().toISOString().split('T')[0];
@@ -106,28 +115,35 @@ export class PagFuncionario implements OnInit {
     this.loading = true;
     this.solicitacoesFiltradas = [];
     this.CDR.detectChanges(); //forca a atualizacão para mostrar o carregamento antes de aplicar o filtro
+
     this.filterTimer = setTimeout(() => { //simula um processamento demorado do filtro
       const hojeStr = new Date().toDateString(); //string com a data de hoje sem hora, usada para comparar apenas a data
 
-      if (this.filtro === 'HOJE') {
-      this.solicitacoesFiltradas = this.todasSolicitacoes.filter(s => {
-        const dataS = new Date(s.dataHora);
-        return dataS.toDateString() === hojeStr;
+      let listaBase = this.todasSolicitacoes.filter(s => { //filtra as solicitações redirecionadas deacordo com o usuario
+        if (s.estado === 'REDIRECIONADA') {
+          return s.funcionarioDestino === this.nomeUsuario; //mostra as redirecionadas com o funcionário destino igual ao usuario logado
+        }
+        return true;
       });
+
+      if (this.filtro === 'HOJE') {
+        this.solicitacoesFiltradas = listaBase.filter(s =>
+          new Date(s.dataHora).toDateString() === hojeStr
+        );
       } 
       else if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
         // Converte as strings dos inputs de data para objetos Date
-        const dInicio = new Date(this.dataInicio + 'T00:00:00');
-        const dFim = new Date(this.dataFim + 'T23:59:59');
+        const dataInicio = new Date(this.dataInicio + 'T00:00:00');
+        const dataFim = new Date(this.dataFim + 'T23:59:59');
 
-        this.solicitacoesFiltradas = this.todasSolicitacoes.filter(s => {
-          const dataS = new Date(s.dataHora);
-          return dataS >= dInicio && dataS <= dFim;
+        this.solicitacoesFiltradas = listaBase.filter(s => {
+          const dataSolicitacao = new Date(s.dataHora);
+          return dataSolicitacao >= dataInicio && dataSolicitacao <= dataFim;
         });
       } 
       else {
         // Se for 'TODAS' ou período incompleto, mostra tudo
-        this.solicitacoesFiltradas = [...this.todasSolicitacoes];
+        this.solicitacoesFiltradas = [...listaBase];
       }
 
       this.loading = false;
@@ -164,6 +180,31 @@ export class PagFuncionario implements OnInit {
     const os = this.todasSolicitacoes.find(s => s.id === id);
     if(os) os.estado = 'ARRUMADA'; 
     this.aplicarFiltro(); //reaplica o filtro para atualizar a lista exibida
+  }
+
+  redirecionar(dadosRedirecionamento?: any) {
+    if(!dadosRedirecionamento) {
+      this.funcionariosDisponiveis = this.listaFuncionarios.filter(f => f.nome !== this.nomeUsuario); //filtra a lista de funcionarios para não mostrar o funcionário logado
+      return;
+    }
+
+      this.loading = true;
+      this.CDR.detectChanges(); //força a atualização para mostrar o carregamento antes de finalizar
+
+      setTimeout(() => {
+        this.solicitacaoSelecionada.estado = 'REDIRECIONADA';
+
+        this.solicitacaoSelecionada.historicoRedirecionamento = {
+        origem: dadosRedirecionamento.funcionarioOrigem,
+        destino: dadosRedirecionamento.funcionarioDestino,
+        data: dadosRedirecionamento.dataHora };
+
+        this.aplicarFiltro();
+        this.loading = false;
+        this.CDR.detectChanges();
+        this.solicitacaoSelecionada = null;
+
+      },500);
   }
 
   finalizar() {
