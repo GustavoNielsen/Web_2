@@ -95,25 +95,6 @@ export const routes: Routes = [{
       },
     
     ]
-    {
-      path: 'equipamento',
-      loadComponent: () =>
-      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-    },
-
-    {
-      path: 'users',
-      loadComponent: () =>
-      import("./pages/funcionario/crud-funcionario/listar-funcionario/listar-funcionario.component").then(m => m.ListarFuncionarioComponent),
-    },
-
-    {
-      path: 'financeiro',
-      loadComponent: () =>
-      import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-    },
-  
-  ]
 },
 
 
