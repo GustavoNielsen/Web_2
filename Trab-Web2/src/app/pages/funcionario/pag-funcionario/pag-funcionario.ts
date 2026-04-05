@@ -3,18 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FinalizarSolicitacao } from '../finalizar-solicitacao/finalizar-solicitacao';
 import { RedirecionarSolicitacao } from '../redirecionar-solicitcao/redirecionar-solicitacao';
+import { VisualizarSolicitacao } from '../visualizar-solicitacoes/visualizar-solicitacao';
 
 @Component({
   selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinalizarSolicitacao, RedirecionarSolicitacao],
+  imports: [CommonModule, FormsModule, FinalizarSolicitacao, RedirecionarSolicitacao, VisualizarSolicitacao],
   templateUrl: './pag-funcionario.html',
   styleUrl: './pag-funcionario.css',
 })
 export class PagFuncionario implements OnInit {
 
   nomeUsuario = 'Mário';
-  filtro: 'HOJE' | 'TODAS' | 'PERIODO' = 'HOJE';
+  filtro: 'SOLICITACOES-ABERTAS' |'HOJE' | 'TODAS' | 'PERIODO' = 'HOJE';
 
   dataInicio: string = '';
   dataFim: string = '';
@@ -27,62 +28,119 @@ export class PagFuncionario implements OnInit {
   todasSolicitacoes: any[] = [
     {
       id: 1001,
-      dataHora: new Date('2026-04-04T09:00:00'),
+      dataHora: new Date('2026-04-05T09:00:00'),
       nomeCliente: 'João',
       descricaoEquipamento: 'Notebook - Tela quebrada e dobradiça solta',
-      estado: 'ABERTA'
+      categoria: 'Notebooks',
+      descricaoDefeito: 'Tela quebrada após queda e dobradiça esquerda solta.',
+      estado: 'ABERTA',
+      historico: [
+        { data: new Date('2026-04-05T09:00:00'), estado: 'ABERTA', funcionario: 'Sistema' }
+      ]
     },
     {
       id: 1002,
       dataHora: new Date('2026-04-03T14:30:00'),
       nomeCliente: 'José',
       descricaoEquipamento: 'Desktop - Lentidão extrema, possível problema de HD',
-      estado: 'ORÇADA'
+      categoria: 'Desktops',
+      descricaoDefeito: 'Lentidão extrema, demora 10 minutos para iniciar o Windows.',
+      estado: 'ORÇADA',
+      historico: [
+        { data: new Date('2026-04-03T14:30:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-04-03T16:00:00'), estado: 'ORÇADA', funcionario: 'Maria' }
+      ]
     },
     {
       id: 1003,
       dataHora: new Date('2026-04-02T10:15:00'),
       nomeCliente: 'Joana',
       descricaoEquipamento: 'Impressora - Não imprime, luz de erro piscando',
-      estado: 'REJEITADA'
+      categoria: 'Impressoras',
+      descricaoDefeito: 'Não imprime em preto, apenas colorido. Já feito limpeza de cabeçote.',
+      estado: 'REJEITADA',
+      historico: [
+        { data: new Date('2026-04-02T10:15:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-04-02T11:00:00'), estado: 'ORÇADA', funcionario: 'Mário' },
+        { data: new Date('2026-04-02T13:00:00'), estado: 'REJEITADA', funcionario: 'Cliente' }
+      ]
     },
     {
       id: 1004,
       dataHora: new Date('2026-04-01T16:00:00'),
       nomeCliente: 'Joaquina',
       descricaoEquipamento: 'Mouse - Scroll travado e clique duplo',
-      estado: 'APROVADA'
+      categoria: 'Periféricos',
+      descricaoDefeito: 'Botão esquerdo com clique duplo intermitente.',
+      estado: 'APROVADA',
+      historico: [
+        { data: new Date('2026-04-01T16:00:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-04-01T17:00:00'), estado: 'ORÇADA', funcionario: 'Maria' },
+        { data: new Date('2026-04-02T09:00:00'), estado: 'APROVADA', funcionario: 'Cliente' }
+      ]
     },
     {
       id: 1005,
       dataHora: new Date('2026-03-31T08:40:00'),
       nomeCliente: 'Guilherme',
       descricaoEquipamento: 'Teclado - algumas teclas não respondem e outras digitam sozinhas',
+      categoria: 'Periféricos',
+      descricaoDefeito: 'Derramou suco no teclado e agora as teclas "A" e "S" não funcionam.',
       estado: 'REDIRECIONADA',
-      funcionarioDestino: 'Mário'
+      funcionarioDestino: 'Mário',
+      historico: [
+        { data: new Date('2026-03-31T08:40:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-03-31T10:00:00'), estado: 'REDIRECIONADA', funcionario: 'Maria', destino: 'Mário' }
+      ]
     },
     {
       id: 1006,
       dataHora: new Date('2026-03-30T09:15:00'),
       nomeCliente: 'Gustavo',
       descricaoEquipamento: 'Notebook - Dobradiça solta',
-      estado: 'ARRUMADA'
+      categoria: 'Notebooks',
+      descricaoDefeito: 'Dobradiça fazendo barulho de estalo ao abrir.',
+      estado: 'ARRUMADA',
+      historico: [
+        { data: new Date('2026-03-30T09:15:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-03-30T11:00:00'), estado: 'ORÇADA', funcionario: 'Mário' },
+        { data: new Date('2026-03-30T14:00:00'), estado: 'APROVADA', funcionario: 'Cliente' },
+        { data: new Date('2026-03-31T16:00:00'), estado: 'ARRUMADA', funcionario: 'Mário' }
+      ]
     },
     {
       id: 1007,
       dataHora: new Date('2026-03-29T08:30:00'),
       nomeCliente: 'Matheus',
       descricaoEquipamento: 'Teclado - Teclas não respondem',
-      estado: 'PAGA'
+      categoria: 'Monitores',
+      descricaoDefeito: 'Listras verticais coloridas aparecendo no centro da tela.',
+      estado: 'PAGA',
+      historico: [
+        { data: new Date('2026-03-29T08:30:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-03-29T10:00:00'), estado: 'ORÇADA', funcionario: 'Maria' },
+        { data: new Date('2026-03-29T11:00:00'), estado: 'APROVADA', funcionario: 'Cliente' },
+        { data: new Date('2026-03-30T09:00:00'), estado: 'ARRUMADA', funcionario: 'Maria' },
+        { data: new Date('2026-03-30T10:00:00'), estado: 'PAGA', funcionario: 'Maria' }
+      ]
     },
     {
       id: 1008,
       dataHora: new Date('2026-03-28T09:00:00'),
       nomeCliente: 'Eduardo',
       descricaoEquipamento: 'Rebinboca - Não liga, possível problema',
-      estado: 'FINALIZADA'
+      categoria: 'Consoles',
+      descricaoDefeito: 'Superaquecimento e desligamento repentino após 30 min de jogo.',
+      estado: 'FINALIZADA',
+      historico: [
+        { data: new Date('2026-03-28T09:00:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-03-28T10:00:00'), estado: 'ORÇADA', funcionario: 'Mário' },
+        { data: new Date('2026-03-28T11:00:00'), estado: 'APROVADA', funcionario: 'Cliente' },
+        { data: new Date('2026-03-28T15:00:00'), estado: 'ARRUMADA', funcionario: 'Mário' },
+        { data: new Date('2026-03-29T09:00:00'), estado: 'PAGA', funcionario: 'Mário' },
+        { data: new Date('2026-03-29T10:00:00'), estado: 'FINALIZADA', funcionario: 'Mário' }
+      ]
     }
-
   ];
 
   solicitacoesFiltradas: any[] = []; //variavel que guard solicitações depois do filtro, é a lista exibida
@@ -94,12 +152,12 @@ export class PagFuncionario implements OnInit {
 
   funcionariosDisponiveis: any[] = []; //variavel que guarda funcionários disponiveis para não mostrar o funcionário logado na lista de redirecionamento
 
-  ngOnInit() {
-    this.dataAtual = new Date().toISOString().split('T')[0];
+  ngOnInit() { //inicializa com as OS abertas
+    this.filtro = 'SOLICITACOES-ABERTAS';
     this.aplicarFiltro();
   }
 
-  setFiltro(f: 'HOJE' | 'TODAS' | 'PERIODO') {
+  setFiltro(f: 'SOLICITACOES-ABERTAS' | 'HOJE' | 'TODAS' | 'PERIODO') {
     this.filtro = f;
     this.aplicarFiltro();
   } 
@@ -126,7 +184,10 @@ export class PagFuncionario implements OnInit {
         return true;
       });
 
-      if (this.filtro === 'HOJE') {
+      if (this.filtro === 'SOLICITACOES-ABERTAS') { //filtro para mostrar apenas as solicitações abertas
+        this.solicitacoesFiltradas = listaBase.filter(s => s.estado === 'ABERTA');
+      }
+      else if (this.filtro === 'HOJE') {
         this.solicitacoesFiltradas = listaBase.filter(s =>
           new Date(s.dataHora).toDateString() === hojeStr
         );
@@ -175,10 +236,9 @@ export class PagFuncionario implements OnInit {
   }
 
   efetuarManutencao(id: number) {
-    alert('Iniciando Manutenção da OS: ' + id);
     //simulação de mudança de estado
-    const os = this.todasSolicitacoes.find(s => s.id === id);
-    if(os) os.estado = 'ARRUMADA'; 
+    const os = this.todasSolicitacoes.find(s => s.id === id); //encontra a OS na lista completa
+    if(os) os.estado = 'ARRUMADA'; //altera o estado da OS para arrumada
     this.aplicarFiltro(); //reaplica o filtro para atualizar a lista exibida
   }
 
