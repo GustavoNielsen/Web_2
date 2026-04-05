@@ -1,6 +1,6 @@
 <div class="container-fluid d-flex justify-content-center p-3">
     <div class="card shadow-sm w-100" style="max-width: 1200px; border: 1px solid #0d6efd;">
-        
+
         <div class="card-header bg-primary text-white p-3">
             <h1 class="h5 mb-0 fw-bold">Minhas Solicitações</h1>
         </div>
@@ -17,59 +17,59 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="px-4 py-3 text-nowrap">08/03/2026 09:00</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Notebook Lenovo</td>
-                            <td class="px-4 py-3">
-                                <span class="badge bg-warning text-dark text-uppercase">Orçada</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(1)">Visualizar</button>
-                                    <button class="btn btn-sm btn-primary fw-bold" (click)="openModal('a/r')">Aprovar / Rejeitar</button>
-                                </div>
-                            </td>
-                        </tr>
+                        <tr *ngFor="let s of solicitacoes">
 
-                        <tr>
-                            <td class="px-4 py-3 text-nowrap">08/03/2026 10:30</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Teclado Logitech</td>
-                            <td class="px-4 py-3">
-                                <span class="badge bg-success text-uppercase">Aprovada</span>
+                            <td class="px-4 py-3 text-nowrap">
+                                {{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(2)">Visualizar</button>
-                                </div>
-                            </td>
-                        </tr>
 
-                        <tr>
-                            <td class="px-4 py-3 text-nowrap">11/03/2026 09:00</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Impressora HP</td>
-                            <td class="px-4 py-3">
-                                <span class="badge bg-danger text-uppercase">Rejeitada</span>   
+                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">
+                                {{ s.descricaoEquipamento }}
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(3)">Visualizar</button>
-                                     <button (click)="openModal('resgatar')" class="btn btn-sm btn-warning fw-bold">Resgatar Serviço</button>
-                                </div>
-                            </td>
-                        </tr>
 
-                        <tr>
-                            <td class="px-4 py-3 text-nowrap">12/03/2026 16:00</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Desktop Gamer</td>
                             <td class="px-4 py-3">
-                                <span class="badge bg-info text-dark text-uppercase">Arrumada</span>
+                                <span class="badge text-uppercase fw-bold" [ngClass]="{
+          'bg-secondary': s.estado === 'ABERTA',
+          'bg-warning text-dark': s.estado === 'ORÇADA',
+          'bg-danger': s.estado === 'REJEITADA',
+          'bg-success': s.estado === 'APROVADA',
+          'bg-info text-dark': s.estado === 'ARRUMADA',
+          'bg-primary': s.estado === 'PAGA',
+          'bg-dark': s.estado === 'FINALIZADA'
+        }">
+                                    {{ s.estado }}
+                                </span>
                             </td>
+
                             <td class="px-4 py-3">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(4)">Visualizar</button>
-                                    <button class="btn btn-sm btn-success fw-bold" (click)="openModal('pagar')">Pagar Serviço</button>
+
+                                    <!-- VISUALIZAR -->
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(s.id, 'visualizar')">
+                                        Visualizar
+                                    </button>
+
+                                    <!-- APROVAR / REJEITAR -->
+                                    <button *ngIf="s.estado === 'ORÇADA'" class="btn btn-sm btn-primary fw-bold"
+                                        (click)="visualizarServico(s.id, 'a/r')">
+                                        Aprovar / Rejeitar
+                                    </button>
+
+                                    <!-- RESGATAR -->
+                                    <button *ngIf="s.estado === 'REJEITADA'" class="btn btn-sm btn-warning fw-bold"
+                                        (click)="visualizarServico(s.id, 'resgatar')">
+                                        Resgatar
+                                    </button>
+
+                                    <!-- PAGAR -->
+                                    <button *ngIf="s.estado === 'ARRUMADA'" class="btn btn-sm btn-success fw-bold"
+                                        (click)="visualizarServico(s.id, 'pagar')">
+                                        Pagar Serviço
+                                    </button>
+
                                 </div>
                             </td>
+
                         </tr>
                     </tbody>
                 </table>
@@ -79,20 +79,29 @@
 </div>
 
 @if(modal == 'visualizar'){
-    <app-visualizar-servico 
-     [id]="idSolicitacao"
-     (fechar)="closeModal()"/>
+<app-visualizar-servico 
+    [solicitacao]="solicitacaoSelecionada"
+    (fechar)="closeModal()"
+    (acao)="abrirAcao($event)"  />
 }
 
 @if(modal == 'a/r'){
-    <app-mostrar-servico (fechar)="closeModal()"  />
+<app-mostrar-servico 
+  [solicitacao]="solicitacaoSelecionada"
+  (fechar)="closeModal()"
+  (atualizado)="atualizarSolicitacao($event)" />
 }
 
 @if(modal == "resgatar"){
-    <app-resgatar-servico (fechar)="closeModal()" />
+<app-resgatar-servico 
+  [solicitacao]="solicitacaoSelecionada"
+  (fechar)="closeModal()"
+  (atualizado)="atualizarSolicitacao($event)" />
 }
 
 @if(modal == "pagar"){
-    <app-pagar-servico (fechar)="closeModal()" />
+<app-pagar-servico 
+  [solicitacao]="solicitacaoSelecionada"
+  (fechar)="closeModal()"
+  (atualizado)="atualizarSolicitacao($event)" />
 }
-

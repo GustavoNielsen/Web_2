@@ -1,55 +1,40 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-pagar-servico',
   standalone: true,
-  imports: [CommonModule, DatePipe, CurrencyPipe],
+  imports: [CommonModule],
   templateUrl: './pagar-servico.html',
   styleUrl: './pagar-servico.css',
 })
 export class PagarServico {
 
   @Output() fechar = new EventEmitter<void>();
+  @Input() solicitacao: any;
+  @Output() atualizado = new EventEmitter<any>();
   perfil: string = 'CLIENTE';
 
-  solicitacao: any = {
-    id: 0,
-    estado: '',
-    descricaoEquipamento: '',
-    categoria: '',
-    descricaoDefeito: '',
-    dataHora: new Date(),
-
-    valorOrcamento: null,
-    funcionarioOrcamento: '',
-    dataOrcamento: new Date(),
-
-    descricaoManutencao: '',
-    orientacoesCliente: '',
-    funcionarioManutencao: '',
-    dataManutencao: new Date(),
-
-    cliente: {
-      nome: '',
-      email: '',
-      cpf: '',
-      telefone: '',
-      logradouro: '',
-      numero: '',
-      complemento: '',
-      bairro: '',
-      cidade: '',
-      estado: '',
-      cep: ''
-    }
-  };
-
-  historico: any[] = [];
 
   voltar() {
     this.fechar.emit();
   }
+
+confirmarPagamento(){
+  this.atualizado.emit({
+    id: this.solicitacao.id,
+    estado: 'PAGA',
+    historico: [
+      {
+        data: new Date(),
+        estado: 'PAGA',
+        funcionario: 'Cliente'
+      }
+    ]
+  });
+
+  this.fechar.emit();
+}
 
   irParaOrcamento() {}
 

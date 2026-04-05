@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { AprovarServico } from '../aprovar-servico/aprovar-servico';
 import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
 
@@ -13,6 +13,8 @@ export class MostrarServico {
   estado : string = ""
   valor : string = "R$ 525,00"
   @Output() fechar = new EventEmitter<void>();
+  @Output() atualizado = new EventEmitter<any>();
+  @Input() solicitacao: any;
 
 
   voltar(){
@@ -24,7 +26,19 @@ export class MostrarServico {
   }
 
   aprovarServico(){
-    this.estado = "aprovar"
+    this.atualizado.emit({
+    id: this.solicitacao.id,
+    estado: 'APROVADA',
+    historico: [
+      {
+        data: new Date(),
+        estado: 'APROVADA',
+        funcionario: 'Cliente'
+      }
+    ]
+  });
+
+  this.fechar.emit();
   }
 
   closeModal(){
