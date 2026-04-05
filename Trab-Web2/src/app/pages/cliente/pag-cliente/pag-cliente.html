@@ -25,35 +25,21 @@
                             </td>
                             <td class="px-4 py-3">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="visualizar_solicitacao.html?id=1" class="btn btn-sm btn-outline-secondary">Visualizar</a>
-                                    <button class="btn btn-sm btn-success fw-bold" (click)="openModal('a/r')">Aprovar / Rejeitar</button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(1)">Visualizar</button>
+                                    <button class="btn btn-sm btn-primary fw-bold" (click)="openModal('a/r')">Aprovar / Rejeitar</button>
                                 </div>
                             </td>
                         </tr>
 
                         <tr>
                             <td class="px-4 py-3 text-nowrap">08/03/2026 10:30</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Smartphone Samsung</td>
+                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Teclado Logitech</td>
                             <td class="px-4 py-3">
-                                <span class="badge bg-info text-dark text-uppercase">Aprovada</span>
+                                <span class="badge bg-success text-uppercase">Aprovada</span>
                             </td>
                             <td class="px-4 py-3">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="visualizar_solicitacao.html?id=2" class="btn btn-sm btn-outline-secondary">Visualizar</a>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="px-4 py-3 text-nowrap">09/03/2026 09:00</td>
-                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Monitor LG</td>
-                            <td class="px-4 py-3">
-                                <span class="badge bg-danger text-uppercase">Rejeitada</span>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <a href="visualizar_solicitacao.html?id=3" class="btn btn-sm btn-outline-secondary">Visualizar</a>
-                                    <button (click)="openModal('resgatar')" class="btn btn-sm btn-warning fw-bold">Resgatar Serviço</button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(2)">Visualizar</button>
                                 </div>
                             </td>
                         </tr>
@@ -62,12 +48,26 @@
                             <td class="px-4 py-3 text-nowrap">11/03/2026 09:00</td>
                             <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Impressora HP</td>
                             <td class="px-4 py-3">
-                                <span class="badge bg-secondary text-uppercase">Em Manutenção</span>
+                                <span class="badge bg-danger text-uppercase">Rejeitada</span>   
                             </td>
                             <td class="px-4 py-3">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <a href="visualizar_solicitacao.html?id=5" class="btn btn-sm btn-outline-secondary">Visualizar</a>
-                                    <button class="btn btn-sm btn-primary fw-bold" (click)="openModal('visualizar')">Ver Detalhes</button>
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(3)">Visualizar</button>
+                                     <button (click)="openModal('resgatar')" class="btn btn-sm btn-warning fw-bold">Resgatar Serviço</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="px-4 py-3 text-nowrap">12/03/2026 16:00</td>
+                            <td class="px-4 py-3 text-truncate" style="max-width: 300px;">Desktop Gamer</td>
+                            <td class="px-4 py-3">
+                                <span class="badge bg-info text-dark text-uppercase">Arrumada</span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(4)">Visualizar</button>
+                                    <button class="btn btn-sm btn-success fw-bold" (click)="openModal('pagar')">Pagar Serviço</button>
                                 </div>
                             </td>
                         </tr>
@@ -79,7 +79,9 @@
 </div>
 
 @if(modal == 'visualizar'){
-    <app-visualizar-servico (fechar)="closeModal()" />
+    <app-visualizar-servico 
+     [id]="idSolicitacao"
+     (fechar)="closeModal()"/>
 }
 
 @if(modal == 'a/r'){
@@ -90,4 +92,7 @@
     <app-resgatar-servico (fechar)="closeModal()" />
 }
 
+@if(modal == "pagar"){
+    <app-pagar-servico (fechar)="closeModal()" />
+}
 
