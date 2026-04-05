@@ -232,8 +232,27 @@ export class PagFuncionario implements OnInit {
     alert('Visualizando detalhes da OS: ' + id);
   }
 
-  efetuarOrcamento(id: number) {
-    alert('Abrindo tela de Orçamento para OS: ' + id);
+  efetuarOrcamento(solicitacao: any) {
+    this.loading = true;
+    this.CDR.detectChanges();
+
+    setTimeout(() => {
+      solicitacao.estado = 'ORÇADA';
+
+      if (!solicitacao.historico) {
+        solicitacao.historico = [];
+      }
+      
+      solicitacao.historico.push({
+        data: new Date(),
+        estado: 'ORÇADA',
+        funcionario: this.nomeUsuario
+      });
+
+      this.aplicarFiltro();
+      this.loading = false;
+      this.CDR.detectChanges();
+    }, 500);
   }
 
   efetuarManutencao(dados: any) {
