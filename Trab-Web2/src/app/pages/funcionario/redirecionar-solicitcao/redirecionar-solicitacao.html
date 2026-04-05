@@ -1,10 +1,10 @@
 <div class="modal-header bg-primary text-white">
   <h5 class="modal-title fw-bold">Redirecionar Manutenção</h5>
-  <button class="btn btn-close" data-bs-dismiss="modal" (click)="cancelarRedirecionamento()"></button>
+  <button type="button" class="btn btn-close" data-bs-dismiss="modal" (click)="cancelarRedirecionamento()"></button>
 </div>
 
 <div class="modal-body">
-  <p>Selecione um funcionário parra repassar a OS <strong>#{{ solicitacao?.id }}</strong>:</p>
+  <p>Selecione um funcionário para repassar a OS <strong>#{{ solicitacao?.id }}</strong>:</p>
   
   <div class="mb-3">
     <label class="form-label fw-bold">Funcionário Destino:</label>
@@ -20,6 +20,6 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" (click)="cancelarRedirecionamento()">Voltar</button>
-  <button type="button" class="btn btn-primary fw-bold" [disabled]="!funcionarioSelecionado" data-bs-dismiss="modal" (click)="confirmarRedirecionamento()">Confirmar Redirecionamento</button>
+  <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="cancelarRedirecionamento()">Voltar</button>
+  <button type="button" class="btn btn-primary fw-bold" data-bs-dismiss="modal" [disabled]="!funcionarioSelecionado" (click)="confirmarRedirecionamento()">Confirmar Redirecionamento</button>
 </div>

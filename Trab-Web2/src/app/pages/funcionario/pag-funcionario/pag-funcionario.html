@@ -12,10 +12,10 @@
       <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
         <!-- Filtros -->
         <div class="btn-group shadow-sm">
-          <button class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Solicitações Abertas</button>
-          <button class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
-          <button class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
-          <button class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Solicitações Abertas</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
         </div>
 
           @if (filtro === 'PERIODO') {
@@ -58,19 +58,18 @@
                   </td>
                   <td>
                     <div class="td-acoes d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
-                        <button class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Efetuar Orçamento</button>
+                        <button type="button" class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Efetuar Orçamento</button>
                       }
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
-                        <button class="btn btn-sm btn-primary fw-bold" (click)="efetuarManutencao(s.id)">Manutenção</button>
-                        <button class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalRedirecionar" (click)="solicitacaoSelecionada = s; redirecionar(); componenteRedirecionar.funcionarioSelecionado = ''">Redirecionar</button>
+                        <button type="button" class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s">Manutenção</button>
                       }
 
                       @if (s.estado === 'PAGA') {
-                        <button class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">Finalizar</button>
+                        <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">Finalizar</button>
                       }
                     </div>
                   </td>
@@ -87,6 +86,20 @@
 
     </div>
 
+  </div>
+
+  <!-- Modal de Manutenção -->
+  <div class="modal fade" id="modalManutencao">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-efetuar-manutencao 
+          [solicitacao]="solicitacaoSelecionada"
+          (realizarManutencao)="efetuarManutencao($event)"
+          (abrirRedirecionar)="redirecionar()"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-efetuar-manutencao>
+      </div>
+    </div>
   </div>
 
   <!-- Modal de Visualização -->
@@ -110,7 +123,7 @@
           [solicitacao]="solicitacaoSelecionada"
           [funcionarios]="funcionariosDisponiveis"
           (redirecionado)="redirecionar($event)"
-          (cancelado)="solicitacaoSelecionada = null">
+          (cancelado)="solicitacaoSelecionada = solicitacaoSelecionada">
         </app-redirecionar-solicitcao>
       </div>
     </div>
