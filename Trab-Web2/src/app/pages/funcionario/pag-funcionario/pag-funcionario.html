@@ -12,6 +12,7 @@
       <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
         <!-- Filtros -->
         <div class="btn-group shadow-sm">
+          <button class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Solicitações Abertas</button>
           <button class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
           <button class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
           <button class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
@@ -57,10 +58,10 @@
                   </td>
                   <td>
                     <div class="td-acoes d-flex gap-2">
-                      <button class="btn btn-sm btn-outline-secondary" (click)="visualizar(s.id)">Ver</button>
+                      <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
-                        <button class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Orçar</button>
+                        <button class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Efetuar Orçamento</button>
                       }
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
@@ -86,6 +87,18 @@
 
     </div>
 
+  </div>
+
+  <!-- Modal de Visualização -->
+  <div class="modal fade" id="modalVisualizar">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-visualizar-solicitacao 
+          [solicitacao]="solicitacaoSelecionada"
+          (fechar)="solicitacaoSelecionada = null">
+        </app-visualizar-solicitacao>
+      </div>
+    </div>
   </div>
 
   <!-- Modal de Redirecionamento -->
