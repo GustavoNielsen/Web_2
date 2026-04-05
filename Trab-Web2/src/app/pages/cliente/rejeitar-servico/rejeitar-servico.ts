@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter} from '@angular/core'; 
+import { Component, Output, EventEmitter, Input} from '@angular/core'; 
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 
@@ -12,13 +12,24 @@ import { FormsModule } from '@angular/forms';
 export class RejeitarServico {
   motivoRejeicao: string = ""; 
 
-  @Output() fechar = new EventEmitter<void>();
+  @Output() atualizado = new EventEmitter<any>();
+  @Input() solicitacao: any;
 
   confirmarRejeicao() {
-    window.location.href = '/cliente/home';
+    this.atualizado.emit({
+      id: this.solicitacao.id,
+      estado: 'REJEITADA',
+      historico: [
+        {
+          data: new Date(),
+          estado: 'REJEITADA',
+          funcionario: 'Cliente'
+        }
+      ]
+    });
   }
 
   cancelar() {
-    this.fechar.emit(); 
+    this.atualizado.emit(); 
   }
 }

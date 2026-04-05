@@ -5,8 +5,7 @@
   <div class="overlay-content">
 
     <!-- Loading -->
-    <div class="d-flex flex-column align-items-center justify-content-center vh-50"
-         *ngIf="loading">
+    <div class="d-flex flex-column align-items-center justify-content-center vh-50" *ngIf="loading">
       <div class="spinner-border text-primary"></div>
       <p class="mt-2 text-secondary">Carregando solicitação...</p>
     </div>
@@ -24,7 +23,15 @@
             Solicitação #{{ solicitacao.id }}
           </h5>
 
-          <span class="badge bg-light text-dark text-uppercase">
+          <span class="badge text-uppercase fw-bold" [ngClass]="{
+    'bg-secondary': solicitacao.estado === 'ABERTA',
+    'bg-warning text-dark': solicitacao.estado === 'ORÇADA',
+    'bg-danger': solicitacao.estado === 'REJEITADA',
+    'bg-success': solicitacao.estado === 'APROVADA',
+    'bg-info text-dark': solicitacao.estado === 'ARRUMADA',
+    'bg-primary': solicitacao.estado === 'PAGA',
+    'bg-dark': solicitacao.estado === 'FINALIZADA'
+  }">
             {{ solicitacao.estado }}
           </span>
         </div>
@@ -79,15 +86,11 @@
               <div class="card mb-3 border">
                 <div class="card-header fw-bold">Cliente</div>
                 <div class="card-body">
-                  <p><strong>Nome:</strong> {{ solicitacao.cliente.nome }}</p>
-                  <p><strong>Email:</strong> {{ solicitacao.cliente.email }}</p>
-                  <p><strong>CPF:</strong> {{ solicitacao.cliente.cpf }}</p>
-                  <p><strong>Telefone:</strong> {{ solicitacao.cliente.telefone }}</p>
-                  <p>
-                    <strong>Endereço:</strong><br>
-                    {{ solicitacao.cliente.logradouro }}, {{ solicitacao.cliente.numero }}<br>
-                    {{ solicitacao.cliente.bairro }} - {{ solicitacao.cliente.cidade }}
-                  </p>
+                  <p><strong>Nome:</strong> {{ solicitacao.nomeCliente }}</p>
+                  <p><strong>Email:</strong> {{ solicitacao.nomeCliente }}@dominio.com</p>
+                  <p><strong>CPF:</strong> Não informado</p>
+                  <p><strong>Telefone:</strong> Não informado</p>
+                  <p><strong>Endereço:</strong> Não informado</p>
                 </div>
               </div>
 
@@ -99,15 +102,15 @@
                 <div class="card-body">
 
                   <div *ngFor="let item of historico" class="mb-3 border-bottom pb-2">
+
                     <p class="mb-1">
-                      <strong>{{ item.estadoAnterior || 'Início' }}</strong>
-                      →
-                      <strong>{{ item.estadoNovo }}</strong>
+                      <strong>{{ item.estado }}</strong>
                     </p>
+
                     <small class="text-muted">
-                      {{ item.responsavel }} - {{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}
+                      {{ item.funcionario }} - {{ item.data | date:'dd/MM/yyyy HH:mm' }}
                     </small>
-                    <p class="mb-0">{{ item.descricao }}</p>
+
                   </div>
 
                   <div *ngIf="historico.length === 0" class="text-muted">
@@ -129,27 +132,19 @@
           <!-- CLIENTE -->
           <ng-container *ngIf="perfil === 'CLIENTE'">
 
-            <button class="btn btn-success me-2"
-              *ngIf="solicitacao.estado === 'ORÇADA'"
-              (click)="aprovarOrcamento()">
+            <button class="btn btn-success me-2" *ngIf="solicitacao.estado === 'ORÇADA'" (click)="acaoCliente('a/r')">
               Aprovar
             </button>
 
-            <button class="btn btn-danger me-2"
-              *ngIf="solicitacao.estado === 'ORÇADA'"
-              (click)="rejeitarOrcamento()">
+            <button class="btn btn-danger me-2" *ngIf="solicitacao.estado === 'ORÇADA'" (click)="acaoCliente('a/r')">
               Rejeitar
             </button>
 
-            <button class="btn btn-warning me-2"
-              *ngIf="solicitacao.estado === 'REJEITADA'"
-              (click)="resgatarServico()">
+            <button class="btn btn-warning me-2" *ngIf="solicitacao.estado === 'REJEITADA'" (click)="acaoCliente('resgatar')">
               Resgatar
             </button>
 
-            <button class="btn btn-primary"
-              *ngIf="solicitacao.estado === 'ARRUMADA'"
-              (click)="pagar()">
+            <button class="btn btn-primary" *ngIf="solicitacao.estado === 'ARRUMADA'" (click)="acaoCliente('pagar')">
               Pagar Serviço
             </button>
 

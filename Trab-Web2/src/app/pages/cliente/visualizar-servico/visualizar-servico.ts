@@ -10,65 +10,19 @@ import { Router } from '@angular/router';
   styleUrl: './visualizar-servico.css',
 })
 export class VisualizarServico implements OnInit {
-  @Input() id: number = 0;
+  @Input() solicitacao: any;
   loading = true;
   perfil = 'CLIENTE'; // troque para 'CLIENTE' para testar
-  solicitacao: any = null;
   historico: any[] = [];
   @Output() fechar = new EventEmitter<void>();
+  @Output() acao = new EventEmitter<string>();
 
   constructor(private router: Router) {}
 
   ngOnInit() {
-
-  const dados: any = {
-    1: {
-      id: 1,
-      estado: 'ORÇADA',
-      descricaoEquipamento: 'Notebook Lenovo',
-      categoria: 'Notebook',
-      descricaoDefeito: 'Não liga',
-      dataHora: "03/08/2026 09:00",
-      cliente: { nome: 'João' }
-    },
-    2: {
-      id: 2,
-      estado: 'APROVADA',
-      descricaoEquipamento: 'Teclado Logitech',
-      categoria: 'Teclado',
-      descricaoDefeito: 'Led queimado',
-      dataHora: new Date(),
-      cliente: { nome: 'Joana' }
-    },
-    3: {
-      id: 3,
-      estado: 'REJEITADA',
-      descricaoEquipamento: 'Impressora HP',
-      categoria: 'Impressora',
-      descricaoDefeito: 'Falha impressão',
-      dataHora: new Date(),
-      cliente: { nome: 'Cliente 4' }
-    },
-    4: {
-      id: 4,
-      estado: 'ARRUMADA',
-      descricaoEquipamento: 'Desktop Gamer',
-      categoria: 'Computador',
-      descricaoDefeito: 'Superaquecimento',
-      dataHora: new Date(),
-      cliente: { nome: 'Cliente 5' }
-    }
-  };
-
-  this.solicitacao = dados[this.id];
-
-  this.historico = [{
-    estadoAnterior: null,
-    estadoNovo: this.solicitacao.estado,
-    descricao: 'Solicitação carregada.',
-    responsavel: 'Sistema',
-    dataHora: new Date()
-  }];
+  this.historico = this.solicitacao?.historico
+    ? [...this.solicitacao.historico]
+    : [];
 
   this.loading = false;
 }
@@ -91,16 +45,24 @@ export class VisualizarServico implements OnInit {
   }
 
   private mudar(novoEstado: string, descricao: string, responsavel?: string) {
-    const anterior = this.solicitacao.estado;
-    this.solicitacao = { ...this.solicitacao, estado: novoEstado };
-    this.historico = [{
-      estadoAnterior: anterior,
-      estadoNovo: novoEstado,
-      descricao,
-      responsavel: responsavel ?? 'Sistema',
-      dataHora: new Date(),
-    }, ...this.historico];
-  }
+  const anterior = this.solicitacao.estado;
+
+  this.solicitacao.estado = novoEstado;
+
+  this.historico = [{
+    estadoAnterior: anterior,
+    estadoNovo: novoEstado,
+    descricao,
+    responsavel: responsavel ?? 'Sistema',
+    dataHora: new Date(),
+  }, ...this.historico];
+
+  // Atualiza a tabela
+  this.acao.emit({
+    ...this.solicitacao,
+    historico: this.historico
+  });
+}
 
   // Ações do FUNCIONARIO
   efetuarOrcamento() {
@@ -124,19 +86,8 @@ export class VisualizarServico implements OnInit {
   }
 
   // Ações do CLIENTE
-  aprovarOrcamento() {
-    this.mudar('APROVADA', 'Orçamento aprovado pelo cliente.', this.solicitacao.cliente.nome);
-  }
+  acaoCliente(modal: string) {
+  this.acao.emit(modal);
+}
 
-  rejeitarOrcamento() {
-    this.mudar('REJEITADA', 'Orçamento rejeitado pelo cliente.', this.solicitacao.cliente.nome);
-  }
-
-  resgatarServico() {
-    this.mudar('ABERTA', 'Solicitação resgatada pelo cliente.', this.solicitacao.cliente.nome);
-  }
-
-  pagar() {
-    this.mudar('PAGA', 'Pagamento realizado.', this.solicitacao.cliente.nome);
-  }
 }

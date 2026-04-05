@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -12,6 +12,8 @@ export class ResgatarServico {
 
   @Output() resgateConfirmado = new EventEmitter<void>(); // Output para emitir um evento de confirmação de resgate
   @Output() fechar = new EventEmitter<void>(); //Emiti um evento de cancelamento de resgate
+  @Output() atualizado = new EventEmitter<any>();
+  @Input() solicitacao: any;
 
 //função para voltar para a página anterior
   voltar() {
@@ -20,7 +22,19 @@ export class ResgatarServico {
 
 // função exemplo para simular o resgate
   confirmarResgate() {
-    window.location.href = '/cliente/home'; //dispara o evento de confirmação,pode usar para fechar o popup ou atualizar a página
+    this.atualizado.emit({
+    id: this.solicitacao.id,
+    estado: 'APROVADA',
+    historico: [
+      {
+        data: new Date(),
+        estado: 'APROVADA',
+        funcionario: 'Cliente'
+      }
+    ]
+  });
+
+  this.fechar.emit();
+}
   }
 
-}
