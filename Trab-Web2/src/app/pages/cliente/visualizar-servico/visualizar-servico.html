@@ -1,278 +1,164 @@
 <div class="overlay">
 
-  <!-- backdrop -->
   <div class="overlay-backdrop" (click)="voltar()"></div>
 
-  <!-- modal -->
   <div class="overlay-content">
 
     <!-- Loading -->
-    <div class="loading-state" *ngIf="loading">
-      <div class="spinner-lg"></div>
-      <p>Carregando solicitação...</p>
+    <div class="d-flex flex-column align-items-center justify-content-center vh-50"
+         *ngIf="loading">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2 text-secondary">Carregando solicitação...</p>
     </div>
 
     <!-- Conteúdo -->
-    <div class="page-container" *ngIf="!loading && solicitacao">
+    <div class="container py-3" *ngIf="!loading && solicitacao">
 
-      <!-- Header -->
-      <div class="page-header">
-        <button class="btn-back" (click)="voltar()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-          Voltar
-        </button>
+      <div class="card shadow border-primary">
 
-        <div class="header-center">
-          <h1 class="page-title">Solicitação #{{ solicitacao.id }}</h1>
-          <span class="status-badge" [ngClass]="getStatusClass(solicitacao.estado)">
+        <!-- HEADER -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <button class="btn btn-light btn-sm" (click)="voltar()">Voltar</button>
+
+          <h5 class="mb-0 fw-bold">
+            Solicitação #{{ solicitacao.id }}
+          </h5>
+
+          <span class="badge bg-light text-dark text-uppercase">
             {{ solicitacao.estado }}
           </span>
         </div>
 
-        <div class="actions">
+        <div class="card-body">
+
+          <div class="row g-4">
+
+            <!-- ESQUERDA -->
+            <div class="col-md-6">
+
+              <!-- Equipamento -->
+              <div class="card mb-3 border">
+                <div class="card-header fw-bold">Equipamento</div>
+                <div class="card-body">
+                  <p><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
+                  <p><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
+                  <p><strong>Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
+                  <p><strong>Data:</strong> {{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+              </div>
+
+              <!-- Orçamento -->
+              <div class="card mb-3 border" *ngIf="solicitacao.valorOrcamento">
+                <div class="card-header fw-bold">Orçamento</div>
+                <div class="card-body text-center">
+                  <h3 class="text-primary fw-bold">
+                    R$ {{ solicitacao.valorOrcamento | number:'1.2-2' }}
+                  </h3>
+                  <p *ngIf="solicitacao.funcionarioOrcamento">
+                    {{ solicitacao.funcionarioOrcamento }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Manutenção -->
+              <div class="card border" *ngIf="solicitacao.descricaoManutencao">
+                <div class="card-header fw-bold">Manutenção</div>
+                <div class="card-body">
+                  <p><strong>Descrição:</strong> {{ solicitacao.descricaoManutencao }}</p>
+                  <p><strong>Orientações:</strong> {{ solicitacao.orientacoesCliente }}</p>
+                  <p><strong>Técnico:</strong> {{ solicitacao.funcionarioManutencao }}</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- DIREITA -->
+            <div class="col-md-6">
+
+              <!-- Cliente -->
+              <div class="card mb-3 border">
+                <div class="card-header fw-bold">Cliente</div>
+                <div class="card-body">
+                  <p><strong>Nome:</strong> {{ solicitacao.cliente.nome }}</p>
+                  <p><strong>Email:</strong> {{ solicitacao.cliente.email }}</p>
+                  <p><strong>CPF:</strong> {{ solicitacao.cliente.cpf }}</p>
+                  <p><strong>Telefone:</strong> {{ solicitacao.cliente.telefone }}</p>
+                  <p>
+                    <strong>Endereço:</strong><br>
+                    {{ solicitacao.cliente.logradouro }}, {{ solicitacao.cliente.numero }}<br>
+                    {{ solicitacao.cliente.bairro }} - {{ solicitacao.cliente.cidade }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Histórico -->
+              <div class="card border">
+                <div class="card-header fw-bold">
+                  Histórico ({{ historico.length }})
+                </div>
+                <div class="card-body">
+
+                  <div *ngFor="let item of historico" class="mb-3 border-bottom pb-2">
+                    <p class="mb-1">
+                      <strong>{{ item.estadoAnterior || 'Início' }}</strong>
+                      →
+                      <strong>{{ item.estadoNovo }}</strong>
+                    </p>
+                    <small class="text-muted">
+                      {{ item.responsavel }} - {{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}
+                    </small>
+                    <p class="mb-0">{{ item.descricao }}</p>
+                  </div>
+
+                  <div *ngIf="historico.length === 0" class="text-muted">
+                    Nenhuma alteração registrada.
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="card-footer text-end">
+
           <!-- CLIENTE -->
           <ng-container *ngIf="perfil === 'CLIENTE'">
-            <button class="btn-action btn-approve"
+
+            <button class="btn btn-success me-2"
               *ngIf="solicitacao.estado === 'ORÇADA'"
               (click)="aprovarOrcamento()">
-              Aprovar Orçamento
+              Aprovar
             </button>
 
-            <button class="btn btn-rose"
+            <button class="btn btn-danger me-2"
               *ngIf="solicitacao.estado === 'ORÇADA'"
               (click)="rejeitarOrcamento()">
               Rejeitar
             </button>
 
-            <button class="btn btn-violet"
+            <button class="btn btn-warning me-2"
               *ngIf="solicitacao.estado === 'REJEITADA'"
               (click)="resgatarServico()">
               Resgatar
             </button>
 
-            <button class="btn btn-blue"
+            <button class="btn btn-primary"
               *ngIf="solicitacao.estado === 'ARRUMADA'"
               (click)="pagar()">
-              Pagar serviço
+              Pagar Serviço
             </button>
+
           </ng-container>
 
-          <!-- FUNCIONARIO -->
-          <ng-container *ngIf="perfil === 'FUNCIONARIO'">
-            <button class="btn btn-amber"
-              *ngIf="solicitacao.estado === 'ABERTA'"
-              (click)="efetuarOrcamento()">
-              Efetuar orçamento
-            </button>
-
-            <button class="btn btn-rose"
-              *ngIf="solicitacao.estado === 'APROVADA' || solicitacao.estado === 'REDIRECIONADA'"
-              (click)="efetuarManutencao()">
-              Efetuar manutenção
-            </button>
-
-            <button class="btn btn-green"
-              *ngIf="solicitacao.estado === 'PAGA'"
-              (click)="finalizarSolicitacao()">
-              ✓ Finalizar
-            </button>
-          </ng-container>
         </div>
+
       </div>
 
-      <!-- Grid -->
-      <div class="grid">
-
-        <!-- Coluna esquerda -->
-        <div class="col">
-
-          <!-- Equipamento -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Equipamento</h2>
-              <span class="badge sm" [ngClass]="getStatusClass(solicitacao.estado)">
-                {{ solicitacao.estado }}
-              </span>
-            </div>
-            <div class="card-body">
-              <div class="fields">
-                <div class="field">
-                  <label>Equipamento</label>
-                  <span>{{ solicitacao.descricaoEquipamento }}</span>
-                </div>
-                <div class="field">
-                  <label>Categoria</label>
-                  <span>{{ solicitacao.categoria }}</span>
-                </div>
-                <div class="field span2">
-                  <label>Descrição do defeito</label>
-                  <span class="block">{{ solicitacao.descricaoDefeito }}</span>
-                </div>
-                <div class="field">
-                  <label>Aberta em</label>
-                  <span>{{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Orçamento -->
-          <div class="card" *ngIf="solicitacao.valorOrcamento">
-            <div class="card-head">
-              <h2>Orçamento</h2>
-            </div>
-            <div class="card-body">
-              <div class="orcamento-valor">
-                <span class="currency">R$</span>
-                <span class="amount">{{ solicitacao.valorOrcamento | number:'1.2-2' }}</span>
-              </div>
-              <div class="fields" *ngIf="solicitacao.funcionarioOrcamento">
-                <div class="field">
-                  <label>Orçado por</label>
-                  <span>{{ solicitacao.funcionarioOrcamento }}</span>
-                </div>
-                <div class="field">
-                  <label>Data</label>
-                  <span>{{ solicitacao.dataOrcamento | date:'dd/MM/yyyy HH:mm' }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Manutenção -->
-          <div class="card" *ngIf="solicitacao.descricaoManutencao">
-            <div class="card-head">
-              <h2>Manutenção realizada</h2>
-            </div>
-            <div class="card-body">
-              <div class="fields">
-                <div class="field span2">
-                  <label>O que foi feito</label>
-                  <span class="block">{{ solicitacao.descricaoManutencao }}</span>
-                </div>
-                <div class="field span2">
-                  <label>Orientações ao cliente</label>
-                  <span class="block info">{{ solicitacao.orientacoesCliente }}</span>
-                </div>
-                <div class="field">
-                  <label>Técnico</label>
-                  <span>{{ solicitacao.funcionarioManutencao }}</span>
-                </div>
-                <div class="field">
-                  <label>Data</label>
-                  <span>{{ solicitacao.dataManutencao | date:'dd/MM/yyyy HH:mm' }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Coluna direita -->
-        <div class="col">
-
-          <!-- Cliente -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Cliente</h2>
-            </div>
-            <div class="card-body">
-              <div class="avatar-row">
-                <div class="avatar">{{ getInitials(solicitacao.cliente.nome) }}</div>
-                <div class="avatar-info">
-                  <p>{{ solicitacao.cliente.nome }}</p>
-                  <small>{{ solicitacao.cliente.email }}</small>
-                </div>
-              </div>
-              <div class="fields">
-                <div class="field">
-                  <label>CPF</label>
-                  <span>{{ solicitacao.cliente.cpf }}</span>
-                </div>
-                <div class="field">
-                  <label>Telefone</label>
-                  <span>{{ solicitacao.cliente.telefone }}</span>
-                </div>
-                <div class="field span2">
-                  <label>Endereço</label>
-                  <span>
-                    {{ solicitacao.cliente.logradouro }}, {{ solicitacao.cliente.numero }}
-                    <ng-container *ngIf="solicitacao.cliente.complemento">
-                      — {{ solicitacao.cliente.complemento }}
-                    </ng-container>
-                    <br>{{ solicitacao.cliente.bairro }}, {{ solicitacao.cliente.cidade }}/{{ solicitacao.cliente.estado }}
-                    <br>CEP {{ solicitacao.cliente.cep }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Histórico -->
-          <div class="card">
-            <div class="card-head">
-              <h2>Histórico</h2>
-              <span class="badge sm s-arrumada">{{ historico.length }}</span>
-            </div>
-            <div class="card-body">
-              <div class="timeline">
-
-                <div class="t-item"
-                     *ngFor="let item of historico; let last = last"
-                     [class.last]="last">
-                  <div class="t-left">
-                    <div class="t-dot" [ngClass]="getStatusClass(item.estadoNovo)"></div>
-                    <div class="t-line" *ngIf="!last"></div>
-                  </div>
-
-                  <div class="t-content">
-                    <div class="t-states">
-                      <span class="badge sm"
-                            [ngClass]="getStatusClass(item.estadoAnterior)"
-                            *ngIf="item.estadoAnterior">
-                        {{ item.estadoAnterior }}
-                      </span>
-
-                      <svg *ngIf="item.estadoAnterior" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2.5">
-                        <polyline points="9 18 15 12 9 6"/>
-                      </svg>
-
-                      <span class="badge sm"
-                            [ngClass]="getStatusClass(item.estadoNovo)">
-                        {{ item.estadoNovo }}
-                      </span>
-                    </div>
-
-                    <p class="t-desc" *ngIf="item.descricao">
-                      {{ item.descricao }}
-                    </p>
-
-                    <div class="t-meta">
-                      <span>{{ item.responsavel }}</span>
-                      <span>{{ item.dataHora | date:'dd/MM/yyyy HH:mm' }}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="t-empty" *ngIf="historico.length === 0">
-                  Nenhuma alteração registrada.
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- Vazio -->
-    <div class="empty" *ngIf="!loading && !solicitacao">
-      <h3>Solicitação não encontrada</h3>
-      <p>Verifique o ID e tente novamente.</p>
-      <button class="btn btn-amber" (click)="voltar()">Voltar</button>
     </div>
 
   </div>

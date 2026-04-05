@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -10,9 +10,9 @@ import { Router } from '@angular/router';
   styleUrl: './visualizar-servico.css',
 })
 export class VisualizarServico implements OnInit {
-
+  @Input() id: number = 0;
   loading = true;
-  perfil = 'FUNCIONARIO'; // troque para 'CLIENTE' para testar
+  perfil = 'CLIENTE'; // troque para 'CLIENTE' para testar
   solicitacao: any = null;
   historico: any[] = [];
   @Output() fechar = new EventEmitter<void>();
@@ -20,36 +20,58 @@ export class VisualizarServico implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-      this.solicitacao = {
-        id: 1042,
-        estado: 'ABERTA',
-        descricaoEquipamento: 'Notebook Dell Inspiron 15',
-        categoria: 'Informática',
-        descricaoDefeito: 'Não liga após queda. Bateria indica carga, tela permanece apagada e sem sinal de boot.',
-        dataHora: new Date('2025-03-10T09:30:00'),
-        cliente: {
-          nome: 'Maria Fernanda Oliveira',
-          email: 'maria.fernanda@email.com',
-          cpf: '123.456.789-00',
-          telefone: '(41) 99876-5432',
-          logradouro: 'Rua das Flores',
-          numero: '342',
-          complemento: 'Apto 12',
-          bairro: 'Água Verde',
-          cidade: 'Curitiba',
-          estado: 'PR',
-          cep: '80610-010',
-        },
-      };
-      this.historico = [{
-        estadoAnterior: null,
-        estadoNovo: 'ABERTA',
-        descricao: 'Solicitação criada pelo cliente.',
-        responsavel: 'Maria Fernanda Oliveira',
-        dataHora: new Date('2025-03-10T09:30:00'),
-      }];
-      this.loading = false;
-  }
+
+  const dados: any = {
+    1: {
+      id: 1,
+      estado: 'ORÇADA',
+      descricaoEquipamento: 'Notebook Lenovo',
+      categoria: 'Notebook',
+      descricaoDefeito: 'Não liga',
+      dataHora: "03/08/2026 09:00",
+      cliente: { nome: 'João' }
+    },
+    2: {
+      id: 2,
+      estado: 'APROVADA',
+      descricaoEquipamento: 'Teclado Logitech',
+      categoria: 'Teclado',
+      descricaoDefeito: 'Led queimado',
+      dataHora: new Date(),
+      cliente: { nome: 'Joana' }
+    },
+    3: {
+      id: 3,
+      estado: 'REJEITADA',
+      descricaoEquipamento: 'Impressora HP',
+      categoria: 'Impressora',
+      descricaoDefeito: 'Falha impressão',
+      dataHora: new Date(),
+      cliente: { nome: 'Cliente 4' }
+    },
+    4: {
+      id: 4,
+      estado: 'ARRUMADA',
+      descricaoEquipamento: 'Desktop Gamer',
+      categoria: 'Computador',
+      descricaoDefeito: 'Superaquecimento',
+      dataHora: new Date(),
+      cliente: { nome: 'Cliente 5' }
+    }
+  };
+
+  this.solicitacao = dados[this.id];
+
+  this.historico = [{
+    estadoAnterior: null,
+    estadoNovo: this.solicitacao.estado,
+    descricao: 'Solicitação carregada.',
+    responsavel: 'Sistema',
+    dataHora: new Date()
+  }];
+
+  this.loading = false;
+}
 
   getStatusClass(estado: string) {
     const map: any = {
