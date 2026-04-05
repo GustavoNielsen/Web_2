@@ -61,7 +61,7 @@
                       <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
-                        <button type="button" class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s.id)">Efetuar Orçamento</button>
+                        <button type="button" class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s)">Efetuar Orçamento</button>
                       }
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
