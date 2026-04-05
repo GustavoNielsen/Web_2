@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -10,8 +10,7 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 })
 export class PagarServico {
 
-  loading: boolean = false;
-
+  @Output() fechar = new EventEmitter<void>();
   perfil: string = 'CLIENTE';
 
   solicitacao: any = {
@@ -48,7 +47,9 @@ export class PagarServico {
 
   historico: any[] = [];
 
-  voltar() {}
+  voltar() {
+    this.fechar.emit();
+  }
 
   irParaOrcamento() {}
 
@@ -59,17 +60,4 @@ export class PagarServico {
   finalizarSolicitacao() {}
 
   resgatarServico() {}
-
-  getStatusClass(status: string): string {
-    return '';
-  }
-
-  getInitials(nome: string): string {
-    if (!nome) return '';
-    return nome
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
-  }
 }
