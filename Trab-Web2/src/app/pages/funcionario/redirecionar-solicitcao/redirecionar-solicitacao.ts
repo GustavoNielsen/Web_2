@@ -28,6 +28,7 @@ export class RedirecionarSolicitacao {
         dataHora: new Date(),
       };
       this.redirecionado.emit(dadosRedirecionamento); //emite o evento com os dados do redirecionamento
+      this.funcionarioSelecionado = ''; //limpa a seleção após redirecionar
     }
   }
 
