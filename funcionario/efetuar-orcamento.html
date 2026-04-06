@@ -1,0 +1,282 @@
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="header-title">
+        <span class="title-main">Sistema de Manutenção</span>
+        <span class="title-sub">Painel do Funcionário</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>{{ nomeUsuario }}</span>
+      </div>
+      <button class="btn-sair" (click)="sair()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <button class="btn-voltar" (click)="voltar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Voltar
+    </button>
+
+    <div class="page-title-row">
+      <h1 class="page-title">Efetuar Orçamento</h1>
+      <span class="badge-status status-aberta">Aberta</span>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!loading && solicitacao" class="content-grid">
+
+      <!-- COLUNA ESQUERDA -->
+      <div class="col-left">
+
+        <!-- Dados do Equipamento -->
+        <div class="card">
+          <div class="card-title-row">
+            <div class="card-icon card-icon-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Dados do Equipamento</h2>
+          </div>
+
+          <div class="info-grid-2">
+            <div class="info-field">
+              <label class="field-label">Equipamento</label>
+              <p class="field-value">{{ solicitacao.equipamento }}</p>
+            </div>
+            <div class="info-field">
+              <label class="field-label">Modelo</label>
+              <p class="field-value">{{ solicitacao.modelo }}</p>
+            </div>
+            <div class="info-field">
+              <label class="field-label">Número de Série</label>
+              <p class="field-value mono">{{ solicitacao.numeroSerie }}</p>
+            </div>
+            <div class="info-field">
+              <label class="field-label">Categoria</label>
+              <p class="field-value">{{ solicitacao.categoria }}</p>
+            </div>
+          </div>
+
+          <div class="info-field full-width">
+            <label class="field-label">Descrição do Defeito</label>
+            <p class="field-value text-block">{{ solicitacao.descricaoDefeito }}</p>
+          </div>
+
+          <div class="info-field full-width">
+            <label class="field-label">Data da Solicitação</label>
+            <div class="info-with-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span>{{ solicitacao.dataHora | date:'dd/MM/yyyy \'às\' HH:mm' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados do Cliente -->
+        <div class="card">
+          <div class="card-title-row">
+            <div class="card-icon card-icon-teal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Dados do Cliente</h2>
+          </div>
+
+          <div class="cliente-header">
+            <div class="avatar">{{ getInitials(solicitacao.cliente.nome) }}</div>
+            <div>
+              <p class="cliente-nome">{{ solicitacao.cliente.nome }}</p>
+              <p class="cliente-email">{{ solicitacao.cliente.email }}</p>
+            </div>
+          </div>
+
+          <div class="info-grid-2">
+            <div class="info-field">
+              <label class="field-label">CPF</label>
+              <p class="field-value mono">{{ solicitacao.cliente.cpf }}</p>
+            </div>
+            <div class="info-field">
+              <label class="field-label">Telefone</label>
+              <div class="info-with-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <span>{{ solicitacao.cliente.telefone }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-field full-width">
+            <label class="field-label">Endereço</label>
+            <div class="info-with-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>
+                {{ solicitacao.cliente.logradouro }}, {{ solicitacao.cliente.numero }}
+                <span *ngIf="solicitacao.cliente.complemento"> — {{ solicitacao.cliente.complemento }}</span><br>
+                {{ solicitacao.cliente.bairro }} · {{ solicitacao.cliente.cidade }}/{{ solicitacao.cliente.estado }} · CEP {{ solicitacao.cliente.cep }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUNA DIREITA -->
+      <div class="col-right">
+
+        <!-- Card Orçamento -->
+        <div class="card card-orcamento">
+          <div class="card-title-row">
+            <div class="card-icon card-icon-amber">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <h2 class="card-title">Registrar Orçamento</h2>
+          </div>
+
+          <div class="orcamento-info">
+            <div class="orcamento-info-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span>Funcionário: <strong>{{ nomeUsuario }}</strong></span>
+            </div>
+            <div class="orcamento-info-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>Data/hora: <strong>{{ dataAtual | date:'dd/MM/yyyy HH:mm' }}</strong></span>
+            </div>
+            <div class="orcamento-info-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              <span>Estado após registro: <strong class="text-amber">ORÇADA</strong></span>
+            </div>
+          </div>
+
+          <div class="form-group" [formGroup]="form">
+            <label class="field-label" for="valor">Valor do Orçamento</label>
+            <div class="input-wrapper" [class.error]="isInvalid('valor')" [class.success]="isValid('valor')">
+              <span class="input-prefix">R$</span>
+              <input
+                id="valor"
+                type="text"
+                class="input-valor"
+                formControlName="valor"
+                placeholder="0,00"
+                (input)="maskValor($event)"
+              />
+            </div>
+            <span class="error-msg" *ngIf="isInvalid('valor')">Informe um valor válido</span>
+          </div>
+
+          <div class="form-group" [formGroup]="form">
+            <label class="field-label" for="observacao">Observação (opcional)</label>
+            <textarea
+              id="observacao"
+              class="input-textarea"
+              formControlName="observacao"
+              placeholder="Descreva os serviços incluídos no orçamento..."
+              rows="4"
+            ></textarea>
+          </div>
+
+          <button
+            class="btn-confirmar"
+            (click)="confirmarOrcamento()"
+            [disabled]="form.invalid || salvando">
+            <span *ngIf="!salvando">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Confirmar Orçamento
+            </span>
+            <span *ngIf="salvando" class="btn-loading">
+              <div class="spinner-sm"></div>
+              Salvando...
+            </span>
+          </button>
+        </div>
+
+        <!-- Aviso -->
+        <div class="card card-aviso">
+          <div class="aviso-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <div>
+            <p class="aviso-titulo">Atenção</p>
+            <p class="aviso-texto">Após confirmar, a solicitação passará automaticamente para o estado <strong>ORÇADA</strong> e o cliente será notificado para aprovação.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Sucesso -->
+    <div *ngIf="orcamentoRealizado" class="sucesso-state">
+      <div class="sucesso-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h2 class="sucesso-titulo">Orçamento registrado!</h2>
+      <p class="sucesso-desc">
+        Valor de <strong>{{ valorFormatado }}</strong> registrado por <strong>{{ nomeUsuario }}</strong>
+        em {{ dataOrcamento | date:'dd/MM/yyyy \'às\' HH:mm' }}.<br>
+        A solicitação agora está com status <strong>ORÇADA</strong>.
+      </p>
+      <button class="btn-voltar-sucesso" (click)="voltar()">Voltar para a solicitação</button>
+    </div>
+
+  </main>
+</div>

@@ -1,0 +1,28 @@
+<div class="modal-header bg-primary text-white">
+  <h5 class="modal-title fw-bold">EFETUAR MANUTENÇÃO - OS #{{ solicitacao?.id }}</h5>
+  <button type="button" class="btn btn-close btn-close-white" (click)="cancelado.emit()" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body p-4">
+  <div class="alert alert-info small mb-4">
+    <strong>Equipamento:</strong> {{ solicitacao?.descricaoEquipamento }}<br>
+    <strong>Categoria:</strong> {{ solicitacao?.categoria }}<br>
+    <strong>Defeito Relatado:</strong> {{ solicitacao?.descricaoDefeito }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold small ">DESCRIÇÃO DA MANUTENÇÃO</label>
+    <textarea class="form-control" rows="3" placeholder="Descreva o que foi realizado." [(ngModel)]="descricaoManutencao"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold small">ORIENTAÇÕES PARA O CLIENTE</label>
+    <textarea class="form-control" rows="2" placeholder="Ex: Não ligar em 220v, evitar papocar na parede..." [(ngModel)]="orientacoesCliente"></textarea>
+  </div>
+</div>
+
+<div class="modal-footer bg-light justify-content-between">
+  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelado.emit()">Cancelar</button>
+  <button type="button" class="btn btn-primary fw-bold" data-bs-dismiss="modal" [disabled]="!descricaoManutencao || !orientacoesCliente" (click)="confirmarManutencao()">Efetuar Manutenção</button>
+  <button type="button" class="btn btn-purple fw-bold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalRedirecionar" (click)="irParaRedirecionar()">Redirecionar</button>
+</div>
