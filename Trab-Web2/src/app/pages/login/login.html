@@ -19,7 +19,7 @@
               <input type="password" class="form-control form-control-lg" id="senha" name="senha" placeholder="digite sua senha" ngModel required minlength="4">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg w-100 shadow fw-bold" [disabled]="!loginForm.valid" (click)="login()"> ENTRAR NO SISTEMA </button> <!-- submit: tipo de botão que envia o formulário ;btn-lg: tamanho grande; w-100: largura completa disponível do botão -->
+            <button type="submit" class="btn btn-primary btn-lg w-100 shadow fw-bold" [disabled]="!loginForm.valid" (click)="login(loginForm)"> ENTRAR NO SISTEMA </button> <!-- submit: tipo de botão que envia o formulário ;btn-lg: tamanho grande; w-100: largura completa disponível do botão -->
 
             <div class="text-center border-top mt-4 ">
               <p class="mb-1 mt-3 text-muted small">Ainda não possui uma conta?</p>

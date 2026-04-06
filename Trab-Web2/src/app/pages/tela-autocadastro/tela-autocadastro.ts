@@ -144,10 +144,8 @@ export class TelaAutocadastro {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading = true;
     // TODO: chamar o serviço real de cadastro
-    setTimeout(() => {
       this.loading = false;
       this.cadastroRealizado = true;
-    }, 1200);
   }
 
   irParaLogin() {}
