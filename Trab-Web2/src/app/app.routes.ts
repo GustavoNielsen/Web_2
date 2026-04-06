@@ -87,13 +87,12 @@ export const routes: Routes = [{
         import('./pages/funcionario/crud-funcionario/editar-funcionario/editar-funcionario.component')
           .then(m => m.EditarFuncionarioComponent)
        },
-
-      {
-        path: 'financeiro',
-        loadComponent: () =>
-        import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
-      },
-    
+{
+      path: 'orcamento-financeiro',
+      loadComponent: () =>
+        import('./pages/funcionario/painel-orcamento/painel-orcamento.component').then(m => m.PainelOrcamentoComponent)
+    },
+     
     ]
 },
 

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router'; 
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-topbar-executor',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './topbar-executor.component.html',
   styleUrl: './topbar-executor.component.css',
 })
@@ -19,6 +20,7 @@ export class TopbarExecutorComponent {
 
   getManterEquipamento(){
     this.router.navigate(['/funcionario/equipamento'])
+
   }
 
     getManterFuncionario(){
