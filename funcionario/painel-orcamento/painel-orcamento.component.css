@@ -1,0 +1,57 @@
+/* --- painel-orcamento.component.css --- */
+
+.card {
+  border-radius: 12px;
+  border: none !important; 
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Dá uma leve "flutuada" no card */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+
+.card-header {
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  border-bottom: none;
+  letter-spacing: 0.5px;
+}
+
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  background-color: #fcfcfc;
+}
+
+
+.form-control:focus {
+  border-color: #0d6efd;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+
+.btn {
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transition: all 0.2s ease-in-out;
+}
+
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+
+.bi {
+  vertical-align: -0.125em;
+}
