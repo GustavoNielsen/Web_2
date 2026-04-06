@@ -24,10 +24,10 @@
           </button>
         </li>
         <li class="nav-item">
-          <button class="nav-link btn btn-link" (click)="getFinanceiro()">
-            Financeiro
-          </button>
-        </li>
+  <a class="nav-link fw-bold" style="cursor: pointer;" [routerLink]="['/funcionario/orcamento-financeiro']">
+    Orçamentos / Financeiro
+  </a>
+</li>
       </ul>
       <div class="d-flex align-items-center gap-2">
         <span class="nav-link">Olá {{username}}!</span>
