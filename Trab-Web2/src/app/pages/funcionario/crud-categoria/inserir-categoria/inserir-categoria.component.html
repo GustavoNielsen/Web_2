@@ -1,31 +1,44 @@
-<h1>Nova Categoria</h1>
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7 col-11">
 
-<div class="well">
-<form #formCategoria="ngForm">
-<div class="form-group">
-<label for="nome">Nome:</label>
-<input type="text" class="form-control" id="nome" name="nome"
-[(ngModel)]="categoria.nome"
-#nome="ngModel"
-minlength="2" required>
-@if(nome.errors && (nome.dirty || nome.touched)) {
-<div class="alert alert-danger">
-<div [hidden]="!nome.errors['required']">
-Digite o nome da pessoa.
-</div>
-<div [hidden]="!nome.errors['minlength']">
-O nome deve conter ao menos 2 caracteres.
-</div>
-</div>
-}
-</div>
-<div class="form-group">
-<button type="button" class="btn btn-primary" (click)="inserir()" [disabled]="!formCategoria.form.valid">
-<i class="fa fa-save"></i> Salvar
-</button>
-<a class="btn btn-secondary" [routerLink]="['/funcionario/equipamento']">
-<i class="fa fa-arrow-left"></i> Voltar
-</a>
-</div>
-</form>
+      <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h1 class="mb-0 h4 fw-bold">NOVA CATEGORIA</h1>
+        </div>
+
+        <div class="card-body p-4 bg-light">
+          <form #formCategoria="ngForm">
+
+            <div class="mb-4">
+              <label for="nome" class="form-label fw-bold text-dark">Nome da Categoria</label>
+              <input type="text" class="form-control form-control-lg" id="nome" name="nome"
+                placeholder="Ex: Notebook, Impressora..." [(ngModel)]="categoria.nome"
+                #nome="ngModel" minlength="2" required>
+              @if (nome.errors && (nome.dirty || nome.touched)) {
+                <div class="alert alert-danger mt-1 py-1 px-2 small">
+                  <div [hidden]="!nome.errors['required']">Digite o nome da categoria.</div>
+                  <div [hidden]="!nome.errors['minlength']">O nome deve conter ao menos 2 caracteres.</div>
+                </div>
+              }
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg w-100 shadow fw-bold"
+              (click)="inserir()" [disabled]="!formCategoria.form.valid">
+              <i class="fa fa-save"></i> Salvar
+            </button>
+
+            <div class="text-center border-top mt-4">
+              <a [routerLink]="['/funcionario/equipamento']" class="text-primary fw-bold text-decoration-none">
+                <i class="fa fa-arrow-left"></i> Voltar para a lista
+              </a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <p class="text-center text-muted mt-3 small">Trabalho de Desenvolvimento Web II</p>
+    </div>
+  </div>
 </div>
