@@ -10,31 +10,28 @@ import { CommonModule } from '@angular/common';
 })
 export class ResgatarServico {
 
-  @Output() resgateConfirmado = new EventEmitter<void>(); // Output para emitir um evento de confirmação de resgate
-  @Output() fechar = new EventEmitter<void>(); //Emiti um evento de cancelamento de resgate
-  @Output() atualizado = new EventEmitter<any>();
   @Input() solicitacao: any;
+  @Output() fechar = new EventEmitter<void>();
+  @Output() atualizado = new EventEmitter<any>();
 
 //função para voltar para a página anterior
-  voltar() {
+  cancelar() {
     this.fechar.emit(); //dispara o evento de cancelamento, pode usar para fechar o popup ou voltar para a página anterior
   }
 
-// função exemplo para simular o resgate
+// função para o resgate
   confirmarResgate() {
-    this.atualizado.emit({
-    id: this.solicitacao.id,
-    estado: 'APROVADA',
-    historico: [
-      {
+    const dadosResgate = {
+      id: this.solicitacao.id,
+      estado: 'APROVADA',
+      historico: [{
         data: new Date(),
         estado: 'APROVADA',
         funcionario: 'Cliente'
-      }
-    ]
-  });
+      }]
+    };
 
-  this.fechar.emit();
-}
+    this.atualizado.emit(dadosResgate); 
+    this.fechar.emit();
   }
-
+}

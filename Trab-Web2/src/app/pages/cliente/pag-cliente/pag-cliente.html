@@ -93,10 +93,17 @@
 }
 
 @if(modal == "resgatar"){
-<app-resgatar-servico 
-  [solicitacao]="solicitacaoSelecionada"
-  (fechar)="closeModal()"
-  (atualizado)="atualizarSolicitacao($event)" />
+<div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0">
+      <app-resgatar-servico 
+        [solicitacao]="solicitacaoSelecionada"
+        (fechar)="closeModal()"
+        (atualizado)="atualizarSolicitacao($event)">
+      </app-resgatar-servico>
+    </div>
+  </div>
+</div>
 }
 
 @if(modal == "pagar"){
