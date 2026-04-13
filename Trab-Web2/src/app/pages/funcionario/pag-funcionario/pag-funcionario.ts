@@ -141,6 +141,23 @@ export class PagFuncionario implements OnInit {
         { data: new Date('2026-03-29T09:00:00'), estado: 'PAGA', funcionario: 'Mário' },
         { data: new Date('2026-03-29T10:00:00'), estado: 'FINALIZADA', funcionario: 'Mário' }
       ]
+    },
+    {
+      id: 1009,
+      dataHora: new Date('2026-04-13T09:00:00'),
+      nomeCliente: 'Alfredo',
+      descricaoEquipamento: 'Notebook',
+      categoria: 'Notebooks',
+      descricaoDefeito: 'Desliga depois de ligar',
+      estado: 'FINALIZADA',
+      historico: [
+        { data: new Date('2026-03-28T09:00:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+        { data: new Date('2026-03-28T10:00:00'), estado: 'ORÇADA', funcionario: 'Maria' },
+        { data: new Date('2026-03-28T11:00:00'), estado: 'APROVADA', funcionario: 'Cliente' },
+        { data: new Date('2026-03-28T15:00:00'), estado: 'ARRUMADA', funcionario: 'Maria' },
+        { data: new Date('2026-03-29T09:00:00'), estado: 'PAGA', funcionario: 'Maria' },
+        { data: new Date('2026-03-29T10:00:00'), estado: 'FINALIZADA', funcionario: 'Maria' }
+      ]
     }
   ];
 
