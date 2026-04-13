@@ -10,9 +10,27 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="px-4 py-3">Data/Hora</th>
-                            <th class="px-4 py-3">Equipamento</th>
-                            <th class="px-4 py-3">Estado</th>
+                            <th class="px-4 py-3" style="cursor: pointer;" (click)="ordenarPor('dataHora')">
+                                Data/Hora
+                                <span *ngIf="colunaOrdenacao === 'dataHora'">
+                                    {{ direcaoOrdenacao === 'asc' ? '↑' : '↓' }}
+                                </span>
+                            </th>
+
+                            <th class="px-4 py-3" style="cursor: pointer;" (click)="ordenarPor('descricaoEquipamento')">
+                                Equipamento
+                                <span *ngIf="colunaOrdenacao === 'descricaoEquipamento'">
+                                    {{ direcaoOrdenacao === 'asc' ? '↑' : '↓' }}
+                                </span>
+                            </th>
+
+                            <th class="px-4 py-3" style="cursor: pointer;" (click)="ordenarPor('estado')">
+                                Estado
+                                <span *ngIf="colunaOrdenacao === 'estado'">
+                                    {{ direcaoOrdenacao === 'asc' ? '↑' : '↓' }}
+                                </span>
+                            </th>
+
                             <th class="px-4 py-3 text-center">Ações</th>
                         </tr>
                     </thead>
@@ -45,7 +63,8 @@
                                 <div class="d-flex gap-2 justify-content-center">
 
                                     <!-- VISUALIZAR -->
-                                    <button class="btn btn-sm btn-outline-secondary" (click)="visualizarServico(s.id, 'visualizar')">
+                                    <button class="btn btn-sm btn-outline-secondary"
+                                        (click)="visualizarServico(s.id, 'visualizar')">
                                         Visualizar
                                     </button>
 
@@ -79,36 +98,27 @@
 </div>
 
 @if(modal == 'visualizar'){
-<app-visualizar-servico 
-    [solicitacao]="solicitacaoSelecionada"
-    (fechar)="closeModal()"
-    (acao)="abrirAcao($event)"  />
+<app-visualizar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()" (acao)="abrirAcao($event)" />
 }
 
 @if(modal == 'a/r'){
-<app-mostrar-servico 
-  [solicitacao]="solicitacaoSelecionada"
-  (fechar)="closeModal()"
-  (atualizado)="atualizarSolicitacao($event)" />
+<app-mostrar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
+    (atualizado)="atualizarSolicitacao($event)" />
 }
 
 @if(modal == "resgatar"){
 <div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content border-0">
-      <app-resgatar-servico 
-        [solicitacao]="solicitacaoSelecionada"
-        (fechar)="closeModal()"
-        (atualizado)="atualizarSolicitacao($event)">
-      </app-resgatar-servico>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0">
+            <app-resgatar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
+                (atualizado)="atualizarSolicitacao($event)">
+            </app-resgatar-servico>
+        </div>
     </div>
-  </div>
 </div>
 }
 
 @if(modal == "pagar"){
-<app-pagar-servico 
-  [solicitacao]="solicitacaoSelecionada"
-  (fechar)="closeModal()"
-  (atualizado)="atualizarSolicitacao($event)" />
+<app-pagar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
+    (atualizado)="atualizarSolicitacao($event)" />
 }

@@ -5,6 +5,26 @@ import { MostrarServico } from '../mostrar-servico/mostrar-servico';
 import { ResgatarServico } from '../resgatar-servico/resgatar-servico';
 import { PagarServico } from '../pagar-servico/pagar-servico';
 
+type ColunaOrdenacao = 'dataHora' | 'descricaoEquipamento' | 'estado';
+
+interface Historico {
+  data: Date;
+  estado: string;
+  funcionario: string;
+  destino?: string;
+}
+
+interface Solicitacao {
+  id: number;
+  dataHora: Date;
+  nomeCliente: string;
+  descricaoEquipamento: string;
+  categoria: string;
+  descricaoDefeito: string;
+  estado: string;
+  historico: Historico[];
+  funcionarioDestino?: string;
+}
 
 @Component({
   selector: 'app-pag-cliente',
@@ -17,6 +37,8 @@ export class PagCliente {
 
   modal: string = ""
   solicitacaoSelecionada: any = null;
+  colunaOrdenacao: ColunaOrdenacao | '' = '';
+  direcaoOrdenacao: 'asc' | 'desc' = 'asc';
 
   openModal(modal: string) {
     this.modal = modal
@@ -49,10 +71,33 @@ export class PagCliente {
     this.closeModal();
   }
 
+  ordenarPor(coluna: ColunaOrdenacao) {
+    if (this.colunaOrdenacao === coluna) {
+      this.direcaoOrdenacao = this.direcaoOrdenacao === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.colunaOrdenacao = coluna;
+      this.direcaoOrdenacao = 'asc';
+    }
+
+    this.solicitacoes.sort((a, b) => {
+      let valorA: string | number = a[coluna] instanceof Date
+        ? a[coluna].getTime()
+        : a[coluna].toLowerCase();
+
+      let valorB: string | number = b[coluna] instanceof Date
+        ? b[coluna].getTime()
+        : b[coluna].toLowerCase();
+
+      if (valorA < valorB) return this.direcaoOrdenacao === 'asc' ? -1 : 1;
+      if (valorA > valorB) return this.direcaoOrdenacao === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
   closeModal() {
     this.modal = ""
   }
-  solicitacoes = [
+  solicitacoes: Solicitacao[] = [
     {
       id: 1001,
       dataHora: new Date('2026-04-05T09:00:00'),
