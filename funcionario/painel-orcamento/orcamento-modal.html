@@ -1,0 +1,153 @@
+<div class="container-fluid d-flex justify-content-center p-3">
+  <div class="card shadow-sm border-primary col-11">
+    
+    <div class="card-header bg-primary text-white p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="h5 mb-0 fw-bold text-uppercase">Painel de Solicitações</h1>
+        <span class="small fw-bold">Bem-vindo, {{ nomeUsuario }}</span>
+      </div>
+    </div>
+
+    <div class="card-body p-4" style="min-height: 70vh; display: flex; flex-direction: column;">
+      
+      <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
+        <div class="btn-group shadow-sm">
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Solicitações Abertas</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
+        </div>
+
+        @if (filtro === 'PERIODO') {
+          <div class="date-inputs d-flex align-items-center ms-3">
+            <input type="date" class="form-control" [(ngModel)]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
+            <span class="date-sep mx-2">até</span>
+            <input type="date" class="form-control" [(ngModel)]="dataFim" [max]="dataAtual" [min]="dataInicio" (ngModelChange)="aplicarFiltro()" />
+          </div>
+        }
+      </div>
+
+      <div class="table-responsive table-scroll" style="max-height: 50vh; overflow-y: auto;">
+        @if (loading) {
+          <div class="loading text-center mt-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-2">Carregando...</span>
+          </div>
+        } @else {
+          @if (solicitacoesFiltradas.length > 0) {
+            <table class="table table-hover align-middle mb-0 border">
+              <thead class="table-light sticky-top">
+                <tr class="text-dark small fw-bold">
+                  <th>DATA / HORA</th>
+                  <th>CLIENTE</th>
+                  <th>EQUIPAMENTO</th>
+                  <th>ESTADO</th>
+                  <th>AÇÕES</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of solicitacoesFiltradas; track s.id) {
+                  <tr>
+                    <td class="td-data">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td class="td-cliente fw-bold">{{ s.nomeCliente }}</td>
+                    <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
+                    <td>
+                      <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span>
+                    </td>
+                    <td>
+                      <div class="td-acoes d-flex gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
+
+                        @if (s.estado === 'ABERTA') {
+                          <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#modalOrcamento" (click)="solicitacaoSelecionada = s">
+                            Efetuar Orçamento
+                          </button>
+                        }
+
+                        @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
+                          <button type="button" class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s">Manutenção</button>
+                        }
+
+                        @if (s.estado === 'PAGA') {
+                          <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">Finalizar</button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="text-center mt-5 text-muted">
+              <span>Nenhuma solicitação encontrada.</span>
+            </div>
+          }
+        }
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalOrcamento" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <app-efetuar-orcamento 
+          [solicitacao]="solicitacaoSelecionada"
+          (orcamentoConfirmado)="salvarOrcamento($event)"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-efetuar-orcamento>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalManutencao" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-efetuar-manutencao 
+          [solicitacao]="solicitacaoSelecionada"
+          (realizarManutencao)="efetuarManutencao($event)"
+          (abrirRedirecionar)="redirecionar()"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-efetuar-manutencao>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalVisualizar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-visualizar-solicitacao 
+          [solicitacao]="solicitacaoSelecionada"
+          (fechar)="solicitacaoSelecionada = null">
+        </app-visualizar-solicitacao>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalRedirecionar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-redirecionar-solicitcao 
+          #componenteRedirecionar
+          [solicitacao]="solicitacaoSelecionada"
+          [funcionarios]="funcionariosDisponiveis"
+          (redirecionado)="redirecionar($event)"
+          (cancelado)="solicitacaoSelecionada = solicitacaoSelecionada">
+        </app-redirecionar-solicitcao>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalFinalizar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-finalizar-solicitacao 
+          [solicitacao]="solicitacaoSelecionada"
+          (finalizada)="finalizar()"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-finalizar-solicitacao>
+      </div>
+    </div>
+  </div>
+
+</div>
