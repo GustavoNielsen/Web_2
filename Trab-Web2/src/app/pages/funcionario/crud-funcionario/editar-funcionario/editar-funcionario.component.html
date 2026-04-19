@@ -1,10 +1,17 @@
-<h1>Editar Funcionário</h1>
-<div class="well">
-<form #formFuncionario="ngForm">
-<div class="form-group">
-<label for="nome">Nome:</label>
-<input type="text" class="form-control" id="nome" name="nome"
-[(ngModel)]="funcionario.nome" #nome="ngModel"
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-7 col-11">
+ 
+      <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white text-center py-3">
+          <h1 class="mb-0 h4 fw-bold">Editar Funcionário</h1>
+        </div>
+        <div class="card-body p-4 bg-light">
+          <form #formFuncionario="ngForm">
+            <div class="mb-3">
+              <label for="nome" class="form-label fw-bold text-dark">Nome:</label>
+              <input type="text" class="form-control form-control-lg" id="nome" name="nome"
+                [(ngModel)]="funcionario.nome" #nome="ngModel"
 minlength="2" required>
 @if(nome.errors && (nome.dirty || nome.touched)) {
     <div class="alert alert-danger">
@@ -18,9 +25,9 @@ minlength="2" required>
 }
 </div>
 
-<div class="form-group">
-<label for="email">Email:</label>
-<input type="text" class="form-control" id="email" name="email" required
+<div class="mb-3">
+<label for="email" class="form-label fw-bold text-dark">Email:</label>
+<input type="text" class="form-control form-control-lg" id="email" name="email" required
 [(ngModel)]="funcionario.email" #email="ngModel"
 minlength="2" required>
 @if(email.errors && (email.dirty || email.touched)) {
@@ -35,9 +42,9 @@ minlength="2" required>
 }
 </div>
 
-<div class="form-group">
-<label for="nasc">Data de Nascimento:</label>
-<input type="date" class="form-control" id="nasc" name="nasc" required
+<div class="mb-4">
+<label for="nasc" class="form-label fw-bold text-dark">Data de Nascimento:</label>
+<input type="date" class="form-control form-control-lg" id="nasc" name="nasc" required
 [(ngModel)]="funcionario.nasc" #nasc="ngModel"
 required>
 @if(nasc.errors && (nasc.dirty || nasc.touched)) {
