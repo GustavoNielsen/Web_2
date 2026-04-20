@@ -3,16 +3,70 @@
     
     <div class="card-header bg-primary text-white p-3">
       <div class="d-flex justify-content-between align-items-center">
-        <h1 class="h5 mb-0 fw-bold text-uppercase">Painel de Solicitações</h1>
+        <h1 class="h5 mb-0 fw-bold text-uppercase"><i class="bi bi-laptop me-2"></i>Painel de Solicitações</h1>
         <span class="small fw-bold">Bem-vindo, {{ nomeUsuario }}</span>
       </div>
     </div>
 
     <div class="card-body p-4" style="min-height: 70vh; display: flex; flex-direction: column;">
       
-      <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
+      <div class="alert alert-info alert-dismissible fade show mb-4 shadow-sm" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Aviso do Sistema:</strong> Mantenha as solicitações atualizadas. O fechamento do mês ocorre no dia 30.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <div class="row mb-4 g-3">
+        <div class="col-md-3 col-sm-6">
+          <div class="card bg-white border-start border-warning border-4 shadow-sm h-100">
+            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-bold">Abertas</p>
+                <h3 class="mb-0 fw-bold text-dark">12</h3>
+              </div>
+              <i class="bi bi-inbox fs-1 text-warning opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card bg-white border-start border-info border-4 shadow-sm h-100">
+            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-bold">Orçadas</p>
+                <h3 class="mb-0 fw-bold text-dark">5</h3>
+              </div>
+              <i class="bi bi-file-earmark-text fs-1 text-info opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card bg-white border-start border-primary border-4 shadow-sm h-100">
+            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-bold">Em Manutenção</p>
+                <h3 class="mb-0 fw-bold text-dark">8</h3>
+              </div>
+              <i class="bi bi-tools fs-1 text-primary opacity-50"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="card bg-white border-start border-success border-4 shadow-sm h-100">
+            <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-bold">Finalizadas (Hoje)</p>
+                <h3 class="mb-0 fw-bold text-dark">3</h3>
+              </div>
+              <i class="bi bi-check2-circle fs-1 text-success opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-light p-3 rounded shadow-sm border">
+        <span class="fw-bold text-muted small text-uppercase me-2"><i class="bi bi-funnel me-1"></i> Filtros:</span>
         <div class="btn-group shadow-sm">
-          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Solicitações Abertas</button>
+          <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'SOLICITACOES-ABERTAS'" (click)="setFiltro('SOLICITACOES-ABERTAS')">Abertas</button>
           <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'HOJE'" (click)="setFiltro('HOJE')">Hoje</button>
           <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
           <button type="button" class="btn btn-outline-secondary" [class.active]="filtro === 'PERIODO'" (click)="setFiltro('PERIODO')">Período</button>
@@ -20,56 +74,62 @@
 
         @if (filtro === 'PERIODO') {
           <div class="date-inputs d-flex align-items-center ms-3">
-            <input type="date" class="form-control" [(ngModel)]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
-            <span class="date-sep mx-2">até</span>
-            <input type="date" class="form-control" [(ngModel)]="dataFim" [max]="dataAtual" [min]="dataInicio" (ngModelChange)="aplicarFiltro()" />
+            <input type="date" class="form-control form-control-sm shadow-sm" [(ngModel)]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
+            <span class="date-sep mx-2 text-muted small fw-bold">ATÉ</span>
+            <input type="date" class="form-control form-control-sm shadow-sm" [(ngModel)]="dataFim" [max]="dataAtual" [min]="dataInicio" (ngModelChange)="aplicarFiltro()" />
           </div>
         }
       </div>
 
-      <div class="table-responsive table-scroll" style="max-height: 50vh; overflow-y: auto;">
+      <div class="table-responsive table-scroll border rounded shadow-sm" style="max-height: 50vh; overflow-y: auto;">
         @if (loading) {
-          <div class="loading text-center mt-4">
-            <div class="spinner-border text-primary" role="status"></div>
-            <span class="ms-2">Carregando...</span>
+          <div class="loading text-center my-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <span class="d-block mt-3 fw-bold text-muted">Carregando dados...</span>
           </div>
         } @else {
           @if (solicitacoesFiltradas.length > 0) {
-            <table class="table table-hover align-middle mb-0 border">
-              <thead class="table-light sticky-top">
+            <table class="table table-hover align-middle mb-0 bg-white">
+              <thead class="table-light sticky-top shadow-sm">
                 <tr class="text-dark small fw-bold">
-                  <th>DATA / HORA</th>
+                  <th class="ps-3">DATA / HORA</th>
                   <th>CLIENTE</th>
                   <th>EQUIPAMENTO</th>
                   <th>ESTADO</th>
-                  <th>AÇÕES</th>
+                  <th class="text-center">AÇÕES</th>
                 </tr>
               </thead>
               <tbody>
                 @for (s of solicitacoesFiltradas; track s.id) {
                   <tr>
-                    <td class="td-data">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
-                    <td class="td-cliente fw-bold">{{ s.nomeCliente }}</td>
-                    <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
+                    <td class="td-data ps-3 text-muted small">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td class="td-cliente fw-bold text-dark">{{ s.nomeCliente }}</td>
+                    <td class="td-desc text-secondary">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
                     <td>
-                      <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span>
+                      <span class="badge rounded-pill fw-bold px-3 py-2 shadow-sm" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span>
                     </td>
                     <td>
-                      <div class="td-acoes d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
+                      <div class="td-acoes d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s" title="Visualizar Detalhes">
+                          <i class="bi bi-eye"></i> Ver
+                        </button>
 
                         @if (s.estado === 'ABERTA') {
-                          <button type="button" class="btn btn-warning btn-sm fw-bold text-dark" data-bs-toggle="modal" data-bs-target="#modalOrcamento" (click)="solicitacaoSelecionada = s">
-                            Efetuar Orçamento
+                          <button type="button" class="btn btn-warning btn-sm fw-bold text-dark shadow-sm" data-bs-toggle="modal" data-bs-target="#modalOrcamento" (click)="solicitacaoSelecionada = s">
+                            <i class="bi bi-cash-coin"></i> Orçamento
                           </button>
                         }
 
                         @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
-                          <button type="button" class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s">Manutenção</button>
+                          <button type="button" class="btn btn-sm btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s">
+                            <i class="bi bi-tools"></i> Manutenção
+                          </button>
                         }
 
                         @if (s.estado === 'PAGA') {
-                          <button type="button" class="btn btn-sm btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">Finalizar</button>
+                          <button type="button" class="btn btn-sm btn-success fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalFinalizar" (click)="solicitacaoSelecionada = s">
+                            <i class="bi bi-check-lg"></i> Finalizar
+                          </button>
                         }
                       </div>
                     </td>
@@ -78,12 +138,35 @@
               </tbody>
             </table>
           } @else {
-            <div class="text-center mt-5 text-muted">
-              <span>Nenhuma solicitação encontrada.</span>
+            <div class="text-center my-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+              <span class="fs-5 fw-bold">Nenhuma solicitação encontrada no momento.</span>
+              <p class="small mt-1">Altere os filtros acima para buscar novamente.</p>
             </div>
           }
         }
       </div>
+
+      @if (!loading && solicitacoesFiltradas.length > 0) {
+        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+          <span class="small text-muted fw-bold">Mostrando {{ solicitacoesFiltradas.length }} registro(s)</span>
+          <nav aria-label="Navegação de registros">
+            <ul class="pagination pagination-sm mb-0 shadow-sm">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
+              </li>
+              <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#">Próxima</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      }
 
     </div>
   </div>
@@ -102,7 +185,7 @@
 
   <div class="modal fade" id="modalManutencao" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+      <div class="modal-content border-0 shadow-lg">
         <app-efetuar-manutencao 
           [solicitacao]="solicitacaoSelecionada"
           (realizarManutencao)="efetuarManutencao($event)"
@@ -114,8 +197,8 @@
   </div>
 
   <div class="modal fade" id="modalVisualizar" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg">
         <app-visualizar-solicitacao 
           [solicitacao]="solicitacaoSelecionada"
           (fechar)="solicitacaoSelecionada = null">
@@ -126,7 +209,7 @@
 
   <div class="modal fade" id="modalRedirecionar" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+      <div class="modal-content border-0 shadow-lg">
         <app-redirecionar-solicitcao 
           #componenteRedirecionar
           [solicitacao]="solicitacaoSelecionada"
@@ -140,7 +223,7 @@
 
   <div class="modal fade" id="modalFinalizar" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+      <div class="modal-content border-0 shadow-lg">
         <app-finalizar-solicitacao 
           [solicitacao]="solicitacaoSelecionada"
           (finalizada)="finalizar()"
