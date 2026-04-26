@@ -41,6 +41,11 @@
               }
             </tbody>
           </table>
+        <div class="mt-3 text-muted small text-end" *ngIf="categorias.length > 0">
+            Total: <strong>{{ categorias.length }}</strong>
+            {{ categorias.length === 1 ? 'categoria' : 'categorias' }} cadastrada(s).
+          </div>
+ 
         </div>
       </div>
  
