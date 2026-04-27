@@ -1,54 +1,117 @@
 <div class="container-fluid d-flex justify-content-center p-3">
-    <form class="card shadow-sm w-100" style="max-width: 700px; border: 1px solid #0d6efd;">
-        
-        <div class="card-header bg-primary text-white p-3">
-            <h1 class="h5 mb-0 fw-bold text-center">{{titulo}}</h1>
-        </div>
+  <form
+    #formSolicitacao="ngForm"
+    class="card shadow-sm w-100"
+    style="max-width: 700px; border: 1px solid #0d6efd;"
+  >
 
-        <div class="card-body p-4">
-            <div class="mb-3">
-                <label class="form-label fw-bold small text-uppercase text-muted">Equipamento</label>
-                <input type="text" 
-                       name="descEquip" 
-                       [(ngModel)]="descricaoEquipamento" 
-                       class="form-control" 
-                       placeholder="Ex: Notebook Lenovo Yoga">
-            </div>
-            
-            <div class="mb-3">
-                <label class="form-label fw-bold small text-uppercase text-muted">Tipo</label>
-                <select [(ngModel)]="tipoEquipamento" 
-                        name="tipoEquipamento" 
-                        class="form-select"
-                        [class.is-invalid]="erroTipoEquipamento">
-                    <option value="">Selecione o tipo...</option>
-                    <option value="notebook">Notebook</option>
-                    <option value="smartphone">Smartphone</option>
-                    <option value="monitor">Monitor</option>
-                    <option value="impressora">Impressora</option>
-                </select>
-                @if (erroTipoEquipamento) {
-                    <div class="invalid-feedback">
-                        {{ mensagemErroEquipamentoSelect }}
-                    </div>
-                }
-            </div>
+    <div class="card-header bg-primary text-white p-3">
+      <h1 class="h5 mb-0 fw-bold text-center">{{ titulo }}</h1>
+    </div>
 
-            <div class="mb-4">
-                <label class="form-label fw-bold small text-uppercase text-muted">Descrição do Problema</label>
-                <textarea name="descProb" 
-                        [(ngModel)]="descricaoProblema" 
-                        class="form-control" 
-                        placeholder="Descreva o defeito detalhadamente..."
-                        rows="5"></textarea>
-            </div>
-            
-            <button type="button" 
-                    (click)="enviarSolicitacao()" 
-                    class="btn btn-primary w-100 fw-bold py-2">
-                Realizar Solicitação
-            </button>
+    <div class="card-body p-4">
+
+      <div class="mb-3">
+        <label class="form-label fw-bold small text-uppercase text-muted">
+          Equipamento
+        </label>
+
+        <input
+          type="text"
+          name="descricaoEquipamento"
+          [(ngModel)]="solicitacao.descricaoEquipamento"
+          #descricaoEquipamento="ngModel"
+          class="form-control"
+          placeholder="Ex: Notebook Lenovo Yoga"
+          required
+          minlength="2"
+        >
+
+        <div
+          *ngIf="descricaoEquipamento.errors && (descricaoEquipamento.dirty || descricaoEquipamento.touched)"
+          class="alert alert-danger mt-2"
+        >
+          <div [hidden]="!descricaoEquipamento.errors['required']">
+            Digite a descrição do equipamento.
+          </div>
+
+          <div [hidden]="!descricaoEquipamento.errors['minlength']">
+            A descrição deve conter pelo menos 2 caracteres.
+          </div>
         </div>
-    </form>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold small text-uppercase text-muted">
+          Tipo
+        </label>
+
+        <select
+          name="categoria"
+          [(ngModel)]="solicitacao.categoria"
+          #categoria="ngModel"
+          class="form-select"
+          required
+        >
+          <option value="">Selecione o tipo...</option>
+          <option value="Notebooks">Notebook</option>
+          <option value="Smartphones">Smartphone</option>
+          <option value="Monitores">Monitor</option>
+          <option value="Impressoras">Impressora</option>
+          <option value="Desktops">Desktop</option>
+          <option value="Periféricos">Periférico</option>
+          <option value="Consoles">Console</option>
+        </select>
+
+        <div
+          *ngIf="categoria.errors && (categoria.dirty || categoria.touched)"
+          class="alert alert-danger mt-2"
+        >
+          <div [hidden]="!categoria.errors['required']">
+            Selecione o tipo do equipamento.
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-bold small text-uppercase text-muted">
+          Descrição do Problema
+        </label>
+
+        <textarea
+          name="descricaoDefeito"
+          [(ngModel)]="solicitacao.descricaoDefeito"
+          #descricaoDefeito="ngModel"
+          class="form-control"
+          placeholder="Descreva o defeito detalhadamente..."
+          rows="5"
+          required
+          minlength="5"
+        ></textarea>
+
+        <div
+          *ngIf="descricaoDefeito.errors && (descricaoDefeito.dirty || descricaoDefeito.touched)"
+          class="alert alert-danger mt-2"
+        >
+          <div [hidden]="!descricaoDefeito.errors['required']">
+            Digite a descrição do problema.
+          </div>
+
+          <div [hidden]="!descricaoDefeito.errors['minlength']">
+            A descrição do problema deve conter pelo menos 5 caracteres.
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="inserir()"
+        class="btn btn-primary w-100 fw-bold py-2"
+        [disabled]="!formSolicitacao.form.valid"
+      >
+        Realizar Solicitação
+      </button>
+
+    </div>
+  </form>
 </div>
-<p class="text-center text-muted small">Trabalho de Desenvolvimento Web II</p>
