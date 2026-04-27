@@ -12,12 +12,15 @@
           <form (ngSubmit)="confirmarOrcamento()">
             <div class="mb-3">
               <label class="form-label fw-bold">Nº da Solicitação</label>
-              <input type="number" class="form-control" [(ngModel)]="numeroSolicitacao" name="num" placeholder="Ex: 1042" required>
+              <input type="number" class="form-control" [(ngModel)]="numeroSolicitacao" name="num" min="0" (keydown)="impedirNegativo($event)" placeholder="Ex: 1042" required>
             </div>
             
             <div class="mb-4">
               <label class="form-label fw-bold">Valor do Orçamento (R$)</label>
-              <input type="number" class="form-control form-control-lg" [(ngModel)]="valorOrcamento" name="valor" placeholder="0.00" step="0.01" required>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-secondary fw-bold">R$</span>
+                <input type="number" class="form-control form-control-lg" [(ngModel)]="valorOrcamento" name="valor" min="0" (keydown)="impedirNegativo($event)" placeholder="0.00" required>
+              </div>
             </div>
 
             <button type="submit" class="btn btn-warning w-100 fw-bold text-dark">Registrar Orçamento</button>
@@ -36,17 +39,21 @@
           <div class="mb-4 pb-4 border-bottom">
             <h6 class="fw-bold text-primary mb-3">Receitas por Período</h6>
             <form (ngSubmit)="gerarRelatorioPeriodo()" class="row g-2">
+
               <div class="col-6">
                 <label class="form-label small text-muted">Data Inicial</label>
-                <input type="date" class="form-control" [(ngModel)]="dataInicio" name="inicio">
+                <input type="date" class="form-control" [(ngModel)]="dataInicio" name="inicio" [max]="dataFim || dataAtual">
               </div>
+
               <div class="col-6">
                 <label class="form-label small text-muted">Data Final</label>
-                <input type="date" class="form-control" [(ngModel)]="dataFim" name="fim">
+                <input type="date" class="form-control" [(ngModel)]="dataFim" name="fim" [min]="dataInicio" [max]="dataAtual">
               </div>
+
               <div class="col-12 mt-3">
                 <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Gerar PDF por Período</button>
               </div>
+
             </form>
           </div>
 

@@ -20,9 +20,9 @@
 
           @if (filtro === 'PERIODO') {
             <div class="date-inputs d-flex align-items-center ms-3">
-              <input type="date" class="form-control" [(ngModel)]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
+              <input type="date" class="form-control" [(ngModel)]="dataInicio" [max]="dataFim || dataAtual" (ngModelChange)="aplicarFiltro()" />
               <span class="date-sep mx-2">até</span>
-              <input type="date" class="form-control" [(ngModel)]="dataFim" [max]="dataAtual" [min]="dataInicio" (ngModelChange)="aplicarFiltro()" />
+              <input type="date" class="form-control" [(ngModel)]="dataFim" [min]="dataInicio" [max]="dataAtual" (ngModelChange)="aplicarFiltro()" />
             </div>
           }
         </div>
@@ -47,6 +47,7 @@
                 <th>AÇÕES</th>
               </tr>
             </thead>
+
             <tbody>
               @for (s of solicitacoesFiltradas; track s.id) {
                 <tr>
@@ -85,7 +86,7 @@
       }
 
     </div>
-
+    
   </div>
 
   <!-- Modal de Manutenção -->
@@ -104,7 +105,7 @@
 
   <!-- Modal de Visualização -->
   <div class="modal fade" id="modalVisualizar">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <app-visualizar-solicitacao 
           [solicitacao]="solicitacaoSelecionada"
@@ -143,3 +144,6 @@
   </div>
 
 </div>
+
+</div>
+<p class="text-center text-muted small">Trabalho de Desenvolvimento Web II</p>

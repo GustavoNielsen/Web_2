@@ -18,17 +18,19 @@
     <label class="small text-muted">Categoria: {{ solicitacao?.categoria || 'Não informada' }}</label>
   </div>
 
-  <div class="mb-4">
+  <div class="mb-3">
     <h6 class="fw-bold small">DESCRIÇÃO DO DEFEITO</h6>
     <p class="text-secondary small">{{ solicitacao?.descricaoDefeito || 'Nenhuma descrição detalhada.' }}</p>
   </div>
 
-  <h6 class="fw-bold small mb-3 border-bottom pb-2">HISTÓRICO DE ATUALIZAÇÕES</h6>
-  <div class="table-responsive">
-    <table class="table table-sm small">
-      <thead class="text-muted">
+  <h6 class="fw-bold small mb-0 border-bottom pb-2">HISTÓRICO DE ATUALIZAÇÕES</h6>
+  <div class="table-responsive" style="max-height: 140px; overflow-y: auto;">
+    <table class="table table-sm table-hover small">
+      <thead class="text-muted sticky-top">
         <tr>
-          <th>Data/Hora</th><th>Estado</th><th>Responsável</th>
+          <th>Data/Hora</th>
+          <th>Estado</th>
+          <th>Responsável</th>
         </tr>
       </thead>
       <tbody>

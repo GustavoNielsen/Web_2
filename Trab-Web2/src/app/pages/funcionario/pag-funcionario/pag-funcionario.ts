@@ -158,6 +158,18 @@ export class PagFuncionario implements OnInit {
         { data: new Date('2026-03-29T09:00:00'), estado: 'PAGA', funcionario: 'Maria' },
         { data: new Date('2026-03-29T10:00:00'), estado: 'FINALIZADA', funcionario: 'Maria' }
       ]
+    },
+    {
+      id: 1010,
+      dataHora: new Date('2026-04-27T16:00:00'),
+      nomeCliente: 'Monica',
+      descricaoEquipamento: 'Notebook',
+      categoria: 'Notebooks',
+      descricaoDefeito: 'Liga e desliga em sequência',
+      estado: 'ABERTA',
+      historico: [
+        { data: new Date('2026-03-28T09:00:00'), estado: 'ABERTA', funcionario: 'Sistema' },
+      ]
     }
   ];
 
@@ -173,6 +185,8 @@ export class PagFuncionario implements OnInit {
   ngOnInit() { //inicializa com as OS abertas
     this.filtro = 'SOLICITACOES-ABERTAS';
     this.aplicarFiltro();
+    this.dataAtual = new Date().toISOString().split('T')[0];
+
   }
 
   setFiltro(f: 'SOLICITACOES-ABERTAS' | 'HOJE' | 'TODAS' | 'PERIODO') {
