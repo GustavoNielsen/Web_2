@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,7 +15,8 @@ import autoTable from 'jspdf-autotable';
   templateUrl: './painel-orcamento.component.html',
   styleUrls: ['./painel-orcamento.component.css']
 })
-export class PainelOrcamentoComponent {
+
+export class PainelOrcamentoComponent implements OnInit {
   // --- Variáveis do Orçamento ---
   numeroSolicitacao: number | null = null;
   valorOrcamento: number | null = null;
@@ -23,6 +24,17 @@ export class PainelOrcamentoComponent {
   // --- Variáveis dos Relatórios ---
   dataInicio: string = '';
   dataFim: string = '';
+  dataAtual: string = '';
+
+  ngOnInit(): void {
+    this.dataAtual = new Date().toISOString().split('T')[0];
+  }
+
+  impedirNegativo(event: KeyboardEvent): void {
+    if (event.key === '-' || event.key === 'e' || event.key === 'E') {
+      event.preventDefault();
+    }
+  }
 
   confirmarOrcamento(): void {
     if (!this.numeroSolicitacao || !this.valorOrcamento) {
