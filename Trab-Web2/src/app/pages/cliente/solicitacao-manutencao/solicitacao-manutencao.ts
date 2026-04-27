@@ -1,40 +1,32 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, ViewChild, inject } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Solicitacao } from '../../../shared/models/solicitacao.model';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-solicitacao-manutencao',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './solicitacao-manutencao.html',
   styleUrl: './solicitacao-manutencao.css',
 })
 export class SolicitacaoManutencao {
-  titulo: string = "Solicitar manutenção";
-  descricaoEquipamento: string = "";
-  tipoEquipamento: string = "";
-  descricaoProblema: string = "";
-  erroTipoEquipamento: boolean = false;
-  mensagemErroEquipamentoSelect: string = "";
+  @ViewChild('formSolicitacao') formulario!: NgForm;
 
-  validarDesEquipamento() {}
+  titulo: string = 'Solicitar manutenção';
+  solicitacao: Solicitacao = new Solicitacao();
 
-  validarTipoEquipamento() {
+  private solicitacaoService = inject(SolicitacaoService);
+  private router = inject(Router);
 
-    if (this.tipoEquipamento === "") {
-      this.erroTipoEquipamento = true;
-      this.mensagemErroEquipamentoSelect = "Seleção obrigatória!";
-    } else {
-      this.erroTipoEquipamento = false;
-    }
+  inserir(): void {
+  if (this.formulario.form.valid) {
+    this.solicitacao.nomeCliente = 'Cliente';
+    this.solicitacaoService.inserir(this.solicitacao);
+
+    this.router.navigate(['/cliente/home']);
   }
-
-  validarDesProblema() {}
-
-  enviarSolicitacao() {
-    this.validarTipoEquipamento();
-    
-    if (!this.erroTipoEquipamento) {
-      console.log("Dados enviados:", this.descricaoEquipamento, this.tipoEquipamento, this.descricaoProblema);
-    }
-  }
+}
 }
