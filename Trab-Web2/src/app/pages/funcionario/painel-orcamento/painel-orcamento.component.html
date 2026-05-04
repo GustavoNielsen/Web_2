@@ -9,6 +9,13 @@
         <div class="card-body p-4">
           <p class="text-muted small mb-4">Digite o número da solicitação que está com estado "ABERTA" e informe o valor do serviço.</p>
           
+          <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4 py-2">
+            <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> Formatação de sistema:</span>
+            <span class="badge bg-secondary">
+              {{ 'EM_MANUTENCAO' | statusFormat }}
+            </span>
+          </div>
+
           <form (ngSubmit)="confirmarOrcamento()">
             <div class="mb-3">
               <label class="form-label fw-bold">Nº da Solicitação</label>
