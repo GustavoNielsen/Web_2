@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { STATUS_SOLICITACAO } from '../../../shared/constants/status.constants';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 
 // Gerador de PDF
@@ -11,7 +13,7 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-painel-orcamento',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, StatusFormatPipe],
   templateUrl: './painel-orcamento.component.html',
   styleUrls: ['./painel-orcamento.component.css']
 })
@@ -41,6 +43,9 @@ export class PainelOrcamentoComponent implements OnInit {
       alert('Por favor, preencha o número da solicitação e o valor.');
       return;
     }
+
+    console.log(`Registrando orçamento para uma solicitação em estado: ${STATUS_SOLICITACAO.ABERTA}`);
+
     alert(`Sucesso! Orçamento de R$ ${this.valorOrcamento} registrado para a Solicitação #${this.numeroSolicitacao}.`);
     this.numeroSolicitacao = null;
     this.valorOrcamento = null;
