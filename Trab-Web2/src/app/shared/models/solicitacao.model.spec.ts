@@ -1,7 +1,7 @@
-import { SolicitacaoModel } from './solicitacao.model';
+import { Solicitacao } from './solicitacao.model';
 
-describe('SolicitacaoModel', () => {
+describe('Solicitacao', () => {
   it('should create an instance', () => {
-    expect(new SolicitacaoModel()).toBeTruthy();
+    expect(new Solicitacao()).toBeTruthy();
   });
 });

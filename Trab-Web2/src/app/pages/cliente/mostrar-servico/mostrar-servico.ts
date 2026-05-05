@@ -10,11 +10,20 @@ import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
   styleUrl: './mostrar-servico.css',
 })
 export class MostrarServico {
-  estado : string = ""
-  valor : string = "R$ 525,00"
+  estado: string = '';
+
   @Output() fechar = new EventEmitter<void>();
   @Output() atualizado = new EventEmitter<any>();
   @Input() solicitacao: any;
+
+  get valor(): string {
+    const valor = this.solicitacao?.valorOrcamento;
+
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+  }
 
 
   voltar(){
@@ -33,7 +42,8 @@ export class MostrarServico {
       {
         data: new Date(),
         estado: 'APROVADA',
-        funcionario: 'Cliente'
+        funcionario: 'Cliente',
+        observacao: `Serviço aprovado no valor ${this.valor}`
       }
     ]
   });
@@ -41,6 +51,10 @@ export class MostrarServico {
   this.fechar.emit();
   }
 
+  rejeicaoAtualizada(evento: any) {
+  this.atualizado.emit(evento);
+  this.fechar.emit();
+}
   closeModal(){
     this.estado = ""
   }

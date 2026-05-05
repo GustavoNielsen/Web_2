@@ -10,8 +10,9 @@
         <div class="card shadow border-0 mt-5">
 
           <div class="card-header bg-primary text-white text-center py-3">
-            <h2 class="mb-0 h4 fw-bold">Pagamento de Serviço - Ordem de Serviço #0001</h2>
-          </div>
+            <h2 class="mb-0 h4 fw-bold">
+  Pagamento de Serviço - Ordem de Serviço #{{ solicitacao?.id }}
+</h2>
 
           <div class="card-body bg-light p-4">
             <p class="text-dark mb-4">
@@ -27,24 +28,26 @@
                   </tr>
                 </thead>
                 <tbody>
+                 <tr>
+  <td class="fw-bold">Equipamento:</td>
+  <td>{{ solicitacao?.descricaoEquipamento }}</td>
+</tr>
                   <tr>
-                    <td class="fw-bold">Equipamento:</td>
-                    <td>Desktop Gamer</td>
-                  </tr>
+  <td class="fw-bold">Serviço:</td>
+  <td>{{ solicitacao?.descricaoManutencao || solicitacao?.descricaoDefeito }}</td>
+</tr>
                   <tr>
-                    <td class="fw-bold">Serviço:</td>
-                    <td>Manutenção preventiva, substituição de pasta térmica e organização de cabos.</td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold">Status Atual:</td>
-                    <td>
-                      <span class="badge bg-primary">ARRUMADA</span>
-                    </td>
-                  </tr>
+  <td class="fw-bold">Status Atual:</td>
+  <td>
+    <span class="badge bg-primary">{{ solicitacao?.estado }}</span>
+  </td>
+</tr>
                   <tr class="table-info">
-                    <td class="fw-bold h5">VALOR TOTAL:</td>
-                    <td class="fw-bold h4 text-success">R$ 350,00</td>
-                  </tr>
+  <td class="fw-bold h5">VALOR TOTAL:</td>
+  <td class="fw-bold h4 text-success">
+    {{ (solicitacao?.valorOrcamento) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+  </td>
+</tr>
                 </tbody>
               </table>
             </div>

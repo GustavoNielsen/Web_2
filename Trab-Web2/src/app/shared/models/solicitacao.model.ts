@@ -3,6 +3,7 @@ export class Historico {
   estado!: string;
   funcionario!: string;
   destino?: string;
+  observacao?: string;
 }
 
 export class Solicitacao {
@@ -15,4 +16,9 @@ export class Solicitacao {
   estado!: string;
   historico!: Historico[];
   funcionarioDestino?: string;
+  valorOrcamento?: number;
+  motivoRejeicao?: string;
+  dataPagamento?: Date;
+  descricaoManutencao?: string;
+  orientacoesCliente?: string;
 }

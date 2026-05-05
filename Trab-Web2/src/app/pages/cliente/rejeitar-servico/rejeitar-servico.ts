@@ -19,11 +19,13 @@ export class RejeitarServico {
     this.atualizado.emit({
       id: this.solicitacao.id,
       estado: 'REJEITADA',
+       motivoRejeicao: this.motivoRejeicao,
       historico: [
         {
           data: new Date(),
           estado: 'REJEITADA',
-          funcionario: 'Cliente'
+          funcionario: 'Cliente',
+          observacao: `Serviço rejeitado. Motivo: ${this.motivoRejeicao}`
         }
       ]
     });

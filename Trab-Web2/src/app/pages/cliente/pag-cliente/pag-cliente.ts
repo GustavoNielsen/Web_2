@@ -28,7 +28,9 @@ export class PagCliente implements OnInit {
   solicitacoes: Solicitacao[] = [];
 
   ngOnInit(): void {
-    this.solicitacoes = this.solicitacaoService.listarTodos();
+    this.solicitacoes = this.solicitacaoService.listarTodos().sort((a, b) => 
+      new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
+    );
   }
 
   openModal(modal: string) {
@@ -46,17 +48,22 @@ export class PagCliente implements OnInit {
   }
 
   atualizarSolicitacao(evento: any) {
+      if (!evento) {
+    this.closeModal();
+    return;
+  }
+
     const index = this.solicitacoes.findIndex(s => s.id === evento.id);
 
-    if (index !== -1) {
-      this.solicitacoes[index] = {
-        ...this.solicitacoes[index],
-        estado: evento.estado,
-        historico: [
-          ...this.solicitacoes[index].historico,
-          ...evento.historico
-        ]
-      };
+     if (index !== -1) {
+    this.solicitacoes[index] = {
+      ...this.solicitacoes[index],
+      ...evento,
+      historico: [
+        ...(this.solicitacoes[index].historico || []),
+        ...(evento.historico || [])
+      ]
+    };
 
       this.solicitacaoService.atualizar(this.solicitacoes[index]);
     }
