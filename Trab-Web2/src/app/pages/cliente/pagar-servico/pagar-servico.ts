@@ -24,6 +24,7 @@ confirmarPagamento(){
   this.atualizado.emit({
     id: this.solicitacao.id,
     estado: 'PAGA',
+    dataPagamento: new Date(),
     historico: [
       {
         data: new Date(),

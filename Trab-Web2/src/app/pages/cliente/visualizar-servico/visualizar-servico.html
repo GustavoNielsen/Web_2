@@ -54,6 +54,14 @@
                 </div>
               </div>
 
+              <!-- Motivo da Rejeição -->
+<div class="card mb-3 border border-danger" *ngIf="solicitacao.motivoRejeicao">
+  <div class="card-header fw-bold bg-danger text-white">Motivo da Rejeição</div>
+  <div class="card-body">
+    <p class="mb-0">{{ solicitacao.motivoRejeicao }}</p>
+  </div>
+</div>
+
               <!-- Orçamento -->
               <div class="card mb-3 border" *ngIf="solicitacao.valorOrcamento">
                 <div class="card-header fw-bold">Orçamento</div>
@@ -66,6 +74,17 @@
                   </p>
                 </div>
               </div>
+
+              <!-- Pagamento -->
+<div class="card mb-3 border border-success" *ngIf="solicitacao.dataPagamento">
+  <div class="card-header fw-bold bg-success text-white">Pagamento</div>
+  <div class="card-body">
+    <p class="mb-0">
+      <strong>Data do pagamento:</strong>
+      {{ solicitacao.dataPagamento | date:'dd/MM/yyyy HH:mm' }}
+    </p>
+  </div>
+</div>
 
               <!-- Manutenção -->
               <div class="card border" *ngIf="solicitacao.descricaoManutencao">
@@ -103,15 +122,19 @@
 
                   <div *ngFor="let item of historico" class="mb-3 border-bottom pb-2">
 
-                    <p class="mb-1">
-                      <strong>{{ item.estado }}</strong>
-                    </p>
+  <p class="mb-1">
+    <strong>{{ item.estado }}</strong>
+  </p>
 
-                    <small class="text-muted">
-                      {{ item.funcionario }} - {{ item.data | date:'dd/MM/yyyy HH:mm' }}
-                    </small>
+  <p class="mb-1" *ngIf="item.observacao">
+    {{ item.observacao }}
+  </p>
 
-                  </div>
+  <small class="text-muted">
+    {{ item.funcionario }} - {{ item.data | date:'dd/MM/yyyy HH:mm' }}
+  </small>
+
+</div>
 
                   <div *ngIf="historico.length === 0" class="text-muted">
                     Nenhuma alteração registrada.
