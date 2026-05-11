@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { STATUS_SOLICITACAO } from '../../../shared/constants/status.constants';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
@@ -13,15 +13,16 @@ import autoTable from 'jspdf-autotable';
 @Component({
   selector: 'app-painel-orcamento',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, StatusFormatPipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, StatusFormatPipe],
   templateUrl: './painel-orcamento.component.html',
   styleUrls: ['./painel-orcamento.component.css']
 })
 
 export class PainelOrcamentoComponent implements OnInit {
-  // --- Variáveis do Orçamento ---
-  numeroSolicitacao: number | null = null;
-  valorOrcamento: number | null = null;
+  // Novo objeto que controlará todo o formulário
+  orcamentoForm!: FormGroup;
+
+  constructor(private fb: FormBuilder) {}
 
   // --- Variáveis dos Relatórios ---
   dataInicio: string = '';
@@ -30,6 +31,19 @@ export class PainelOrcamentoComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataAtual = new Date().toISOString().split('T')[0];
+
+    //Inicializando o formulário com as regras de validação
+    this.orcamentoForm = this.fb.group({
+      numeroSolicitacao: [null, [
+        Validators.required, 
+        Validators.min(1),
+        Validators.pattern("^[0-9]*$") //só numeros inteiros
+      ]],
+      valorOrcamento: [null, [
+        Validators.required, 
+        Validators.min(0.01) //Valor tem que ser maior que zero
+      ]]
+    });
   }
 
   impedirNegativo(event: KeyboardEvent): void {
@@ -38,19 +52,24 @@ export class PainelOrcamentoComponent implements OnInit {
     }
   }
 
-  confirmarOrcamento(): void {
-    if (!this.numeroSolicitacao || !this.valorOrcamento) {
-      alert('Por favor, preencha o número da solicitação e o valor.');
+  confirmarOrcamento(): void { 
+    if (this.orcamentoForm.invalid) {
+      this.orcamentoForm.markAllAsTouched();
       return;
     }
 
-    console.log(`Registrando orçamento para uma solicitação em estado: ${STATUS_SOLICITACAO.ABERTA}`);
-
-    alert(`Sucesso! Orçamento de R$ ${this.valorOrcamento} registrado para a Solicitação #${this.numeroSolicitacao}.`);
-    this.numeroSolicitacao = null;
-    this.valorOrcamento = null;
+    const { numeroSolicitacao, valorOrcamento } = this.orcamentoForm.value;
+    
+    alert(`Sucesso! Orçamento de R$ ${valorOrcamento} registrado para a Solicitação #${numeroSolicitacao}.`);
+    this.orcamentoForm.reset(); // Limpa o formulário após o sucesso
   }
 
+
+
+
+
+
+  
   // --- Por Período ---
   gerarRelatorioPeriodo(): void {
     const doc = new jsPDF();
