@@ -18,6 +18,11 @@ export class EfetuarManutencao {
   descricaoManutencao: string = '';
   orientacoesCliente: string = '';
 
+  limparFormulario(): void {
+    this.descricaoManutencao = '';
+    this.orientacoesCliente = '';
+  }
+
   confirmarManutencao() {
     if (this.descricaoManutencao && this.orientacoesCliente) {
       this.realizarManutencao.emit({

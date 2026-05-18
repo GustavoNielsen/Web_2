@@ -1,107 +1,27 @@
 <div class="container-fluid mt-4 px-4">
-  <div class="row">
-    
-    <div class="col-md-6 mb-4">
-      <div class="card shadow-sm border-warning h-100">
-        <div class="card-header bg-warning text-dark py-3">
-          <h5 class="mb-0 fw-bold text-uppercase"><i class="bi bi-cash-coin me-2"></i> Efetuar Orçamento</h5>
-        </div>
-        <div class="card-body p-4">
-          <p class="text-muted small mb-4">Digite o número da solicitação que está com estado "ABERTA" e informe o valor do serviço.</p>
-          
-          <!--
-          <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4 py-2">
-            <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> Formatação de sistema:</span>
-            <span class="badge bg-secondary">
-              {{ 'EM_MANUTENCAO' | statusFormat }}
-            </span>
-          </div>
-          -->
-          
-          <form [formGroup]="orcamentoForm" (ngSubmit)="confirmarOrcamento()">
-            <div class="mb-3">
-              <label class="form-label fw-bold">Nº da Solicitação</label>
-              <input type="number" 
-                    formControlName="numeroSolicitacao"
-                    class="form-control" 
-                    [ngClass]="{ 'is-invalid': orcamentoForm.controls['numeroSolicitacao'].touched && orcamentoForm.controls['numeroSolicitacao'].errors }"
-                    (keydown)="impedirNegativo($event)"
-                    placeholder="Ex: 1042">
-              
-              @if (orcamentoForm.controls['numeroSolicitacao'].touched && orcamentoForm.controls['numeroSolicitacao'].errors) {
-                <div class="invalid-feedback">
-                  @if (orcamentoForm.controls['numeroSolicitacao'].errors['required']) {
-                    <small class="d-block">O número da solicitação é obrigatório.</small>
-                  }
-                  @if (orcamentoForm.controls['numeroSolicitacao'].errors['min']) {
-                    <small class="d-block">O número deve ser maior que zero.</small>
-                  }
-                  @if (orcamentoForm.controls['numeroSolicitacao'].errors['pattern']) {
-                    <small class="d-block">Use apenas números inteiros.</small>
-                  }
-                </div>
-              }
-            </div>
-            
-            <div class="mb-4">
-              <label class="form-label fw-bold">Valor do Orçamento (R$)</label>
-              <div class="input-group has-validation">
-                <span class="input-group-text bg-light text-secondary fw-bold">R$</span>
-                <input type="number" 
-                      formControlName="valorOrcamento"
-                      class="form-control form-control-lg" 
-                      [ngClass]="{ 'is-invalid': orcamentoForm.controls['valorOrcamento'].touched && orcamentoForm.controls['valorOrcamento'].errors }"
-                      (keydown)="impedirNegativo($event)"
-                      placeholder="0.00">
-                
-                @if (orcamentoForm.controls['valorOrcamento'].touched && orcamentoForm.controls['valorOrcamento'].errors) {
-                  <div class="invalid-feedback">
-                    @if (orcamentoForm.controls['valorOrcamento'].errors['required']) {
-                      <small class="d-block">O valor do orçamento é obrigatório.</small>
-                    }
-                    @if (orcamentoForm.controls['valorOrcamento'].errors['min']) {
-                      <small class="d-block">O valor deve ser maior que zero.</small>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
+  <div class="row justify-content-center">
 
-            <button type="submit" class="btn btn-warning w-100 fw-bold text-dark" [disabled]="orcamentoForm.invalid && orcamentoForm.touched">
-              Registrar Orçamento
-            </button>
-          </form>
-
-        </div>
-      </div>
-    </div>
-
-
-    <div class="col-md-6 mb-4">
+    <div class="col-md-8 mb-4">
       <div class="card shadow-sm border-primary h-100">
         <div class="card-header bg-primary text-white py-3">
           <h5 class="mb-0 fw-bold text-uppercase"><i class="bi bi-graph-up me-2"></i> Relatórios Financeiros</h5>
         </div>
         <div class="card-body p-4">
-          
+
           <div class="mb-4 pb-4 border-bottom">
             <h6 class="fw-bold text-primary mb-3">Receitas por Período</h6>
             <form (ngSubmit)="gerarRelatorioPeriodo()" class="row g-2">
-
               <div class="col-6">
                 <label class="form-label small text-muted">Data Inicial</label>
                 <input type="date" class="form-control" [(ngModel)]="dataInicio" name="inicio" [max]="dataFim || dataAtual">
               </div>
-
               <div class="col-6">
                 <label class="form-label small text-muted">Data Final</label>
                 <input type="date" class="form-control" [(ngModel)]="dataFim" name="fim" [min]="dataInicio" [max]="dataAtual">
               </div>
-
               <div class="col-12 mt-3">
                 <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Gerar PDF por Período</button>
               </div>
-
             </form>
           </div>
 
