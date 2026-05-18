@@ -62,11 +62,11 @@
                       <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
-                        <button type="button" class="btn btn-sm btn-warning fw-bold" (click)="efetuarOrcamento(s)">Efetuar Orçamento</button>
+                        <button type="button" class="btn btn-sm btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#modalOrcamento" (click)="solicitacaoSelecionada = s; modalOrcamentoRef.limparFormulario()">Efetuar Orçamento</button>
                       }
 
                       @if (s.estado === 'APROVADA' || s.estado === 'REDIRECIONADA') {
-                        <button type="button" class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s">Manutenção</button>
+                        <button type="button" class="btn btn-sm btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#modalManutencao" (click)="solicitacaoSelecionada = s; modalManutencaoRef.limparFormulario()">Manutenção</button>
                       }
 
                       @if (s.estado === 'PAGA') {
@@ -89,11 +89,26 @@
     
   </div>
 
+  <!-- Modal de Orçamento -->
+  <div class="modal fade" id="modalOrcamento">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <app-efetuar-orcamento
+          #modalOrcamentoRef
+          [solicitacao]="solicitacaoSelecionada"
+          (orcamentoConfirmado)="efetuarOrcamento($event)"
+          (cancelado)="solicitacaoSelecionada = null">
+        </app-efetuar-orcamento>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal de Manutenção -->
   <div class="modal fade" id="modalManutencao">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <app-efetuar-manutencao 
+        <app-efetuar-manutencao
+          #modalManutencaoRef 
           [solicitacao]="solicitacaoSelecionada"
           (realizarManutencao)="efetuarManutencao($event)"
           (abrirRedirecionar)="redirecionar()"

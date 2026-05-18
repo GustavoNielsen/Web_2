@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { EfetuarOrcamento } from '../efetuar-orcamento/efetuar-orcamento';
 import { FinalizarSolicitacao } from '../finalizar-solicitacao/finalizar-solicitacao';
 import { RedirecionarSolicitacao } from '../redirecionar-solicitcao/redirecionar-solicitacao';
 import { VisualizarSolicitacao } from '../visualizar-solicitacoes/visualizar-solicitacao';
@@ -9,7 +10,7 @@ import { EfetuarManutencao } from '../efetuar-manutencao/efetuar-manutencao';
 @Component({
   selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule, FinalizarSolicitacao, RedirecionarSolicitacao, VisualizarSolicitacao, EfetuarManutencao],
+  imports: [CommonModule, FormsModule, EfetuarOrcamento, FinalizarSolicitacao, RedirecionarSolicitacao, VisualizarSolicitacao, EfetuarManutencao],
   templateUrl: './pag-funcionario.html',
   styleUrl: './pag-funcionario.css',
 })
@@ -263,27 +264,38 @@ export class PagFuncionario implements OnInit {
     alert('Visualizando detalhes da OS: ' + id);
   }
 
-  efetuarOrcamento(solicitacao: any) {
-    this.loading = true;
-    this.CDR.detectChanges();
-
-    setTimeout(() => {
-      solicitacao.estado = 'ORÇADA';
-
-      if (!solicitacao.historico) {
-        solicitacao.historico = [];
-      }
-      
-      solicitacao.historico.push({
-        data: new Date(),
-        estado: 'ORÇADA',
-        funcionario: this.nomeUsuario
-      });
-
-      this.aplicarFiltro();
-      this.loading = false;
+  efetuarOrcamento(dados: any) {
+    if (this.solicitacaoSelecionada) {
+      this.loading = true;
       this.CDR.detectChanges();
-    }, 500);
+
+      setTimeout(() => {
+        // Muda o estado e salva o valor do orçamento
+        this.solicitacaoSelecionada.estado = 'ORÇADA';
+        this.solicitacaoSelecionada.valorOrcamento = dados.valor;
+
+        if (!this.solicitacaoSelecionada.historico) {
+          this.solicitacaoSelecionada.historico = [];
+        }
+
+        // Constrói a mensagem do histórico. Se tiver observação, ele adiciona.
+        const mensagemHist = dados.observacao 
+          ? `Orçamento registrado: R$ ${dados.valor} - ${dados.observacao}` 
+          : `Orçamento registrado: R$ ${dados.valor}`;
+
+        this.solicitacaoSelecionada.historico.push({
+          data: new Date(),
+          estado: 'ORÇADA',
+          funcionario: this.nomeUsuario,
+          observacao: mensagemHist
+        });
+
+        this.aplicarFiltro();
+        this.loading = false;
+        this.CDR.detectChanges();
+        this.solicitacaoSelecionada = null;
+      }, 500);
+    }
   }
 
   efetuarManutencao(dados: any) {
