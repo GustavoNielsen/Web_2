@@ -65,7 +65,7 @@
 
                                         <!-- VISUALIZAR -->
                                         <button class="btn btn-sm btn-outline-secondary"
-                                            (click)="visualizarServico(s.id, 'visualizar')">
+                                        [routerLink]="['/cliente/servico', s.id]">
                                             Visualizar
                                         </button>
 
