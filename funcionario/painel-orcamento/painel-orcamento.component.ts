@@ -51,6 +51,7 @@ export class PainelOrcamentoComponent {
       ['03/04/2026', 'Formatação', 'R$ 120,00'],
       ['05/04/2026', 'Limpeza Interna', 'R$ 150,00'],
     ];
+    
 
     // Gerando a Tabela
     autoTable(doc, {
@@ -90,7 +91,45 @@ export class PainelOrcamentoComponent {
       body: dadosFicticios,
       theme: 'striped',
       headStyles: { fillColor: [25, 135, 84] } // Cor verde do Bootstrap para diferenciar
-    });
+    })
+      
+      setFiltro(novoFiltro: string): void {
+    this.filtro = novoFiltro;
+    this.paginaAtual = 1; // Reseta a página ao mudar o filtro
+    this.aplicarFiltro();
+  }
+
+  aplicarFiltro(): void {
+    this.loading = true;
+
+    setTimeout(() => {
+      if (this.filtro === 'SOLICITACOES-ABERTAS') {
+        this.solicitacoesFiltradas = this.todasSolicitacoes.filter(s => s.estado === 'ABERTA');
+      } else if (this.filtro === 'TODAS') {
+        this.solicitacoesFiltradas = [...this.todasSolicitacoes];
+      } else {
+        this.solicitacoesFiltradas = [...this.todasSolicitacoes];
+      }
+
+      this.atualizarPaginacao();
+      this.loading = false;
+    }, 400);
+  }
+
+  atualizarPaginacao(): void {
+    this.totalPaginas = Math.ceil(this.solicitacoesFiltradas.length / this.itensPorPagina);
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    this.solicitacoesPaginadas = this.solicitacoesFiltradas.slice(inicio, fim);
+  }
+
+  mudarPagina(novaPagina: number, evento: Event): void {
+    evento.preventDefault();
+    if (novaPagina >= 1 && novaPagina <= this.totalPaginas) {
+      this.paginaAtual = novaPagina;
+      this.atualizarPaginacao();
+    }
+  };
 
     // Faz o download do arquivo
     doc.save('relatorio-categorias.pdf');
