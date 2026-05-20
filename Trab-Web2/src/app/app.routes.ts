@@ -1,34 +1,45 @@
 import { Routes } from '@angular/router';
+import { TopbarUser } from './pages/topbar-user/topbar-user';
+import { PagCliente } from './pages/cliente/pag-cliente/pag-cliente';
+import { Login } from './pages/login/login'
+import { TelaAutocadastro } from './pages/tela-autocadastro/tela-autocadastro'
 
-export const routes: Routes = [{
+export const routes: Routes = 
+[{
   path: '',
   pathMatch: 'full',
-  loadComponent: () =>
-    import('./pages/login/login').then(m => m.Login),
+  component: Login,
 },
+
 {
   path: 'registrar',
-  loadComponent: () =>
-    import("./pages/tela-autocadastro/tela-autocadastro").then(m => m.TelaAutocadastro),
-},
-
-
-{
-  path: 'homefuncionario',
-  loadComponent: () =>
-    import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
+  component: TelaAutocadastro,
 },
 
 {
   path: 'cliente',
-  loadComponent: () =>
-    import('./pages/topbar-user/topbar-user').then(m => m.TopbarUser),
+  component: TopbarUser,
   children: [
     {
+      path: '',
+      pathMatch: 'full',
+      redirectTo: 'home',
+    },
+    {
       path: 'home',
-      loadComponent: () =>
-        import("./pages/cliente/pag-cliente/pag-cliente")
-          .then(m => m.PagCliente),
+      component: PagCliente,
+    },
+    {
+      path: 'orcamento/:id',
+      component: PagCliente,
+    },
+    {
+      path: 'rejeitar/:id',
+      component: PagCliente,
+    },
+    {
+      path: 'pagamento/:id',
+      component: PagCliente,
     },
     {
       path: 'servico/:id', // Para visualizar serviço com pag-cliente atras
@@ -46,6 +57,12 @@ export const routes: Routes = [{
 
 
   ]
+},
+
+{
+  path: 'homefuncionario',
+  loadComponent: () =>
+    import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
 },
 
 {

@@ -9,6 +9,7 @@ import { Solicitacao } from '../../../shared/models/solicitacao.model';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 type ColunaOrdenacao = 'dataHora' | 'descricaoEquipamento' | 'estado';
+type ModalCliente = 'visualizar' | 'orcamento' | 'rejeitar' | 'pagamento' | null;
 
 @Component({
   selector: 'app-pag-cliente',
@@ -22,6 +23,7 @@ export class PagCliente implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  
 
 
   modal: string = '';
