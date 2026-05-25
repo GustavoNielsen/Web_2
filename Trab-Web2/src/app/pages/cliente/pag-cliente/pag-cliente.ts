@@ -7,6 +7,7 @@ import { ResgatarServico } from '../resgatar-servico/resgatar-servico';
 import { PagarServico } from '../pagar-servico/pagar-servico';
 import { Solicitacao } from '../../../shared/models/solicitacao.model';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 type ColunaOrdenacao = 'dataHora' | 'descricaoEquipamento' | 'estado';
 type ModalCliente = 'visualizar' | 'orcamento' | 'rejeitar' | 'pagamento' | null;
@@ -14,7 +15,7 @@ type ModalCliente = 'visualizar' | 'orcamento' | 'rejeitar' | 'pagamento' | null
 @Component({
   selector: 'app-pag-cliente',
   standalone: true,
-  imports: [CommonModule, RouterModule, VisualizarServico, MostrarServico, ResgatarServico, PagarServico],
+  imports: [CommonModule, RouterModule, VisualizarServico, MostrarServico, ResgatarServico, PagarServico, StatusFormatPipe],
   templateUrl: './pag-cliente.html',
   styleUrl: './pag-cliente.css',
 })

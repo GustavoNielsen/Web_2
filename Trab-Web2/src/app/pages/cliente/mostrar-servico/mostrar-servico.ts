@@ -9,6 +9,7 @@ import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
   templateUrl: './mostrar-servico.html',
   styleUrl: './mostrar-servico.css',
 })
+
 export class MostrarServico {
   estado: string = '';
 

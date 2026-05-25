@@ -56,7 +56,7 @@
                                     'bg-primary': s.estado === 'PAGA',
                                     'bg-dark': s.estado === 'FINALIZADA'
                                     }"> 
-                                    {{ s.estado }}
+                                    {{ s.estado | statusFormat }}
                                     </span>
                                 </td>
 

@@ -7,16 +7,16 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class StatusFormatPipe implements PipeTransform {
 
   //Transforma strings do backend (ex: EM_MANUTENCAO) 
-  //para um formato melhor(Em Manutenção)
+  //para um formato melhor(EM MANUTENÇÃO)
   
   transform(value: string | undefined | null): string {
     if (!value) return '';
 
     // casos  com acentuação
     const excessoes: { [key: string]: string } = {
-      'ORCADA': 'Orçada',
-      'EM_MANUTENCAO': 'Em Manutenção',
-      'PAGA': 'Paga'
+      'ORCADA': 'ORÇADA',
+      'EM_MANUTENCAO': 'EM MANUTENÇÃO',
+      'PAGA': 'PAGA'
     };
 
     if (excessoes[value]) {
@@ -25,9 +25,8 @@ export class StatusFormatPipe implements PipeTransform {
 
     // remove underline e formata cada palavra
     return value
-      .toLowerCase()
+      .toUpperCase()
       .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
 }

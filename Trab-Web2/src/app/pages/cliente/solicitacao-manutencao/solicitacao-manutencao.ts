@@ -12,6 +12,7 @@ import { SolicitacaoService } from '../../../services/solicitacao.service';
   templateUrl: './solicitacao-manutencao.html',
   styleUrl: './solicitacao-manutencao.css',
 })
+
 export class SolicitacaoManutencao {
   @ViewChild('formSolicitacao') formulario!: NgForm;
 

@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div class="card-body p-4" style="min-height: 70vh; display: flex; flex-direction: column;">
+    <div class="card-body p-4" style="height: 71vh; display: flex; flex-direction: column;">
       <div class="d-flex flex-wrap gap-2 mb-4 align-items-center bg-white p-3 rounded shadow-sm border">
         <!-- Filtros -->
         <div class="btn-group shadow-sm">
@@ -55,7 +55,7 @@
                   <td class="td-cliente fw-bold">{{ s.nomeCliente }}</td>
                   <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
                   <td>
-                    <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado }}</span>
+                    <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado | statusFormat }}</span>
                   </td>
                   <td>
                     <div class="td-acoes d-flex gap-2">

@@ -1,14 +1,16 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 @Component({
   selector: 'app-visualizar-servico',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StatusFormatPipe],
   templateUrl: './visualizar-servico.html',
   styleUrl: './visualizar-servico.css',
 })
+
 export class VisualizarServico implements OnInit {
   @Input() solicitacao: any;
   loading = true;

@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 @Component({
   selector: 'app-pagar-servico',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StatusFormatPipe],
   templateUrl: './pagar-servico.html',
   styleUrl: './pagar-servico.css',
 })
+
 export class PagarServico {
 
   @Output() fechar = new EventEmitter<void>();

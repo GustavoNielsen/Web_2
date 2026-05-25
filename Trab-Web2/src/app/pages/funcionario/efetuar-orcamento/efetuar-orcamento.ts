@@ -9,6 +9,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
   templateUrl: './efetuar-orcamento.html',
   styleUrl: './efetuar-orcamento.css',
 })
+
 export class EfetuarOrcamento implements OnInit {
   @Input() solicitacao: any; 
   @Output() orcamentoConfirmado = new EventEmitter<any>();
