@@ -89,16 +89,3 @@
 
   </div>
 </div>
-
-
-@if(estado == "aprovar"){
-  <app-aprovar-servico [valor]="valor"/>
-}
-
-
-@if(estado == "rejeitar"){
-  <app-rejeitar-servico
-    [solicitacao]="solicitacao"
-    (atualizado)="rejeicaoAtualizada($event)">
-  </app-rejeitar-servico>
-}

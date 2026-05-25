@@ -71,24 +71,29 @@
 
                                         <!-- APROVAR / REJEITAR -->
                                         @if (s.estado === 'ORÇADA') {
-                                            <button class="btn btn-sm btn-primary fw-bold" (click)="visualizarServico(s.id, 'a/r')">
-                                                Aprovar / Rejeitar
-                                            </button>
+                                            <button
+    class="btn btn-sm btn-primary fw-bold"
+    [routerLink]="['/cliente/orcamento', s.id]">
+    Aprovar / Rejeitar
+  </button>
                                         }
 
                                         <!-- RESGATAR -->
                                         @if (s.estado === 'REJEITADA') {
-                                            <button class="btn btn-sm btn-warning fw-bold"
-                                                (click)="visualizarServico(s.id, 'resgatar')">
-                                                Resgatar
-                                            </button>
+                                            <button
+    class="btn btn-sm btn-warning fw-bold"
+    [routerLink]="['/cliente/resgatar', s.id]">
+    Resgatar
+  </button>
                                         }
 
                                         <!-- PAGAR -->
                                         @if (s.estado === 'ARRUMADA') {
-                                            <button class="btn btn-sm btn-success fw-bold" (click)="visualizarServico(s.id, 'pagar')">
-                                                Pagar Serviço
-                                            </button>
+                                             <button
+    class="btn btn-sm btn-success fw-bold"
+    [routerLink]="['/cliente/pagamento', s.id]">
+    Pagar Serviço
+  </button>
                                         }
 
                                     </div>
@@ -107,39 +112,57 @@
     </div>
 </div>
 
-@if(modal == 'visualizar'){
-<div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
+@if(modal === 'visualizar' && solicitacaoSelecionada){
+  <div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
       <div class="modal-content border-0">
-        <app-visualizar-servico 
-          [solicitacao]="solicitacaoSelecionada" 
-          (fechar)="closeModal()">
+        <app-visualizar-servico
+          [solicitacao]="solicitacaoSelecionada"
+          (fechar)="fecharModal()"
+          (acao)="abrirAcaoPorRota($event)">
         </app-visualizar-servico>
       </div>
     </div>
   </div>
 }
 
-@if(modal == 'a/r'){
-<app-mostrar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
-    (atualizado)="atualizarSolicitacao($event)" />
+@if(modal === 'orcamento' && solicitacaoSelecionada){
+  <app-mostrar-servico
+    [solicitacao]="solicitacaoSelecionada"
+    (fechar)="fecharModal()"
+    (rejeitar)="irParaRejeitar(solicitacaoSelecionada)"
+    (atualizado)="atualizarSolicitacao($event)">
+  </app-mostrar-servico>
 }
 
-@if(modal == "resgatar"){
-<div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
+@if(modal === 'rejeitar' && solicitacaoSelecionada){
+  <app-rejeitar-servico
+    [solicitacao]="solicitacaoSelecionada"
+    (fechar)="irParaOrcamento(solicitacaoSelecionada)"
+    (atualizado)="atualizarSolicitacao($event)">
+  </app-rejeitar-servico>
+}
+
+@if(modal === 'resgatar' && solicitacaoSelecionada){
+  <div class="modal d-block shadow-lg" style="background: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content border-0">
-            <app-resgatar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
-                (atualizado)="atualizarSolicitacao($event)">
-            </app-resgatar-servico>
-        </div>
+      <div class="modal-content border-0">
+        <app-resgatar-servico
+          [solicitacao]="solicitacaoSelecionada"
+          (fechar)="fecharModal()"
+          (atualizado)="atualizarSolicitacao($event)">
+        </app-resgatar-servico>
+      </div>
     </div>
-</div>
+  </div>
 }
 
-@if(modal == "pagar"){
-<app-pagar-servico [solicitacao]="solicitacaoSelecionada" (fechar)="closeModal()"
-    (atualizado)="atualizarSolicitacao($event)" />
+@if(modal === 'pagamento' && solicitacaoSelecionada){
+  <app-pagar-servico
+    [solicitacao]="solicitacaoSelecionada"
+    (fechar)="fecharModal()"
+    (atualizado)="atualizarSolicitacao($event)">
+  </app-pagar-servico>
 }
 
 <p class="text-center text-muted small">Trabalho de Desenvolvimento Web II</p>

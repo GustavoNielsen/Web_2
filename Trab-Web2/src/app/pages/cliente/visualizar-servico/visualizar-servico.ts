@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
+type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
+
 @Component({
   selector: 'app-visualizar-servico',
   standalone: true,
@@ -17,7 +19,8 @@ export class VisualizarServico implements OnInit {
   perfil = 'CLIENTE'; // troque para 'CLIENTE' para testar
   historico: any[] = [];
   @Output() fechar = new EventEmitter<void>();
-  @Output() acao = new EventEmitter<string>();
+  @Output() acao = new EventEmitter<AcaoCliente>();
+  @Output() atualizado = new EventEmitter<any>();
 
   constructor(private router: Router) {}
 
@@ -60,10 +63,10 @@ export class VisualizarServico implements OnInit {
   }, ...this.historico];
 
   // Atualiza a tabela
-  this.acao.emit({
-    ...this.solicitacao,
-    historico: this.historico
-  });
+  this.atualizado.emit({
+  ...this.solicitacao,
+  historico: this.historico,
+});
 }
 
   // Ações do FUNCIONARIO
@@ -88,8 +91,8 @@ export class VisualizarServico implements OnInit {
   }
 
   // Ações do CLIENTE
-  acaoCliente(modal: string) {
-  this.acao.emit(modal);
+  acaoCliente(acao: AcaoCliente): void {
+  this.acao.emit(acao);
 }
 
 }
