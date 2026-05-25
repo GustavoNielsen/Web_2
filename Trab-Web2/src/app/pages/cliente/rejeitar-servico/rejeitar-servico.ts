@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './rejeitar-servico.html',
   styleUrl: './rejeitar-servico.css',
 })
+
 export class RejeitarServico {
   motivoRejeicao: string = ""; 
 

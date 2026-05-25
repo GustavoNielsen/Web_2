@@ -32,7 +32,7 @@
     'bg-primary': solicitacao.estado === 'PAGA',
     'bg-dark': solicitacao.estado === 'FINALIZADA'
   }">
-            {{ solicitacao.estado }}
+            {{ solicitacao.estado | statusFormat }}
           </span>
         </div>
 
@@ -123,7 +123,7 @@
                   <div *ngFor="let item of historico" class="mb-3 border-bottom pb-2">
 
   <p class="mb-1">
-    <strong>{{ item.estado }}</strong>
+    <strong>{{ item.estado | statusFormat }}</strong>
   </p>
 
   <p class="mb-1" *ngIf="item.observacao">

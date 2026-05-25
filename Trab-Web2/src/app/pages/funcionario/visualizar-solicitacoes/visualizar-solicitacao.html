@@ -9,7 +9,7 @@
         <p class="small text-muted mb-0">Cliente:</p>
         <span class="fw-bold">{{ solicitacao?.nomeCliente }}</span>
       </div>
-        <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(solicitacao?.estado)">{{ solicitacao?.estado }}</span>
+        <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(solicitacao?.estado)">{{ solicitacao?.estado | statusFormat }}</span>
     </div>
 
   <div class="mb-3 p-3 bg-light rounded border">
@@ -37,7 +37,7 @@
         @for (h of solicitacao?.historico; track h.data) {
           <tr class="border-bottom-0">
             <td>{{ h.data | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td><span class="fw-bold text-dark">{{ h.estado }}</span></td>
+            <td><span class="fw-bold text-dark">{{ h.estado | statusFormat }}</span></td>
             <td>{{ h.funcionario }} {{ h.destino ? '-> ' + h.destino : '' }}</td> 
           </tr>
         } @empty {

@@ -6,14 +6,17 @@ import { FinalizarSolicitacao } from '../finalizar-solicitacao/finalizar-solicit
 import { RedirecionarSolicitacao } from '../redirecionar-solicitcao/redirecionar-solicitacao';
 import { VisualizarSolicitacao } from '../visualizar-solicitacoes/visualizar-solicitacao';
 import { EfetuarManutencao } from '../efetuar-manutencao/efetuar-manutencao';
+import { STATUS_SOLICITACAO } from '../../../shared/constants/status.constants';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 @Component({
   selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule, EfetuarOrcamento, FinalizarSolicitacao, RedirecionarSolicitacao, VisualizarSolicitacao, EfetuarManutencao],
+  imports: [CommonModule, FormsModule, EfetuarOrcamento, FinalizarSolicitacao, RedirecionarSolicitacao, VisualizarSolicitacao, EfetuarManutencao, StatusFormatPipe],
   templateUrl: './pag-funcionario.html',
   styleUrl: './pag-funcionario.css',
 })
+
 export class PagFuncionario implements OnInit {
 
   nomeUsuario = 'Mário';
@@ -245,17 +248,18 @@ export class PagFuncionario implements OnInit {
     }, 500); //simula um delay de 500ms para mostrar o carregamento
   }
 
-  // Lógica de cores para os Badges
+  // Lógica de cores para os Badges padronizada com Constantes
   getStatusClass(status: string): string {
     switch (status) {
-      case 'ABERTA': return 'bg-secondary text-white';
-      case 'ORÇADA': return 'bg-brown text-white';
-      case 'REJEITADA': return 'bg-danger text-white';
-      case 'APROVADA': return 'bg-warning text-dark';
-      case 'REDIRECIONADA': return 'bg-purple text-white';
-      case 'ARRUMADA': return 'bg-primary text-white';
-      case 'PAGA': return 'bg-orange text-white';
-      case 'FINALIZADA': return 'bg-success text-white';
+      case STATUS_SOLICITACAO.ABERTA: return 'bg-secondary text-white';
+      case STATUS_SOLICITACAO.ORCADA: return 'bg-brown text-white';
+      case STATUS_SOLICITACAO.REJEITADA: return 'bg-danger text-white';
+      case STATUS_SOLICITACAO.APROVADA: return 'bg-warning text-dark';
+      case STATUS_SOLICITACAO.REDIRECIONADA: return 'bg-purple text-white';
+      case STATUS_SOLICITACAO.EM_MANUTENCAO: return 'bg-info text-dark';
+      case STATUS_SOLICITACAO.ARRUMADA: return 'bg-primary text-white';
+      case STATUS_SOLICITACAO.PAGA: return 'bg-orange text-white';
+      case STATUS_SOLICITACAO.FINALIZADA: return 'bg-success text-white';
       default: return 'bg-dark text-white';
     }
   }

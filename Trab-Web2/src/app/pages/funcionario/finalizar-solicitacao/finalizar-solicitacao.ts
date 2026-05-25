@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './finalizar-solicitacao.html',
   styleUrl: './finalizar-solicitacao.css',
 })
+
 export class FinalizarSolicitacao {
 
   @Input() solicitacao: any; //Recebe a solicitação a ser finalizada

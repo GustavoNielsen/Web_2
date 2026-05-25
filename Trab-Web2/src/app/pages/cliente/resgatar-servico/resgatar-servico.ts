@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './resgatar-servico.html',
   styleUrl: './resgatar-servico.css',
 })
+
 export class ResgatarServico {
 
   @Input() solicitacao: any;

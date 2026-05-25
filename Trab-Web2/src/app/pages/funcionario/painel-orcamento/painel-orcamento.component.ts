@@ -14,6 +14,7 @@ import autoTable from 'jspdf-autotable';
   templateUrl: './painel-orcamento.component.html',
   styleUrls: ['./painel-orcamento.component.css']
 })
+
 export class PainelOrcamentoComponent implements OnInit {
 
   // --- Variáveis dos Relatórios ---

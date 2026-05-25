@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './efetuar-manutencao.html',
   styleUrl: './efetuar-manutencao.css',
 })
+
 export class EfetuarManutencao {
   @Input() solicitacao: any;
   @Output() realizarManutencao = new EventEmitter<any>();

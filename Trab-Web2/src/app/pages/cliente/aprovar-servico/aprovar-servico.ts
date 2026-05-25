@@ -6,6 +6,7 @@ import { Component, input, Input } from '@angular/core';
   templateUrl: './aprovar-servico.html',
   styleUrl: './aprovar-servico.css',
 })
+
 export class AprovarServico {
   @Input() valor : string = "";
 }
