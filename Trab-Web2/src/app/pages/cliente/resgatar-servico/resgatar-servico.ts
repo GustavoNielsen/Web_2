@@ -32,7 +32,6 @@ export class ResgatarServico {
       }]
     };
 
-    this.atualizado.emit(dadosResgate); 
-    this.fechar.emit();
+    this.atualizado.emit(dadosResgate);
   }
 }

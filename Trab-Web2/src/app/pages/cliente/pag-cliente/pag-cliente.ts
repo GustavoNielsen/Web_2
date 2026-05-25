@@ -1,21 +1,24 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { combineLatest } from 'rxjs';
 import { VisualizarServico } from '../visualizar-servico/visualizar-servico';
 import { MostrarServico } from '../mostrar-servico/mostrar-servico';
 import { ResgatarServico } from '../resgatar-servico/resgatar-servico';
+import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
 import { PagarServico } from '../pagar-servico/pagar-servico';
 import { Solicitacao } from '../../../shared/models/solicitacao.model';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 type ColunaOrdenacao = 'dataHora' | 'descricaoEquipamento' | 'estado';
-type ModalCliente = 'visualizar' | 'orcamento' | 'rejeitar' | 'pagamento' | null;
+type ModalCliente = 'visualizar' | 'orcamento' | 'rejeitar' | 'resgatar' | 'pagamento' | null;
+type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
 
 @Component({
   selector: 'app-pag-cliente',
   standalone: true,
-  imports: [CommonModule, RouterModule, VisualizarServico, MostrarServico, ResgatarServico, PagarServico, StatusFormatPipe],
+  imports: [CommonModule, RouterModule, VisualizarServico, MostrarServico, ResgatarServico, RejeitarServico, PagarServico, StatusFormatPipe],
   templateUrl: './pag-cliente.html',
   styleUrl: './pag-cliente.css',
 })
@@ -27,76 +30,135 @@ export class PagCliente implements OnInit {
   
 
 
-  modal: string = '';
-  solicitacaoSelecionada: any = null;
+  modal: ModalCliente = null;
+  solicitacaoSelecionada: Solicitacao | null = null;
   colunaOrdenacao: ColunaOrdenacao | '' = '';
   direcaoOrdenacao: 'asc' | 'desc' = 'asc';
 
   solicitacoes: Solicitacao[] = [];
 
   ngOnInit(): void {
-    this.solicitacoes = this.solicitacaoService.listarTodos().sort((a, b) => 
-      new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
-    );
+    this.carregarSolicitacoes();
 
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
+  combineLatest([
+    this.route.paramMap,
+    this.route.data,
+  ]).subscribe(([params, data]) => {
+    const id = Number(params.get('id'));
+    const modal = data['modal'] as ModalCliente;
 
-      if (id) {
-        this.abrirModalVisualizarPorId(id);
-      }
+    this.atualizarModalPelaRota(id, modal);
     });
   }
 
-  openModal(modal: string) {
-    this.modal = modal;
-  }
 
-  abrirModalVisualizarPorId(id: number): void {
-    this.solicitacaoSelecionada = this.solicitacoes.find(s => s.id === id);
+  
+private atualizarModalPelaRota(id: number, modal: ModalCliente): void {
+  this.modal = null;
+  this.solicitacaoSelecionada = null;
 
-    if (!this.solicitacaoSelecionada) {
-      alert('Solicitação não encontrada.');
-      this.router.navigate(['/cliente/home']);
-      return;
-    }
-
-    this.modal = 'visualizar';
-  }
-
-  visualizarServico(id: number, modal: string) {
-    this.solicitacaoSelecionada = this.solicitacoes.find(s => s.id === id);
-    this.openModal(modal);
-  }
-
-  abrirAcao(modal: string) {
-    this.closeModal();
-    this.openModal(modal);
-  }
-
-  atualizarSolicitacao(evento: any) {
-      if (!evento) {
-    this.closeModal();
+  if (!modal) {
     return;
   }
 
-    const index = this.solicitacoes.findIndex(s => s.id === evento.id);
+  if (!id) {
+    this.router.navigate(['/cliente/home']);
+    return;
+  }
 
-     if (index !== -1) {
+  const solicitacao = this.solicitacoes.find(
+    s => Number(s.id) === Number(id)
+  );
+
+  if (!solicitacao) {
+    alert('Solicitação não encontrada.');
+    this.router.navigate(['/cliente/home']);
+    return;
+  }
+
+  this.solicitacaoSelecionada = solicitacao;
+  this.modal = modal;
+}
+
+abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visualizarserviço
+  if (!this.solicitacaoSelecionada) {
+    return;
+  }
+
+  if (acao === 'orcamento') {
+    this.irParaOrcamento(this.solicitacaoSelecionada);
+    return;
+  }
+
+  if (acao === 'resgatar') {
+    this.irParaResgatar(this.solicitacaoSelecionada);
+    return;
+  }
+
+  if (acao === 'pagamento') {
+    this.irParaPagamento(this.solicitacaoSelecionada);
+  }
+}
+  private carregarSolicitacoes(): void {
+  this.solicitacoes = this.solicitacaoService
+    .listarTodos()
+    .sort((a, b) =>
+      new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
+    );
+}
+
+  atualizarSolicitacao(evento: Partial<Solicitacao> & { id: number }): void {
+  if (!evento) {
+    this.fecharModal();
+    return;
+  }
+
+  const index = this.solicitacoes.findIndex(
+    s => Number(s.id) === Number(evento.id)
+  );
+
+  if (index !== -1) {
     this.solicitacoes[index] = {
       ...this.solicitacoes[index],
       ...evento,
       historico: [
         ...(this.solicitacoes[index].historico || []),
-        ...(evento.historico || [])
-      ]
+        ...((evento as any).historico || []),
+      ],
     };
 
-      this.solicitacaoService.atualizar(this.solicitacoes[index]);
-    }
-
-    this.closeModal();
+    this.solicitacaoService.atualizar(this.solicitacoes[index]);
   }
+
+  this.fecharModal();
+}
+
+ irParaVisualizar(solicitacao: Solicitacao): void {
+  this.router.navigate(['/cliente/servico', solicitacao.id]);
+}
+
+irParaOrcamento(solicitacao: Solicitacao): void {
+  this.router.navigate(['/cliente/orcamento', solicitacao.id]);
+}
+
+irParaRejeitar(solicitacao: Solicitacao): void {
+  this.router.navigate(['/cliente/rejeitar', solicitacao.id]);
+}
+
+irParaResgatar(solicitacao: Solicitacao): void {
+  this.router.navigate(['/cliente/resgatar', solicitacao.id]);
+}
+
+irParaPagamento(solicitacao: Solicitacao): void {
+  this.router.navigate(['/cliente/pagamento', solicitacao.id]);
+}
+
+fecharModal(): void {
+  this.modal = null;
+  this.solicitacaoSelecionada = null;
+  this.router.navigate(['/cliente/home']);
+}
+
 
   ordenarPor(coluna: ColunaOrdenacao) {
     if (this.colunaOrdenacao === coluna) {
@@ -121,9 +183,5 @@ export class PagCliente implements OnInit {
     });
   }
 
-  closeModal(): void {
-    this.modal = '';
-  this.solicitacaoSelecionada = null;
-  this.router.navigate(['/cliente/home']);
-  }
+  
 }

@@ -1,63 +1,53 @@
 import { Component, Output, EventEmitter, Input } from '@angular/core';
-import { AprovarServico } from '../aprovar-servico/aprovar-servico';
-import { RejeitarServico } from '../rejeitar-servico/rejeitar-servico';
+import { CommonModule } from '@angular/common';
+import { Solicitacao } from '../../../shared/models/solicitacao.model';
 
 @Component({
   selector: 'app-mostrar-servico',
-  imports: [AprovarServico, RejeitarServico],
+  imports: [CommonModule],
   standalone: true,
   templateUrl: './mostrar-servico.html',
   styleUrl: './mostrar-servico.css',
 })
 
 export class MostrarServico {
-  estado: string = '';
+   @Input() solicitacao!: Solicitacao;
 
   @Output() fechar = new EventEmitter<void>();
   @Output() atualizado = new EventEmitter<any>();
-  @Input() solicitacao: any;
+  @Output() rejeitar = new EventEmitter<void>();
 
   get valor(): string {
-    const valor = this.solicitacao?.valorOrcamento;
+    const valor = this.solicitacao?.valorOrcamento ?? 0;
 
     return valor.toLocaleString('pt-BR', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'BRL',
     });
   }
 
-
-  voltar(){
+  voltar(): void {
     this.fechar.emit();
   }
 
-  redirecionarParaRejeicao(){
-    this.estado = "rejeitar"
+  redirecionarParaRejeicao(): void {
+    this.rejeitar.emit();
   }
 
-  aprovarServico(){
+  aprovarServico(): void {
     this.atualizado.emit({
-    id: this.solicitacao.id,
-    estado: 'APROVADA',
-    historico: [
-      {
-        data: new Date(),
-        estado: 'APROVADA',
-        funcionario: 'Cliente',
-        observacao: `Serviço aprovado no valor ${this.valor}`
-      }
-    ]
-  });
+      id: this.solicitacao.id,
+      estado: 'APROVADA',
+      historico: [
+        {
+          data: new Date(),
+          estado: 'APROVADA',
+          funcionario: 'Cliente',
+          observacao: `Serviço aprovado no valor ${this.valor}`,
+        },
+      ],
+    });
 
-  this.fechar.emit();
+    this.fechar.emit();
   }
-
-  rejeicaoAtualizada(evento: any) {
-  this.atualizado.emit(evento);
-  this.fechar.emit();
-}
-  closeModal(){
-    this.estado = ""
-  }
-
 }

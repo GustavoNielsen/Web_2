@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { TopbarUser } from './pages/topbar-user/topbar-user';
 import { PagCliente } from './pages/cliente/pag-cliente/pag-cliente';
-import { Login } from './pages/login/login'
-import { TelaAutocadastro } from './pages/tela-autocadastro/tela-autocadastro'
+import { SolicitacaoManutencao } from './pages/cliente/solicitacao-manutencao/solicitacao-manutencao';
+import { Login } from './pages/login/login';
+import { TelaAutocadastro } from './pages/tela-autocadastro/tela-autocadastro';
 
 export const routes: Routes = 
 [{
@@ -30,28 +31,33 @@ export const routes: Routes =
       component: PagCliente,
     },
     {
+      path: 'servico/:id',
+      component: PagCliente,
+      data: { modal: 'visualizar' },
+    },
+    {
       path: 'orcamento/:id',
       component: PagCliente,
+      data: { modal: 'orcamento' },
     },
     {
       path: 'rejeitar/:id',
       component: PagCliente,
+      data: { modal: 'rejeitar' },
+    },
+    {
+      path: 'resgatar/:id',
+      component: PagCliente,
+      data: { modal: 'resgatar' },
     },
     {
       path: 'pagamento/:id',
       component: PagCliente,
-    },
-    {
-      path: 'servico/:id', // Para visualizar serviço com pag-cliente atras
-      loadComponent: () =>
-        import('./pages/cliente/pag-cliente/pag-cliente')
-          .then(m => m.PagCliente)
+      data: { modal: 'pagamento' },
     },
     {
       path: 'solicitacao',
-      loadComponent: () =>
-        import('./pages/cliente/solicitacao-manutencao/solicitacao-manutencao')
-          .then(m => m.SolicitacaoManutencao),
+      component: SolicitacaoManutencao,
     },
 
 
