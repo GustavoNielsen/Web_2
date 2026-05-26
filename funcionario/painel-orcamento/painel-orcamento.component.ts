@@ -1,99 +1,65 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-
-// Gerador de PDF
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { EfetuarOrcamentoComponent } from '../efetuar-orcamento/efetuar-orcamento.component';
 
 @Component({
-  selector: 'app-painel-orcamento',
+  selector: 'app-pag-funcionario',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './painel-orcamento.component.html',
-  styleUrls: ['./painel-orcamento.component.css']
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule,
+    EfetuarOrcamentoComponent
+  ], 
+  templateUrl: './pag-funcionario.component.html',
+  styleUrls: ['./pag-funcionario.component.css']
 })
-export class PainelOrcamentoComponent {
-  // --- Variáveis do Orçamento ---
-  numeroSolicitacao: number | null = null;
-  valorOrcamento: number | null = null;
-
-  // --- Variáveis dos Relatórios ---
+export class PagFuncionario implements OnInit {
+  // --- VARIÁVEIS DA TELA ---
+  nomeUsuario: string = 'Mário';
+  loading: boolean = false;
+  
+  filtro: string = 'SOLICITACOES-ABERTAS';
   dataInicio: string = '';
   dataFim: string = '';
+  dataAtual: string = new Date().toISOString().split('T')[0];
 
-  confirmarOrcamento(): void {
-    if (!this.numeroSolicitacao || !this.valorOrcamento) {
-      alert('Por favor, preencha o número da solicitação e o valor.');
-      return;
-    }
-    alert(`Sucesso! Orçamento de R$ ${this.valorOrcamento} registrado para a Solicitação #${this.numeroSolicitacao}.`);
-    this.numeroSolicitacao = null;
-    this.valorOrcamento = null;
+  solicitacaoSelecionada: any = null;
+  funcionariosDisponiveis: any[] = []; 
+
+  // --- NOVAS VARIÁVEIS DE PAGINAÇÃO ---
+  paginaAtual: number = 1;
+  itensPorPagina: number = 5;
+  totalPaginas: number = 1;
+  solicitacoesPaginadas: any[] = []; // Os itens que realmente aparecem na tela
+
+  // --- BANCO DE DADOS SIMULADO (Expandido) ---
+  todasSolicitacoes: any[] = [
+    { id: 1042, dataHora: '2026-04-27T09:00:00', nomeCliente: 'José Silva', descricaoEquipamento: 'Computador desktop não liga', estado: 'ABERTA' },
+    { id: 1043, dataHora: '2026-04-26T14:30:00', nomeCliente: 'Maria Souza', descricaoEquipamento: 'Notebook com tela quebrada', estado: 'ORÇADA' },
+    { id: 1044, dataHora: '2026-04-25T10:15:00', nomeCliente: 'Carlos Alves', descricaoEquipamento: 'Impressora falhando impressão', estado: 'APROVADA' },
+    { id: 1045, dataHora: '2026-04-24T16:45:00', nomeCliente: 'Ana Santos', descricaoEquipamento: 'Troca de bateria de Nobreak', estado: 'PAGA' },
+    { id: 1046, dataHora: '2026-04-23T11:00:00', nomeCliente: 'Roberto Costa', descricaoEquipamento: 'Teclado mecânico falhando', estado: 'FINALIZADA' },
+    { id: 1047, dataHora: '2026-04-22T08:20:00', nomeCliente: 'Fernanda Lima', descricaoEquipamento: 'Monitor sem imagem', estado: 'ABERTA' },
+    { id: 1048, dataHora: '2026-04-21T13:10:00', nomeCliente: 'Paulo Mendes', descricaoEquipamento: 'SSD não reconhece', estado: 'REDIRECIONADA' }
+  ];
+
+  solicitacoesFiltradas: any[] = [];
+
+  constructor(public CDR: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.aplicarFiltro();
   }
 
-  // --- Por Período ---
-  gerarRelatorioPeriodo(): void {
-    const doc = new jsPDF();
-    
-    // Título do Documento
-    doc.setFontSize(16);
-    doc.text('Relatório Financeiro - Receitas por Período', 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Período: ${this.dataInicio || 'Início'} até ${this.dataFim || 'Hoje'}`, 14, 28);
-
-    // Dados fictícios simulando o retorno do Banco de Dados - MUDAR DEPOIS 
-    const dadosFicticios = [
-      ['01/04/2026', 'Manutenção Notebook', 'R$ 250,00'],
-      ['02/04/2026', 'Troca de Tela', 'R$ 600,00'],
-      ['03/04/2026', 'Formatação', 'R$ 120,00'],
-      ['05/04/2026', 'Limpeza Interna', 'R$ 150,00'],
-    ];
-    
-
-    // Gerando a Tabela
-    autoTable(doc, {
-      startY: 35,
-      head: [['Data', 'Serviço Agrupado', 'Valor Arrecadado']],
-      body: dadosFicticios,
-      theme: 'striped',
-      headStyles: { fillColor: [13, 110, 253] } // Cor azul do Bootstrap
-    });
-
-    // Download do arquivo
-    doc.save('relatorio-periodo.pdf');
-  }
-
-  // --- GERAÇÃO DE PDF: Por Categoria ---
-  gerarRelatorioCategoria(): void {
-    const doc = new jsPDF();
-    
-    // Título do Documento
-    doc.setFontSize(16);
-    doc.text('Relatório Financeiro - Receitas por Categoria', 14, 20);
-    doc.setFontSize(10);
-    doc.text('Histórico completo consolidado.', 14, 28);
-
-    // Dados fictícios 
-    const dadosFicticios = [
-      ['Notebook', '15', 'R$ 3.500,00'],
-      ['Desktop', '8', 'R$ 1.200,00'],
-      ['Impressora', '5', 'R$ 450,00'],
-      ['Mouse / Teclado', '12', 'R$ 360,00'],
-    ];
-
-    // Gera a Tabela
-    autoTable(doc, {
-      startY: 35,
-      head: [['Categoria de Equipamento', 'Qtd. Serviços', 'Receita Total']],
-      body: dadosFicticios,
-      theme: 'striped',
-      headStyles: { fillColor: [25, 135, 84] } // Cor verde do Bootstrap para diferenciar
-    })
-      
-      setFiltro(novoFiltro: string): void {
+  // ==========================================
+  // FUNÇÕES DE FILTRO E PAGINAÇÃO (+30 linhas)
+  // ==========================================
+  
+  setFiltro(novoFiltro: string): void {
     this.filtro = novoFiltro;
     this.paginaAtual = 1; // Reseta a página ao mudar o filtro
     this.aplicarFiltro();
@@ -129,9 +95,87 @@ export class PainelOrcamentoComponent {
       this.paginaAtual = novaPagina;
       this.atualizarPaginacao();
     }
-  };
+  }
 
-    // Faz o download do arquivo
-    doc.save('relatorio-categorias.pdf');
+  // ==========================================
+  // EXPORTAÇÃO PARA CSV (EXCEL) (+25 linhas)
+  // ==========================================
+  exportarParaCSV(): void {
+    if (this.solicitacoesFiltradas.length === 0) {
+      alert('Não há dados para exportar.');
+      return;
+    }
+
+    const cabecalhos = ['ID', 'Data/Hora', 'Cliente', 'Equipamento', 'Estado'];
+    const linhas = this.solicitacoesFiltradas.map(s => 
+      `${s.id},"${s.dataHora}","${s.nomeCliente}","${s.descricaoEquipamento}","${s.estado}"`
+    );
+
+    const csvContent = [cabecalhos.join(','), ...linhas].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `relatorio_solicitacoes_${this.dataAtual}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // ==========================================
+  // FUNÇÕES VISUAIS E MODAIS
+  // ==========================================
+
+  getStatusClass(estado: string): string {
+    switch (estado) {
+      case 'ABERTA': return 'bg-warning text-dark';
+      case 'ORÇADA': return 'bg-info text-dark';
+      case 'APROVADA': return 'bg-primary text-white';
+      case 'REDIRECIONADA': return 'bg-secondary text-white';
+      case 'PAGA': return 'bg-success text-white';
+      case 'FINALIZADA': return 'bg-dark text-white';
+      default: return 'bg-light text-dark';
+    }
+  }
+
+  salvarOrcamento(dados: {id: number, valor: number}): void {
+    const index = this.todasSolicitacoes.findIndex(s => s.id === dados.id);
+    if (index !== -1) {
+      this.todasSolicitacoes[index].estado = 'ORÇADA';
+      this.todasSolicitacoes[index].valor = dados.valor;
+      this.aplicarFiltro(); 
+      alert(`Orçamento de R$ ${dados.valor} registrado!`);
+    }
+    this.solicitacaoSelecionada = null; 
+  }
+
+  efetuarManutencao(evento: any): void {
+    if (this.solicitacaoSelecionada) {
+       this.solicitacaoSelecionada.estado = 'FINALIZADA'; 
+       this.aplicarFiltro();
+    }
+    this.solicitacaoSelecionada = null;
+  }
+
+  redirecionar(evento?: any): void {
+    if (this.solicitacaoSelecionada) {
+       this.solicitacaoSelecionada.estado = 'REDIRECIONADA';
+       this.aplicarFiltro();
+    }
+    this.solicitacaoSelecionada = null;
+  }
+
+  finalizar(): void {
+    if (this.solicitacaoSelecionada) {
+      this.solicitacaoSelecionada.estado = 'FINALIZADA';
+      this.solicitacaoSelecionada.dataHoraFinalizacao = new Date();
+      this.solicitacaoSelecionada.funcionarioFinalizacao = this.nomeUsuario;
+      this.aplicarFiltro();
+      this.CDR.detectChanges(); 
+    }
+    this.solicitacaoSelecionada = null;
   }
 }
