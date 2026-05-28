@@ -33,7 +33,6 @@ public class FuncionarioService {
         Funcionario existente = buscarPorId(id);
         existente.setNome(dadosNovos.getNome());
         existente.setEmail(dadosNovos.getEmail());
-        existente.setCargo(dadosNovos.getCargo());
         existente.setTelefone(dadosNovos.getTelefone());
         return funcionarioRepository.save(existente);
     }
@@ -43,9 +42,6 @@ public class FuncionarioService {
         funcionarioRepository.deleteById(id);
     }
 
-    public List<Funcionario> buscarPorCargo(String cargo) {
-        return funcionarioRepository.findByCargo(cargo);
-    }
 
     private void validarFuncionario(Funcionario funcionario) {
         if (funcionario.getNome() == null || funcionario.getNome().isBlank()) {
@@ -53,9 +49,6 @@ public class FuncionarioService {
         }
         if (funcionario.getEmail() == null || !funcionario.getEmail().contains("@")) {
             throw new IllegalArgumentException("Email inválido");
-        }
-        if (funcionario.getCargo() == null || funcionario.getCargo().isBlank()) {
-            throw new IllegalArgumentException("Cargo é obrigatório");
         }
     }
 }
