@@ -11,7 +11,7 @@ public class Cliente extends Usuario {
     @Column
     private String telefone;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "endereco_id", nullable = false)
     private Endereco endereco;
 

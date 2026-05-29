@@ -1,22 +1,47 @@
 package com.web2.Back.service;
 import com.web2.Back.dto.RegisterClienteDTO;
 import com.web2.Back.repository.UsuarioRepository;
+import com.web2.Back.repository.ClienteRepository;
 import org.springframework.stereotype.Service;
+import com.web2.Back.model.Endereco;
+import com.web2.Back.model.Cliente;
 
 @Service
 public class RegisterClienteService {
 
     private final UsuarioRepository usuarioRepository;
+    private final ClienteRepository clienteRepository;
 
     public RegisterClienteService(
-            UsuarioRepository usuarioRepository
+            UsuarioRepository usuarioRepository,
+            ClienteRepository clienteRepository
     ){
         this.usuarioRepository = usuarioRepository;
+        this.clienteRepository = clienteRepository;
     }
 
     public void registrar(RegisterClienteDTO dto){
+
         validar(dto);
-        // adicionar no banco
+        System.out.println("Está executando oq n deveria");
+        Endereco endereco = new Endereco();
+        endereco.setCep(dto.cep());
+        endereco.setRua(dto.logradouro());
+        endereco.setNumero(dto.numero());
+        endereco.setBairro(dto.bairro());
+        endereco.setCidade(dto.cidade());
+        endereco.setEstado(dto.uf());
+        endereco.setComplemento(dto.complemento());
+
+        Cliente cliente = new Cliente(
+                dto.cpf(),
+                dto.nome(),
+                dto.email(),
+                dto.telefone(),
+                "1234", // mudar depois
+                endereco
+        );
+        clienteRepository.save(cliente);
 
     }
 
@@ -35,6 +60,10 @@ public class RegisterClienteService {
 
         if(!validarCEP(dto.cep())){
             throw new IllegalArgumentException("CEP invalido");
+        }
+
+        if(clienteRepository.existsByCpf(dto.cpf())){
+            throw new IllegalArgumentException("CPF ja cadastrado");
         }
 
         if(usuarioRepository.existsByEmail(dto.email())){

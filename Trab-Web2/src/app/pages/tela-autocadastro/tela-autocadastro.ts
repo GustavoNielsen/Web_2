@@ -167,6 +167,7 @@ export class TelaAutocadastro {
         console.log(response)
       },
       error: (error) => {
+        console.log(error)
         this.loading = false;
         this.erroRegistro = error.error || 'Erro ao registrar. Tente novamente.';
       }
