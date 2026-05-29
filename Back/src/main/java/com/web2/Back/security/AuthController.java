@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @PostMapping("/registrar")
-    public ResponseEntity<Void> userRegister(@RequestBody RegisterClienteDTO dto) {
+    public ResponseEntity<?> userRegister(@RequestBody RegisterClienteDTO dto) {
         try {
             registerClienteService.registrar(dto);
             return ResponseEntity
@@ -41,7 +41,7 @@ public class AuthController {
 
             return ResponseEntity
                     .badRequest()
-                    .build();
+                    .body(e.getMessage());
         }
     }
 }

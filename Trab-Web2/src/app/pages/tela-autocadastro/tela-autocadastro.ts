@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
+import { AuthService } from '../../services/auth.service';
 
 // ── Validator CPF ──────────────────────────────────────
 function cpfValidator(control: AbstractControl): ValidationErrors | null {
@@ -35,8 +36,9 @@ export class TelaAutocadastro {
   cadastroRealizado = false;
   buscandoCEP = false;
   erroCEP = '';
+  erroRegistro = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private router: Router) {
     this.form = this.fb.group({
       nome:        ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[A-Za-zÀ-ÿ\s]+$/)]],
       cpf:         ['', [Validators.required, cpfValidator]],
@@ -141,12 +143,37 @@ export class TelaAutocadastro {
 
   // ── Submit ────────────────────────────────────────────
   onSubmit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    
     this.loading = true;
-    // TODO: chamar o serviço real de cadastro
-      this.loading = false;
-      this.cadastroRealizado = true;
+    this.erroRegistro = '';
+
+    const dados = {
+      nome: this.form.get('nome')?.value,
+      cpf: (this.form.get('cpf')?.value ?? '').replace(/\D/g, ''),
+      email: this.form.get('email')?.value,
+      telefone: this.form.get('telefone')?.value,
+      cep: this.form.get('cep')?.value,
+      numero: this.form.get('numero')?.value,
+      logradouro: this.form.get('logradouro')?.value,
+      complemento: this.form.get('complemento')?.value,
+      bairro: this.form.get('bairro')?.value,
+      cidade: this.form.get('cidade')?.value,
+      uf: this.form.get('estado')?.value
+    };
+    this.authService.registrar(dados).subscribe({
+      next: (response) => {
+        this.loading = false;
+        this.cadastroRealizado = true;
+        console.log(response)
+      },
+      error: (error) => {
+        this.loading = false;
+        this.erroRegistro = error.error || 'Erro ao registrar. Tente novamente.';
+      }
+    });
   }
 
-  irParaLogin() {}
+  irParaLogin() {
+    this.router.navigate(['/login']);
+  }
 }
