@@ -25,22 +25,20 @@ public class Solicitacao {
     private String descricaoDefeito;
 
     @Column(nullable = false)
-    private String estado;
-
-    @Column(nullable = false)
     private LocalDateTime dataCriacao;
 
     @Column
     private Double valorOrcado;
 
-    @Column
-    private LocalDateTime dataOrcamento;
-
-    @ManyToOne
-    @JoinColumn(name = "funcionario_orcamento_id")
-    private Funcionario funcionarioOrcamento;
-
     public Solicitacao() {}
+
+    public Solicitacao(Cliente cliente, String descricaoEquipamento, CategoriaEquipamentos categoria, String descricaoDefeito) {
+        this.cliente = cliente;
+        this.descricaoEquipamento = descricaoEquipamento;
+        this.categoria = categoria;
+        this.descricaoDefeito = descricaoDefeito;
+        this.dataCriacao = LocalDateTime.now();
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -52,6 +50,8 @@ public class Solicitacao {
     public void setCategoria(CategoriaEquipamentos categoria) { this.categoria = categoria; }
     public String getDescricaoDefeito() { return descricaoDefeito; }
     public void setDescricaoDefeito(String descricaoDefeito) { this.descricaoDefeito = descricaoDefeito; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public LocalDateTime getDataCriacao() { return dataCriacao; }
+    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
+    public Double getValorOrcado() { return valorOrcado; }
+    public void setValorOrcado(Double valorOrcado) { this.valorOrcado = valorOrcado; }
 }

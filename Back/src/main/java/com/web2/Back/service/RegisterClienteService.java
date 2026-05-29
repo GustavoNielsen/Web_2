@@ -1,11 +1,18 @@
 package com.web2.Back.service;
 import com.web2.Back.dto.RegisterClienteDTO;
-
+import com.web2.Back.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RegisterClienteService {
 
+    private final UsuarioRepository usuarioRepository;
+
+    public RegisterClienteService(
+            UsuarioRepository usuarioRepository
+    ){
+        this.usuarioRepository = usuarioRepository;
+    }
 
     public void registrar(RegisterClienteDTO dto){
         validar(dto);
@@ -30,8 +37,9 @@ public class RegisterClienteService {
             throw new IllegalArgumentException("CEP invalido");
         }
 
-
-        //validar se já existe user com aquele email;
+        if(usuarioRepository.existsByEmail(dto.email())){
+            throw new IllegalArgumentException("Email ja cadastrado");
+        }
 
 
     }

@@ -15,30 +15,25 @@ public class HistoricoSolicitacao {
     private Solicitacao solicitacao;
 
     @Column(nullable = false)
-    private String estadoAnterior;
+    private String status;
 
     @Column(nullable = false)
-    private String estadoNovo;
-
-    @Column(nullable = false)
-    private LocalDateTime dataAlteracao;
-
-    @ManyToOne
-    @JoinColumn(name = "funcionario_id")
-    private Funcionario funcionario;
+    private LocalDateTime data;
 
     public HistoricoSolicitacao() {}
+
+    public HistoricoSolicitacao(Solicitacao solicitacao, String status) {
+        this.solicitacao = solicitacao;
+        this.status = status;
+        this.data = LocalDateTime.now();
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Solicitacao getSolicitacao() { return solicitacao; }
     public void setSolicitacao(Solicitacao solicitacao) { this.solicitacao = solicitacao; }
-    public String getEstadoAnterior() { return estadoAnterior; }
-    public void setEstadoAnterior(String estadoAnterior) { this.estadoAnterior = estadoAnterior; }
-    public String getEstadoNovo() { return estadoNovo; }
-    public void setEstadoNovo(String estadoNovo) { this.estadoNovo = estadoNovo; }
-    public LocalDateTime getDataAlteracao() { return dataAlteracao; }
-    public void setDataAlteracao(LocalDateTime dataAlteracao) { this.dataAlteracao = dataAlteracao; }
-    public Funcionario getFuncionario() { return funcionario; }
-    public void setFuncionario(Funcionario funcionario) { this.funcionario = funcionario; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getData() { return data; }
+    public void setData(LocalDateTime data) { this.data = data; }
 }
