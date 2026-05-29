@@ -27,8 +27,8 @@ public class AuthService {
     }
 
     public LoginResponseDTO login(LoginDTO loginDTO) {
-        String email = loginDTO.getEmail();
-        String senha = loginDTO.getPassword();
+        String email = loginDTO.email();
+        String senha = loginDTO.password();
 
         // Tentar encontrar como cliente
         Optional<Cliente> cliente = clienteRepository.findByEmail(email);
