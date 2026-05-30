@@ -19,17 +19,19 @@ public class AuthService {
     private final JwtService jwtService;
     private final SenhaService senhaService;
 
-    public AuthService(ClienteRepository clienteRepository,
-                       FuncionarioRepository funcionarioRepository,
-                       JwtService jwtService,
-                       SenhaService senhaService) {
+    public AuthService(
+            ClienteRepository clienteRepository,
+            FuncionarioRepository funcionarioRepository,
+            JwtService jwtService,
+            SenhaService senhaService
+    ) {
         this.clienteRepository = clienteRepository;
         this.funcionarioRepository = funcionarioRepository;
         this.jwtService = jwtService;
         this.senhaService = senhaService;
     }
 
-    public LoginResponseDTO login(LoginDTO loginDTO) {
+    public String login(LoginDTO loginDTO) {
 
         String email = loginDTO.email().trim();
         String senha = loginDTO.password().trim();
@@ -42,11 +44,8 @@ public class AuthService {
 
             if (validarSenha(senha, c.getSenha(), c.getSalt())) {
 
-                String token = jwtService.gerarToken(c.getId(), "C");
-
-                return new LoginResponseDTO(
-                        token,
-                        c.getNome(),
+                return jwtService.gerarToken(
+                        c.getId(),
                         "C"
                 );
             }
@@ -61,17 +60,46 @@ public class AuthService {
 
             if (validarSenha(senha, f.getSenha(), f.getSalt())) {
 
-                String token = jwtService.gerarToken(f.getId(), "F");
-
-                return new LoginResponseDTO(
-                        token,
-                        f.getNome(),
+                return jwtService.gerarToken(
+                        f.getId(),
                         "F"
                 );
             }
         }
 
         throw new RuntimeException("Email ou senha inválidos");
+    }
+
+    public LoginResponseDTO getResponseDTO(LoginDTO loginDTO) {
+
+        String email = loginDTO.email().trim();
+
+        Optional<Cliente> cliente = clienteRepository.findByEmail(email);
+
+        if (cliente.isPresent()) {
+
+            Cliente c = cliente.get();
+
+            return new LoginResponseDTO(
+                    c.getNome(),
+                    "C"
+            );
+        }
+
+        Optional<Funcionario> funcionario =
+                funcionarioRepository.findByEmail(email);
+
+        if (funcionario.isPresent()) {
+
+            Funcionario f = funcionario.get();
+
+            return new LoginResponseDTO(
+                    f.getNome(),
+                    "F"
+            );
+        }
+
+        throw new RuntimeException("Usuário não encontrado");
     }
 
     private boolean validarSenha(

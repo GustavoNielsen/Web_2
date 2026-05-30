@@ -41,11 +41,9 @@ export class Login {
 
         console.log(response);
 
-        localStorage.setItem('token', response.token);
 
-
-        localStorage.setItem('nome', response.nome);
-        localStorage.setItem('tipo', response.tipo);
+        localStorage.setItem('username', response.nome);
+        localStorage.setItem('cargo', response.tipo);
 
         if (response.cargo === 'C') {
           this.router.navigate(['/cliente/home']);
