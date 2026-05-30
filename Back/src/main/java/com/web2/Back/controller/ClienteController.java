@@ -1,5 +1,6 @@
 package com.web2.Back.controller;
 
+import com.web2.Back.dto.AberturaSolicitacaoDTO;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.service.ClienteService;
 
@@ -19,6 +20,12 @@ public class ClienteController {
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }
+
+
+//    @PostMapping("/abrirsolicitacao")
+//    public ResponseEntity<?> novaSolicitacao(@RequestBody AberturaSolicitacaoDTO dto){
+//
+//    }
 
     // 🔹 Listar todos os clientes
     @GetMapping
