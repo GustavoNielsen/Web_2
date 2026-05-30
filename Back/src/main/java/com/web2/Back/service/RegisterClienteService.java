@@ -31,7 +31,6 @@ public class RegisterClienteService {
     public void registrar(RegisterClienteDTO dto){
 
         validar(dto);
-        System.out.println("Está executando oq n deveria");
         Endereco endereco = new Endereco();
         endereco.setCep(dto.cep());
         endereco.setRua(dto.logradouro());
@@ -56,7 +55,6 @@ public class RegisterClienteService {
         cliente.setSalt(salt);
         clienteRepository.save(cliente);
         emailService.enviarSenha(dto.email(), senhaPlano);
-
     }
 
     private void validar(RegisterClienteDTO dto){

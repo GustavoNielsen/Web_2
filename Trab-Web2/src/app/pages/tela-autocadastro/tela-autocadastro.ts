@@ -165,6 +165,7 @@ export class TelaAutocadastro {
         this.loading = false;
         this.cadastroRealizado = true;
         console.log(response)
+        this.irParaLogin()
       },
       error: (error) => {
         console.log(error)
@@ -175,6 +176,6 @@ export class TelaAutocadastro {
   }
 
   irParaLogin() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 }
