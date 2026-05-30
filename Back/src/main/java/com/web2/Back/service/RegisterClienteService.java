@@ -6,18 +6,26 @@ import org.springframework.stereotype.Service;
 import com.web2.Back.model.Endereco;
 import com.web2.Back.model.Cliente;
 
+
 @Service
 public class RegisterClienteService {
 
     private final UsuarioRepository usuarioRepository;
     private final ClienteRepository clienteRepository;
+    private final SenhaService senhaService;
+    private final EmailService emailService;
 
     public RegisterClienteService(
             UsuarioRepository usuarioRepository,
-            ClienteRepository clienteRepository
+            ClienteRepository clienteRepository,
+            SenhaService senhaService,
+            EmailService emailService
+
     ){
         this.usuarioRepository = usuarioRepository;
         this.clienteRepository = clienteRepository;
+        this.senhaService = senhaService;
+        this.emailService = emailService;
     }
 
     public void registrar(RegisterClienteDTO dto){
@@ -33,15 +41,21 @@ public class RegisterClienteService {
         endereco.setEstado(dto.uf());
         endereco.setComplemento(dto.complemento());
 
+        String senhaPlano = senhaService.gerarSenhaAleatoria();
+        String salt = senhaService.gerarSalt();
+        String hash = senhaService.hashSenha(senhaPlano, salt);
+
         Cliente cliente = new Cliente(
                 dto.cpf(),
                 dto.nome(),
                 dto.email(),
                 dto.telefone(),
-                "1234", // mudar depois
+                hash,
                 endereco
         );
+        cliente.setSalt(salt);
         clienteRepository.save(cliente);
+        emailService.enviarSenha(dto.email(), senhaPlano);
 
     }
 
