@@ -11,57 +11,82 @@
 
           <div class="card-header bg-primary text-white text-center py-3">
             <h2 class="mb-0 h4 fw-bold">
-  Pagamento de Serviço - Ordem de Serviço #{{ solicitacao?.id }}
-</h2>
+              Pagamento de Serviço - Ordem de Serviço #{{ idSolicitacao || solicitacao?.id }}
+            </h2>
+          </div>
 
           <div class="card-body bg-light p-4">
-            <p class="text-dark mb-4">
-              Revise as informações abaixo para confirmar o pagamento do serviço.
-            </p>
 
-            <div class="table-responsive">
-              <table class="table border">
-                <thead class="table-secondary">
-                  <tr>
-                    <th class="w-25">Descrição</th>
-                    <th>Detalhes Técnicos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                 <tr>
-  <td class="fw-bold">Equipamento:</td>
-  <td>{{ solicitacao?.descricaoEquipamento }}</td>
-</tr>
-                  <tr>
-  <td class="fw-bold">Categoria:</td>
-  <td>{{ solicitacao?.descricaoManutencao || solicitacao?.descricaoDefeito }}</td>
-</tr>
-                  <tr>
-  <td class="fw-bold">Status Atual:</td>
-  <td>
-    <span class="badge bg-primary">{{ solicitacao?.estado | statusFormat }}</span>
-  </td>
-</tr>
-                  <tr class="table-info">
-  <td class="fw-bold h5">VALOR TOTAL:</td>
-  <td class="fw-bold h4 text-success">
-    {{ (solicitacao?.valorOrcamento) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
-  </td>
-</tr>
-                </tbody>
-              </table>
+            <div *ngIf="loading" class="text-center py-4">
+              <div class="spinner-border text-primary"></div>
+              <p class="mt-2 text-secondary mb-0">Carregando dados do pagamento...</p>
             </div>
 
-            <div class="alert alert-primary mt-4 mb-0" role="alert">
-              Ao confirmar, o serviço será marcado como <strong>PAGO</strong>.
+            <div *ngIf="erroCarregamento" class="alert alert-danger">
+              {{ erroCarregamento }}
             </div>
+
+            <ng-container *ngIf="!loading && !erroCarregamento">
+
+              <p class="text-dark mb-4">
+                Revise as informações abaixo para confirmar o pagamento do serviço.
+              </p>
+
+              <div class="table-responsive">
+                <table class="table border">
+                  <thead class="table-secondary">
+                    <tr>
+                      <th class="w-25">Descrição</th>
+                      <th>Detalhes Técnicos</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold">Equipamento:</td>
+                      <td>{{ pagamento?.descricaoEquipamento }}</td>
+                    </tr>
+
+                    <tr>
+                      <td class="fw-bold">Categoria:</td>
+                      <td>{{ pagamento?.categoria }}</td>
+                    </tr>
+
+                    <tr>
+                      <td class="fw-bold">Status Atual:</td>
+                      <td>
+                        <span class="badge bg-primary">
+                          {{ pagamento?.status | statusFormat }}
+                        </span>
+                      </td>
+                    </tr>
+
+                    <tr class="table-info">
+                      <td class="fw-bold h5">VALOR TOTAL:</td>
+                      <td class="fw-bold h4 text-success">
+                        {{ valor }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="alert alert-primary mt-4 mb-0" role="alert">
+                Ao confirmar, o serviço será marcado como <strong>PAGO</strong>.
+              </div>
+
+            </ng-container>
           </div>
 
           <div class="card-footer bg-white d-flex justify-content-end gap-2 py-3">
             <button class="btn btn-outline-secondary px-4" (click)="voltar()">
               Cancelar
             </button>
-            <button class="btn btn-success px-4 fw-bold" (click)="confirmarPagamento()">
+
+            <button
+              class="btn btn-success px-4 fw-bold"
+              [disabled]="loading || !!erroCarregamento"
+              (click)="confirmarPagamento()">
               Confirmar Pagamento
             </button>
           </div>

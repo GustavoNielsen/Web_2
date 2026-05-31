@@ -27,6 +27,21 @@ export interface GetOrcamentoClienteDTO {
   valor: number;
 }
 
+export interface GetPagarDTO {
+  descricaoEquipamento: string;
+  categoria: string;
+  status: string;
+  valor: number;
+}
+
+export interface GetResgateDTO {
+  idSolicitacao: number;
+  descricaoEquipamento: string;
+  defeito: string;
+  status: string;
+  valor: number;
+}
+
 export interface InformacoesSolicitacaoDTO {
   id: number;
   equipamento: string;
@@ -94,11 +109,25 @@ export class SolicitacaoService {
   }
 
   buscarOrcamentoCliente(idSolicitacao: number): Observable<GetOrcamentoClienteDTO> {
-  return this.http.get<GetOrcamentoClienteDTO>(
-    `${this.clienteBaseUrl}/orcamento/${idSolicitacao}`,
-    { withCredentials: true }
-  );
-}
+    return this.http.get<GetOrcamentoClienteDTO>(
+      `${this.clienteBaseUrl}/orcamento/${idSolicitacao}`,
+      { withCredentials: true }
+    );
+  }
+
+  buscarPagamentoCliente(idSolicitacao: number): Observable<GetPagarDTO> {
+    return this.http.get<GetPagarDTO>(
+      `${this.clienteBaseUrl}/pagar/${idSolicitacao}`,
+      { withCredentials: true }
+    );
+  }
+
+  buscarResgateCliente(idSolicitacao: number): Observable<GetResgateDTO> {
+    return this.http.get<GetResgateDTO>(
+      `${this.clienteBaseUrl}/resgatar/${idSolicitacao}`,
+      { withCredentials: true }
+    );
+  }
 
   buscarInformacoesFuncionario(idSolicitacao: number): Observable<InformacoesSolicitacaoDTO> {
     return this.http.get<InformacoesSolicitacaoDTO>(
@@ -245,7 +274,7 @@ export class SolicitacaoService {
 
   obterRelatorioCategoria(): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.funcionarioBaseUrl}/relatorio/categoria`, 
+      `${this.funcionarioBaseUrl}/relatorio/categoria`,
       { withCredentials: true }
     );
   }
