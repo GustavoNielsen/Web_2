@@ -15,16 +15,27 @@ export class ListarFuncionarioComponent implements OnInit {
   funcionarios: Funcionario[] = [];
 
   ngOnInit(): void {
-    this.funcionarios = this.funcionarioService.listarTodos();
+    this.carregarFuncionarios();
    
+  }
+
+  carregarFuncionarios(): void {
+    this.funcionarioService.listarTodos().subscribe({
+      next: (data) => this.funcionarios = data,
+      error: (err) => console.error('Erro ao listar funcionários:', err)
+    });
   }
 
   remover($event: any, funcionario: Funcionario): void {
     $event.preventDefault();
     if (confirm(`Deseja realmente remover o funcionário ${funcionario.nome}?`)) {
-      this.funcionarioService.remover(funcionario.id!);
-      this.funcionarios = this.funcionarioService.listarTodos();
+      //o angular manda o DELETE e espera o sucesso para recarregar a tabela
+      this.funcionarioService.remover(funcionario.id!).subscribe({
+        next: () => this.carregarFuncionarios(),
+        error: (err) => console.error('Erro ao remover funcionário:', err)
+      });
     }
   }
+
 }
 

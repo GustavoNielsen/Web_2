@@ -16,14 +16,24 @@ export class ListarCategoriaComponent implements OnInit {
   categorias: Categoria[] = []
 
   ngOnInit(): void {
-    this.categorias = this.categoriasService.listarTodos()
-
+    this.carregarCategorias();
   }
+
+  carregarCategorias(): void {
+    this.categoriasService.listarTodos().subscribe({
+      next: (data) => this.categorias = data,
+      error: (err) => console.error('Erro ao listar categorias:', err)
+    });
+  }
+
   remover($event: any, categoria: Categoria): void {
-      $event.preventDefault();
-      if (confirm(`Deseja realmente remover a categoria ${categoria.nome}?`)) {
-        this.categoriasService.remover(categoria.id!);
-        this.categorias = this.categoriasService.listarTodos();
-      }
+    $event.preventDefault();
+    if (confirm(`Deseja realmente remover a categoria ${categoria.nome}?`)) {
+      this.categoriasService.remover(categoria.id!).subscribe({
+        next: () => this.carregarCategorias(),
+        error: (err) => console.error('Erro ao remover categoria:', err)
+      });
     }
+  }
+
 }

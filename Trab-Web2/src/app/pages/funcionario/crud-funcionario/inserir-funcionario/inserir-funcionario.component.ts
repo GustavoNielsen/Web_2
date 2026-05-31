@@ -17,8 +17,9 @@ export class InserirFuncionarioComponent {
   
   private funcionarioService = inject(FuncionarioService)
   private router = inject(Router)
-email: any;
-nasc: any;
+
+  email: any;
+  nasc: any;
 
   inserir(): void {
     if (this.formulario.form.valid) {
@@ -26,8 +27,11 @@ nasc: any;
         
         this.funcionario.nasc = new Date(this.funcionario.nasc);
       }
-      this.funcionarioService.inserir(this.funcionario);
-      this.router.navigate(["/funcionario/users"]);
+
+      this.funcionarioService.inserir(this.funcionario).subscribe({
+        next: () => this.router.navigate(["/funcionario/users"]),
+        error: (err) => console.error('Erro ao inserir funcionário:', err)
+      });
     }
   }
 }

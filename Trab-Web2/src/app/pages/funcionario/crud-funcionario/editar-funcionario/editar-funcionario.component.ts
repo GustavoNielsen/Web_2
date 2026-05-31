@@ -18,30 +18,35 @@ export class EditarFuncionarioComponent {
   private funcionarioService = inject(FuncionarioService)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-nome: any;
+
+  nome: any;
 
   ngOnInit(): void {
     let id = +this.route.snapshot.params['id'];
-  // Com o id, obtém a pessoa
-  const res = this.funcionarioService.buscarPorId(id);
-  if (res !== undefined)
-   this.funcionario = res;
-  else
-    throw new Error ("Funcionario não encontrado: id = " + id);
-}
-atualizar(): void {
-  if (this.formulario.form.valid) {
-    try {
+    
+    //busca os dados do funcionário pelo id
+    this.funcionarioService.buscarPorId(id).subscribe({
+      next: (res) => {
+        if (res) this.funcionario = res;
+        else console.error("Funcionário não encontrado: id = " + id);
+      },
+      error: (err) => console.error('Erro ao buscar funcionário:', err)
+    });
+  }
+
+  atualizar(): void {
+    if (this.formulario.form.valid) {
       if (typeof this.funcionario.nasc === 'string') {
         this.funcionario.nasc = new Date(this.funcionario.nasc);
       }
-      this.funcionarioService.atualizar(this.funcionario);
-      this.router.navigate(['/funcionario/users']);
-    } catch (error) {
-      console.error('Erro ao atualizar funcionário:', error);
+      
+      //manda as alterações para o Java e aguarda a confirmação
+      this.funcionarioService.atualizar(this.funcionario).subscribe({
+        next: () => this.router.navigate(['/funcionario/users']),
+        error: (err) => console.error('Erro ao atualizar funcionário:', err)
+      });
+    } else {
+      console.log('Formulário inválido:', this.formulario.form.errors);
     }
-  } else {
-    console.log('Formulário inválido:', this.formulario.form.errors);
   }
-}
 }
