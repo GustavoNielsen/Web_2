@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "solicitacoes")
 public class Solicitacao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,9 +30,21 @@ public class Solicitacao {
     @Column
     private Double valorOrcado;
 
-    public Solicitacao() {}
+    @Column
+    private LocalDateTime dataPagamento;
 
-    public Solicitacao(Cliente cliente, String descricaoEquipamento, String categoria, String descricaoDefeito) {
+    @OneToOne(mappedBy = "solicitacao")
+    private Manutencao manutencao;
+
+    public Solicitacao() {
+    }
+
+    public Solicitacao(
+            Cliente cliente,
+            String descricaoEquipamento,
+            String categoria,
+            String descricaoDefeito
+    ) {
         this.cliente = cliente;
         this.descricaoEquipamento = descricaoEquipamento;
         this.categoria = categoria;
@@ -39,18 +52,75 @@ public class Solicitacao {
         this.dataCriacao = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-    public String getDescricaoEquipamento() { return descricaoEquipamento; }
-    public void setDescricaoEquipamento(String descricaoEquipamento) { this.descricaoEquipamento = descricaoEquipamento; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
-    public String getDescricaoDefeito() { return descricaoDefeito; }
-    public void setDescricaoDefeito(String descricaoDefeito) { this.descricaoDefeito = descricaoDefeito; }
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
-    public Double getValorOrcado() { return valorOrcado; }
-    public void setValorOrcado(Double valorOrcado) { this.valorOrcado = valorOrcado; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getDescricaoEquipamento() {
+        return descricaoEquipamento;
+    }
+
+    public void setDescricaoEquipamento(String descricaoEquipamento) {
+        this.descricaoEquipamento = descricaoEquipamento;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getDescricaoDefeito() {
+        return descricaoDefeito;
+    }
+
+    public void setDescricaoDefeito(String descricaoDefeito) {
+        this.descricaoDefeito = descricaoDefeito;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public Double getValorOrcado() {
+        return valorOrcado;
+    }
+
+    public void setValorOrcado(Double valorOrcado) {
+        this.valorOrcado = valorOrcado;
+    }
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    public Manutencao getManutencao() {
+        return manutencao;
+    }
+
+    public void setManutencao(Manutencao manutencao) {
+        this.manutencao = manutencao;
+    }
 }
