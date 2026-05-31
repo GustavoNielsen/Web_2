@@ -22,6 +22,7 @@ export interface InformacoesSolicitacaoDTO {
   equipamento: string;
   categoria: string;
   defeito: string;
+  motivoRejeicao: string | null;
   status: string;
   dataCriacao: string;
   dataPagamento: string | null;
@@ -50,6 +51,7 @@ export class SolicitacaoService {
 
   private apiUrl = 'http://localhost:8080/solicitacoes';
   private clienteApiUrl = 'http://localhost:8080/api/clientes/solicitacoes';
+  private clienteBaseUrl = 'http://localhost:8080/api/clientes';
 
   constructor(private http: HttpClient) {}
 
@@ -74,6 +76,14 @@ export class SolicitacaoService {
    listarCategorias(): Observable<{ id: number; nome: string }[]> {
     return this.http.get<{ id: number; nome: string }[]>(
       'http://localhost:8080/api/clientes/listarcategorias',
+      { withCredentials: true }
+    );
+  }
+  
+  rejeitarSolicitacao(idSolicitacao: number, motivo: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.clienteBaseUrl}/rejeitarsolicitacao`,
+      { idSolicitacao, motivo },
       { withCredentials: true }
     );
   }

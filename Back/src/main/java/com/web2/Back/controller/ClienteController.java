@@ -68,9 +68,30 @@ public class ClienteController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/rejeitarlicitacao")
-    public ResponseEntity<?> rejeitarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+    @PutMapping({"/rejeitarsolicitacao", "/rejeitarlicitacao"})
+    public ResponseEntity<?> rejeitarOrcamento(@RequestBody RejeitarSolicitacaoDTO dto, @CookieValue("jwt") String token){
         clienteService.RejeitarOrcamentoService(dto, token);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orcamento/{id}")
+    public ResponseEntity<GetOrcamentoClienteDTO> getOrcamento(@PathVariable Long id, @CookieValue("jwt") String token){
+        GetOrcamentoClienteDTO response = clienteService.getOrcamentoClienteService(id, token);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/resgatar/{id}")
+    public ResponseEntity<GetResgateDTO> getResgate(@PathVariable Long id, @CookieValue("jwt") String token){
+        GetResgateDTO response = clienteService.getResgateService(id, token);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/resgatar")
+    public ResponseEntity<?> resgatarSolicitacao(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+        clienteService.resgatarSolicitacaoService(dto, token);
 
         return ResponseEntity.ok().build();
     }
