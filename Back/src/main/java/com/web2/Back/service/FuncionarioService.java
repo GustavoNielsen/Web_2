@@ -1,17 +1,14 @@
 package com.web2.Back.service;
 
 import com.web2.Back.dto.OrcarSolicitacaoDTO;
-import com.web2.Back.model.Funcionario;
-import com.web2.Back.repository.FuncionarioRepository;
-import com.web2.Back.repository.OrcamentoRepository;
-import com.web2.Back.repository.SolicitacaoRepository;
+import com.web2.Back.dto.RealizarManutencaoDTO;
+import com.web2.Back.model.*;
+import com.web2.Back.repository.*;
 import com.web2.Back.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import com.web2.Back.model.Solicitacao;
-import com.web2.Back.model.Orcamento;
 
 
 import java.util.List;
@@ -27,6 +24,12 @@ public class FuncionarioService {
 
     @Autowired
     private SolicitacaoRepository solicitacaoRepository;
+
+    @Autowired
+    private ManutencaoRepository manutencaoRepository;
+
+    @Autowired
+    private HistoricoSolicitacaoRepository historicoRepository;
 
 
     private final FuncionarioRepository funcionarioRepository;
@@ -73,7 +76,7 @@ public class FuncionarioService {
     }
 
 
-    public void orcar(OrcarSolicitacaoDTO dto, String token) {
+    public void Orcar(OrcarSolicitacaoDTO dto, String token) {
 
         Long userId = jwtService.extrairUserId(token);
 
@@ -111,7 +114,61 @@ public class FuncionarioService {
 
         solicitacao.setOrcamento(orcamento);
         solicitacao.setStatus("ORÇADA");
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ABERTA");
 
         solicitacaoRepository.save(solicitacao);
+
+        historicoRepository.save(historico);
+
+
+    }
+
+    public void Manutencao(RealizarManutencaoDTO dto, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        Orcamento orcamento = orcamentoRepository
+                .findBySolicitacaoId(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Orcamento não encontrado"
+                        )
+                );
+
+        if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Orcamento não pertence a esse funcionario"
+            );
+        }
+
+        Manutencao manutencao = new Manutencao(solicitacao, funcionario, dto.descricao(), dto.orientacao());
+
+        solicitacao.setStatus("ARRUMADA");
+        solicitacao.setManutencao(manutencao);
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "APROVADA");
+
+        manutencaoRepository.save(manutencao);
+        solicitacaoRepository.save(solicitacao);
+        historicoRepository.save(historico);
+
+
     }
 }

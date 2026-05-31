@@ -4,9 +4,11 @@ import com.web2.Back.dto.AberturaSolicitacaoDTO;
 import com.web2.Back.dto.AprovarRecusarDTO;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
+import com.web2.Back.model.HistoricoSolicitacao;
 import com.web2.Back.model.Solicitacao;
 import com.web2.Back.repository.CategoriaRepository;
 import com.web2.Back.repository.ClienteRepository;
+import com.web2.Back.repository.HistoricoSolicitacaoRepository;
 import com.web2.Back.repository.SolicitacaoRepository;
 import com.web2.Back.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class ClienteService {
 
     @Autowired
     private SolicitacaoRepository solicitacaoRepository;
+
+    @Autowired
+    private HistoricoSolicitacaoRepository historicoRepository;
 
     public List<Cliente> listarTodos() {
         return clienteRepository.findAll();
@@ -135,7 +140,10 @@ public class ClienteService {
         }
 
         solicitacao.setStatus("APROVADA");
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ORÇADA");
         solicitacaoRepository.save(solicitacao);
+
+        historicoRepository.save(historico);
 
     }
 
@@ -167,7 +175,10 @@ public class ClienteService {
         }
 
         solicitacao.setStatus("REJEITADA");
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ORÇADA");
         solicitacaoRepository.save(solicitacao);
+
+        historicoRepository.save(historico);
 
     }
 }
