@@ -360,6 +360,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -393,6 +394,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -421,6 +423,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -454,6 +457,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),

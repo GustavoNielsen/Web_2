@@ -138,8 +138,8 @@ export class SolicitacaoService {
   private funcionarioBaseUrl = 'http://localhost:8080/api/funcionarios';
 
   private mapPainelFuncionario(lista: any[]): Solicitacao[] {
-    return (lista || []).map((s, i) => ({
-      id: i,
+    return (lista || []).map((s) => ({
+      id: s.id,
       dataHora: new Date(s.dataCriacao),
       nomeCliente: s.cliente,
       descricaoEquipamento: s.equipamento,
