@@ -182,6 +182,14 @@ export class SolicitacaoService {
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
+
+  obterRelatorioCategoria(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.funcionarioBaseUrl}/relatorio/categoria`, 
+      { withCredentials: true }
+    );
+  }
+
   /**
   
   listarTodos(): Solicitacao[] {

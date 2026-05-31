@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 // Gerador de PDF
 import jsPDF from 'jspdf';
@@ -17,6 +18,8 @@ import autoTable from 'jspdf-autotable';
 
 export class PainelOrcamentoComponent implements OnInit {
 
+  private solicitacaoService = inject(SolicitacaoService);
+
   // --- Variáveis dos Relatórios ---
   dataInicio: string = '';
   dataFim: string = '';
@@ -28,63 +31,81 @@ export class PainelOrcamentoComponent implements OnInit {
 
   // --- Por Período ---
   gerarRelatorioPeriodo(): void {
-    const doc = new jsPDF();
+    if (!this.dataInicio || !this.dataFim) {
+      alert('Selecione o período inicial e final.');
+      return;
+    }
 
-    // Título do Documento
-    doc.setFontSize(16);
-    doc.text('Relatório Financeiro - Receitas por Período', 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Período: ${this.dataInicio || 'Início'} até ${this.dataFim || 'Hoje'}`, 14, 28);
+    this.solicitacaoService.solicitacoesPorPeriodo(this.dataInicio, this.dataFim).subscribe({
+      next: (dados: any[]) => {
+        const doc = new jsPDF();
+        
+        // Título do Documento
+        doc.setFontSize(16);
+        doc.text('Relatório Financeiro - Receitas por Período', 14, 20);
+        doc.setFontSize(10);
+        doc.text(`Período: ${this.dataInicio} até ${this.dataFim}`, 14, 28);
 
-    // Dados fictícios simulando o retorno do Banco de Dados - MUDAR DEPOIS
-    const dadosFicticios = [
-      ['01/04/2026', 'Manutenção Notebook', 'R$ 250,00'],
-      ['02/04/2026', 'Troca de Tela', 'R$ 600,00'],
-      ['03/04/2026', 'Formatação', 'R$ 120,00'],
-      ['05/04/2026', 'Limpeza Interna', 'R$ 150,00'],
-    ];
+        //mapeia os dados devolvidos
+        const linhasTabela = dados.map(item => [
+          item.dataHora ? new Date(item.dataHora).toLocaleDateString('pt-BR') : '-', 
+          item.descricaoEquipamento, 
+          item.estado
+        ]);
 
-    // Gerando a Tabela
-    autoTable(doc, {
-      startY: 35,
-      head: [['Data', 'Serviço Agrupado', 'Valor Arrecadado']],
-      body: dadosFicticios,
-      theme: 'striped',
-      headStyles: { fillColor: [13, 110, 253] } // Cor azul do Bootstrap
+        // Gerando a Tabela
+        autoTable(doc, {
+          startY: 35,
+          head: [['Data', 'Equipamento', 'Estado']],
+          body: linhasTabela,
+          theme: 'striped',
+          headStyles: { fillColor: [13, 110, 253] } // Cor azul do Bootstrap
+        });
+
+        // Download do arquivo
+        doc.save('relatorio-periodo.pdf');
+      },
+      error: (err) => {
+        console.error('Erro de comunicação com a API:', err);
+        alert('Não foi possível gerar o relatório. Verifique a conexão.');
+      }
     });
-
-    // Download do arquivo
-    doc.save('relatorio-periodo.pdf');
   }
 
-  // --- GERAÇÃO DE PDF: Por Categoria ---
+  // --- Por Categoria ---
   gerarRelatorioCategoria(): void {
-    const doc = new jsPDF();
+    this.solicitacaoService.obterRelatorioCategoria().subscribe({
+      next: (dados: any[]) => {
+        const doc = new jsPDF();
+        
+        // Título do Documento
+        doc.setFontSize(16);
+        doc.text('Relatório Financeiro - Receitas por Categoria', 14, 20);
+        doc.setFontSize(10);
+        doc.text('Histórico completo consolidado.', 14, 28);
 
-    // Título do Documento
-    doc.setFontSize(16);
-    doc.text('Relatório Financeiro - Receitas por Categoria', 14, 20);
-    doc.setFontSize(10);
-    doc.text('Histórico completo consolidado.', 14, 28);
+        const linhasTabela = dados.map(item => [
+          item.categoria || '-', 
+          item.quantidadeServicos?.toString() || '0', 
+          item.receitaTotal ? `R$ ${item.receitaTotal}` : 'R$ 0,00'
+        ]);
 
-    // Dados fictícios
-    const dadosFicticios = [
-      ['Notebook', '15', 'R$ 3.500,00'],
-      ['Desktop', '8', 'R$ 1.200,00'],
-      ['Impressora', '5', 'R$ 450,00'],
-      ['Mouse / Teclado', '12', 'R$ 360,00'],
-    ];
+        // Gera a Tabela
+        autoTable(doc, {
+          startY: 35,
+          head: [['Categoria de Equipamento', 'Qtd. Serviços', 'Receita Total']],
+          body: linhasTabela,
+          theme: 'striped',
+          headStyles: { fillColor: [25, 135, 84] } // Cor verde do Bootstrap
+        });
 
-    // Gera a Tabela
-    autoTable(doc, {
-      startY: 35,
-      head: [['Categoria de Equipamento', 'Qtd. Serviços', 'Receita Total']],
-      body: dadosFicticios,
-      theme: 'striped',
-      headStyles: { fillColor: [25, 135, 84] } // Cor verde do Bootstrap para diferenciar
+        //download do arquivo
+        doc.save('relatorio-categorias.pdf');
+      },
+      error: (err) => {
+        console.error('Erro de comunicação com a API de Relatórios:', err);
+        alert('Não foi possível gerar o relatório. Verifique a conexão.');
+      }
     });
-
-    // Faz o download do arquivo
-    doc.save('relatorio-categorias.pdf');
   }
 }
