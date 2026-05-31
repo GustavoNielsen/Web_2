@@ -1,6 +1,7 @@
 package com.web2.Back.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,13 +29,16 @@ public class Solicitacao {
     private LocalDateTime dataCriacao;
 
     @Column
-    private Double valorOrcado;
-
-    @Column
     private LocalDateTime dataPagamento;
 
     @OneToOne(mappedBy = "solicitacao")
     private Manutencao manutencao;
+
+    @OneToOne(mappedBy = "solicitacao")
+    private Orcamento orcamento;
+
+    @Column(nullable = false)
+    private String status;
 
     public Solicitacao() {
     }
@@ -43,13 +47,15 @@ public class Solicitacao {
             Cliente cliente,
             String descricaoEquipamento,
             String categoria,
-            String descricaoDefeito
+            String descricaoDefeito,
+            String status
     ) {
         this.cliente = cliente;
         this.descricaoEquipamento = descricaoEquipamento;
         this.categoria = categoria;
         this.descricaoDefeito = descricaoDefeito;
         this.dataCriacao = LocalDateTime.now();
+        this.status = status;
     }
 
     public Long getId() {
@@ -100,14 +106,6 @@ public class Solicitacao {
         this.dataCriacao = dataCriacao;
     }
 
-    public Double getValorOrcado() {
-        return valorOrcado;
-    }
-
-    public void setValorOrcado(Double valorOrcado) {
-        this.valorOrcado = valorOrcado;
-    }
-
     public LocalDateTime getDataPagamento() {
         return dataPagamento;
     }
@@ -122,5 +120,21 @@ public class Solicitacao {
 
     public void setManutencao(Manutencao manutencao) {
         this.manutencao = manutencao;
+    }
+
+    public Orcamento getOrcamento() {
+        return orcamento;
+    }
+
+    public void setOrcamento(Orcamento orcamento) {
+        this.orcamento = orcamento;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

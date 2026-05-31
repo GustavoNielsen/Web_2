@@ -1,5 +1,6 @@
 package com.web2.Back.controller;
 
+import com.web2.Back.dto.OrcarSolicitacaoDTO;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.service.FuncionarioService;
 
@@ -38,4 +39,13 @@ public class FuncionarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/orcar")
+    public ResponseEntity<?> orcarSolicitacao(@RequestBody OrcarSolicitacaoDTO dto, @CookieValue("jwt") String token) {
+
+        funcionarioService.orcar(dto, token);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

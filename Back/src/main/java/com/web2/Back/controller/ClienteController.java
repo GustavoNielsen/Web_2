@@ -1,6 +1,7 @@
 package com.web2.Back.controller;
 
 import com.web2.Back.dto.AberturaSolicitacaoDTO;
+import com.web2.Back.dto.AprovarRecusarDTO;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.Solicitacao;
@@ -42,6 +43,21 @@ public class ClienteController {
         Solicitacao solicitacao = solicitacaoService.criarSolicitacao(dto, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/aprovarsolicitacao")
+    public ResponseEntity<?> aprovarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+
+        solicitacaoService.aprovarOrcamentoService(dto, token);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/rejeitarlicitacao")
+    public ResponseEntity<?> rejeitarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+        solicitacaoService.RejeitarOrcamentoService(dto, token);
+
+        return ResponseEntity.ok().build();
     }
 
 
