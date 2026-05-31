@@ -1,50 +1,85 @@
 <div class="modal-header bg-primary text-white">
-  <h5 class="modal-title fw-bold">RESGATE DE ORÇAMENTO - OS #{{ solicitacao?.id }}</h5>
+  <h5 class="modal-title fw-bold">
+    RESGATE DE ORÇAMENTO - OS #{{ resgate?.idSolicitacao || idSolicitacao || solicitacao?.id }}
+  </h5>
   <button type="button" class="btn-close btn-close-white" (click)="cancelar()" aria-label="Close"></button>
 </div>
 
 <div class="modal-body p-4">
-  <div class="mb-4">
-    <p class="text-muted">Revise as informações abaixo para confirmar o resgate do seu equipamento.</p>
+
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary"></div>
+    <p class="mt-2 text-secondary mb-0">Carregando dados do resgate...</p>
   </div>
 
-  <div class="table-responsive border rounded shadow-sm mb-4">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
-        <tr>
-          <th class="fw-bold table-secondary ps-3 w-25">Descrição</th>
-          <th class="fw-bold table-secondary">Detalhes técnicos</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr>
-          <td class="fw-bold ps-3">Equipamento:</td>
-          <td>{{ solicitacao?.descricaoEquipamento }}</td>
-        </tr>
-
-        <tr>
-          <td class="fw-bold ps-3">Defeito:</td>
-          <td>{{ solicitacao?.descricaoDefeito }}</td>
-        </tr>
-
-        <tr class="table-primary">
-          <td class="ps-3 fw-bold">VALOR TOTAL:</td>
-          <td class="text-end pe-3 fw-bold h5 mb-0">R$ 150,00</td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngIf="erroCarregamento" class="alert alert-danger">
+    {{ erroCarregamento }}
   </div>
 
-  <div class="alert alert-info border-0 shadow-sm d-flex align-items-start">
-    <i class="bi bi-info-circle-fill me-3 fs-5"></i>
-    <div>
-      <strong>Atenção:</strong> Ao aprovar e resgatar, o status do seviço mudará para <span class="fw-bold">APROVADA</span>.
+  <ng-container *ngIf="!loading && !erroCarregamento">
+
+    <div class="mb-4">
+      <p class="text-muted">
+        Revise as informações abaixo para confirmar o resgate do seu equipamento.
+      </p>
     </div>
-  </div>
+
+    <div class="table-responsive border rounded shadow-sm mb-4">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="fw-bold table-secondary ps-3 w-25">Descrição</th>
+            <th class="fw-bold table-secondary">Detalhes técnicos</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td class="fw-bold ps-3">Equipamento:</td>
+            <td>{{ resgate?.descricaoEquipamento }}</td>
+          </tr>
+
+          <tr>
+            <td class="fw-bold ps-3">Defeito:</td>
+            <td>{{ resgate?.defeito }}</td>
+          </tr>
+
+          <tr>
+            <td class="fw-bold ps-3">Status Atual:</td>
+            <td>{{ resgate?.status }}</td>
+          </tr>
+
+          <tr class="table-primary">
+            <td class="ps-3 fw-bold">VALOR TOTAL:</td>
+            <td class="text-end pe-3 fw-bold h5 mb-0">
+              {{ valor }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="alert alert-info border-0 shadow-sm d-flex align-items-start">
+      <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+      <div>
+        <strong>Atenção:</strong> Ao aprovar e resgatar, o status do serviço mudará para
+        <span class="fw-bold">APROVADA</span>.
+      </div>
+    </div>
+
+  </ng-container>
 </div>
 
 <div class="modal-footer bg-light">
-  <button type="button" class="btn btn-outline-secondary px-4" (click)="cancelar()">Cancelar</button>
-  <button type="button" class="btn btn-primary fw-bold px-4 shadow-sm" (click)="confirmarResgate()">Aprovar e resgatar</button>
+  <button type="button" class="btn btn-outline-secondary px-4" (click)="cancelar()">
+    Cancelar
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-primary fw-bold px-4 shadow-sm"
+    [disabled]="loading || !!erroCarregamento"
+    (click)="confirmarResgate()">
+    Aprovar e resgatar
+  </button>
 </div>
