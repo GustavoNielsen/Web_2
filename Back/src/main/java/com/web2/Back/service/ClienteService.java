@@ -86,6 +86,7 @@ public class ClienteService {
                 solicitacaoRepository.findByClienteId(cliente.getId())
                         .stream()
                         .map(s -> new SolicitacaoResumoDTO(
+                                s.getId(),
                                 s.getDataCriacao(),
                                 s.getDescricaoEquipamento(),
                                 s.getStatus()

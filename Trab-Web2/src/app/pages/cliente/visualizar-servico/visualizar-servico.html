@@ -1,195 +1,174 @@
 <div class="overlay">
-
   <div class="overlay-backdrop" (click)="voltar()"></div>
 
   <div class="overlay-content">
-
-    <!-- Loading -->
-    <div class="d-flex flex-column align-items-center justify-content-center vh-50" *ngIf="loading">
+    <div class="d-flex flex-column align-items-center justify-content-center vh-50 bg-white rounded p-4" *ngIf="loading">
       <div class="spinner-border text-primary"></div>
-      <p class="mt-2 text-secondary">Carregando solicitação...</p>
+      <p class="mt-2 text-secondary">Carregando solicitacao...</p>
     </div>
 
-    <!-- Conteúdo -->
-    <div class="container py-3" *ngIf="!loading && solicitacao">
+    <div class="card shadow border-primary" *ngIf="!loading">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center gap-3">
+        <button class="btn btn-light btn-sm" type="button" (click)="voltar()">Voltar</button>
 
-      <div class="card shadow border-primary">
+        <h5 class="mb-0 fw-bold text-center">
+          Solicitacao #{{ id }}
+        </h5>
 
-        <!-- HEADER -->
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-          <button class="btn btn-light btn-sm" (click)="voltar()">Voltar</button>
-
-          <h5 class="mb-0 fw-bold">
-            Solicitação #{{ solicitacao.id }}
-          </h5>
-
-          <span class="badge text-uppercase fw-bold" [ngClass]="{
-    'bg-secondary': solicitacao.estado === 'ABERTA',
-    'bg-warning text-dark': solicitacao.estado === 'ORÇADA',
-    'bg-danger': solicitacao.estado === 'REJEITADA',
-    'bg-success': solicitacao.estado === 'APROVADA',
-    'bg-info text-dark': solicitacao.estado === 'ARRUMADA',
-    'bg-primary': solicitacao.estado === 'PAGA',
-    'bg-dark': solicitacao.estado === 'FINALIZADA'
-  }">
-            {{ solicitacao.estado | statusFormat }}
-          </span>
-        </div>
-
-        <div class="card-body">
-
-          <div class="row g-4">
-
-            <!-- ESQUERDA -->
-            <div class="col-md-6">
-
-              <!-- Equipamento -->
-              <div class="card mb-3 border">
-                <div class="card-header fw-bold">Equipamento</div>
-                <div class="card-body">
-                  <p><strong>Equipamento:</strong> {{ solicitacao.descricaoEquipamento }}</p>
-                  <p><strong>Categoria:</strong> {{ solicitacao.categoria }}</p>
-                  <p><strong>Defeito:</strong> {{ solicitacao.descricaoDefeito }}</p>
-                  <p><strong>Data:</strong> {{ solicitacao.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
-                </div>
-              </div>
-
-              <!-- Motivo da Rejeição -->
-<div class="card mb-3 border border-danger" *ngIf="solicitacao.motivoRejeicao">
-  <div class="card-header fw-bold bg-danger text-white">Motivo da Rejeição</div>
-  <div class="card-body">
-    <p class="mb-0">{{ solicitacao.motivoRejeicao }}</p>
-  </div>
-</div>
-
-              <!-- Orçamento -->
-              <div class="card mb-3 border" *ngIf="solicitacao.valorOrcamento">
-                <div class="card-header fw-bold">Orçamento</div>
-                <div class="card-body text-center">
-                  <h3 class="text-primary fw-bold">
-                    R$ {{ solicitacao.valorOrcamento | number:'1.2-2' }}
-                  </h3>
-                  <p *ngIf="solicitacao.funcionarioOrcamento">
-                    {{ solicitacao.funcionarioOrcamento }}
-                  </p>
-                </div>
-              </div>
-
-              <!-- Pagamento -->
-<div class="card mb-3 border border-success" *ngIf="solicitacao.dataPagamento">
-  <div class="card-header fw-bold bg-success text-white">Pagamento</div>
-  <div class="card-body">
-    <p class="mb-0">
-      <strong>Data do pagamento:</strong>
-      {{ solicitacao.dataPagamento | date:'dd/MM/yyyy HH:mm' }}
-    </p>
-  </div>
-</div>
-
-              <!-- Manutenção -->
-              <div class="card border" *ngIf="solicitacao.descricaoManutencao">
-                <div class="card-header fw-bold">Manutenção</div>
-                <div class="card-body">
-                  <p><strong>Descrição:</strong> {{ solicitacao.descricaoManutencao }}</p>
-                  <p><strong>Orientações:</strong> {{ solicitacao.orientacoesCliente }}</p>
-                  <p><strong>Técnico:</strong> {{ solicitacao.funcionarioManutencao }}</p>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- DIREITA -->
-            <div class="col-md-6">
-
-              <!-- Cliente -->
-              <div class="card mb-3 border">
-                <div class="card-header fw-bold">Cliente</div>
-                <div class="card-body">
-                  <p><strong>Nome:</strong> {{ solicitacao.nomeCliente }}</p>
-                  <p><strong>Email:</strong> {{ solicitacao.email}}</p>
-                  <p><strong>CPF:</strong> {{ solicitacao.cpf}}</p>
-                  <p><strong>Telefone:</strong> {{ solicitacao.telefone}}</p>
-                  <p><strong>Endereço:</strong> {{ solicitacao.endereco}}</p>
-                </div>
-              </div>
-
-              <!-- Histórico -->
-              <div class="card border">
-                <div class="card-header fw-bold">
-                  Histórico ({{ historico.length }})
-                </div>
-                <div class="card-body">
-
-                  <div *ngFor="let item of historico" class="mb-3 border-bottom pb-2">
-
-  <p class="mb-1">
-    <strong>{{ item.estado | statusFormat }}</strong>
-  </p>
-
-  <p class="mb-1" *ngIf="item.observacao">
-    {{ item.observacao }}
-  </p>
-
-  <small class="text-muted">
-    {{ item.funcionario }} - {{ item.data | date:'dd/MM/yyyy HH:mm' }}
-  </small>
-
-</div>
-
-                  <div *ngIf="historico.length === 0" class="text-muted">
-                    Nenhuma alteração registrada.
-                  </div>
-
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- AÇÕES -->
-        <div class="card-footer text-end">
-
-          <!-- CLIENTE -->
-          <ng-container *ngIf="perfil === 'CLIENTE'">
-
-            <button
-  class="btn btn-success me-2"
-  *ngIf="solicitacao.estado === 'ORÇADA'"
-  (click)="acaoCliente('orcamento')">
-  Aprovar
-</button>
-
-<button
-  class="btn btn-danger me-2"
-  *ngIf="solicitacao.estado === 'ORÇADA'"
-  (click)="acaoCliente('orcamento')">
-  Rejeitar
-</button>
-
-<button
-  class="btn btn-warning me-2"
-  *ngIf="solicitacao.estado === 'REJEITADA'"
-  (click)="acaoCliente('resgatar')">
-  Resgatar
-</button>
-
-<button
-  class="btn btn-primary"
-  *ngIf="solicitacao.estado === 'ARRUMADA'"
-  (click)="acaoCliente('pagamento')">
-  Pagar Serviço
-</button>
-
-          </ng-container>
-
-        </div>
-
+        <span
+          class="badge text-uppercase fw-bold"
+          [ngClass]="{
+            'bg-secondary': statusNormalizado === 'ABERTA',
+            'bg-warning text-dark': statusNormalizado === 'ORCADA',
+            'bg-danger': statusNormalizado === 'REJEITADA',
+            'bg-success': statusNormalizado === 'APROVADA',
+            'bg-purple': statusNormalizado === 'REDIRECIONADA',
+            'bg-info text-dark': statusNormalizado === 'ARRUMADA',
+            'bg-primary-subtle text-primary': statusNormalizado === 'PAGA',
+            'bg-dark': statusNormalizado === 'FINALIZADA'
+          }">
+          {{ status | statusFormat }}
+        </span>
       </div>
 
-    </div>
+      <div class="alert alert-warning m-3 mb-0" *ngIf="erroCarregamento">
+        {{ erroCarregamento }}
+      </div>
 
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card mb-3 border">
+              <div class="card-header fw-bold">Equipamento</div>
+              <div class="card-body">
+                <p><strong>Equipamento:</strong> {{ equipamento }}</p>
+                <p><strong>Categoria:</strong> {{ categoria }}</p>
+                <p><strong>Defeito:</strong> {{ defeito }}</p>
+                <p><strong>Data de criacao:</strong> {{ dataCriacao | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+            </div>
+
+            <div class="card mb-3 border" *ngIf="temOrcamento">
+              <div class="card-header fw-bold">Orcamento</div>
+              <div class="card-body">
+                <h3 class="text-primary fw-bold mb-2">
+                  R$ {{ valorOrcamento | number:'1.2-2' }}
+                </h3>
+                <p class="mb-1" *ngIf="dataOrcamento">
+                  <strong>Data:</strong> {{ dataOrcamento | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+                <p class="mb-0" *ngIf="funcionarioOrcamento">
+                  <strong>Funcionario:</strong> {{ funcionarioOrcamento }}
+                </p>
+              </div>
+            </div>
+
+            <div class="card mb-3 border border-success" *ngIf="dataPagamento">
+              <div class="card-header fw-bold bg-success text-white">Pagamento</div>
+              <div class="card-body">
+                <p class="mb-0">
+                  <strong>Data do pagamento:</strong>
+                  {{ dataPagamento | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="card mb-3 border border-dark" *ngIf="dataFinalizacao">
+              <div class="card-header fw-bold bg-dark text-white">Finalizacao</div>
+              <div class="card-body">
+                <p class="mb-0">
+                  <strong>Data de finalizacao:</strong>
+                  {{ dataFinalizacao | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="card border" *ngIf="temManutencao">
+              <div class="card-header fw-bold">Manutencao</div>
+              <div class="card-body">
+                <p *ngIf="manutencaoDescricao">
+                  <strong>Descricao:</strong> {{ manutencaoDescricao }}
+                </p>
+                <p *ngIf="manutencaoOrientacao">
+                  <strong>Orientacoes:</strong> {{ manutencaoOrientacao }}
+                </p>
+                <p *ngIf="dataManutencao">
+                  <strong>Data:</strong> {{ dataManutencao | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+                <p class="mb-0" *ngIf="funcionarioManutencao">
+                  <strong>Tecnico:</strong> {{ funcionarioManutencao }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card border">
+              <div class="card-header fw-bold">
+                Historico ({{ historico.length }})
+              </div>
+              <div class="card-body">
+                <div *ngFor="let item of historico" class="historico-item">
+                  <div class="d-flex justify-content-between gap-3">
+                    <strong>{{ item.status | statusFormat }}</strong>
+                    <small class="text-muted text-nowrap">
+                      {{ item.data | date:'dd/MM/yyyy HH:mm' }}
+                    </small>
+                  </div>
+
+                  <p class="mb-1" *ngIf="item.observacao">
+                    {{ item.observacao }}
+                  </p>
+
+                  <small class="text-muted" *ngIf="item.funcionario">
+                    {{ item.funcionario }}
+                  </small>
+                </div>
+
+                <div *ngIf="historico.length === 0" class="text-muted">
+                  Nenhuma alteracao registrada.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer text-end">
+        <ng-container *ngIf="perfil === 'CLIENTE'">
+          <button
+            class="btn btn-success me-2"
+            type="button"
+            *ngIf="statusNormalizado === 'ORCADA'"
+            (click)="acaoCliente('orcamento')">
+            Aprovar
+          </button>
+
+          <button
+            class="btn btn-danger me-2"
+            type="button"
+            *ngIf="statusNormalizado === 'ORCADA'"
+            (click)="acaoCliente('orcamento')">
+            Rejeitar
+          </button>
+
+          <button
+            class="btn btn-warning me-2"
+            type="button"
+            *ngIf="statusNormalizado === 'REJEITADA'"
+            (click)="acaoCliente('resgatar')">
+            Resgatar
+          </button>
+
+          <button
+            class="btn btn-primary"
+            type="button"
+            *ngIf="statusNormalizado === 'ARRUMADA'"
+            (click)="acaoCliente('pagamento')">
+            Pagar Servico
+          </button>
+        </ng-container>
+      </div>
+    </div>
   </div>
 </div>

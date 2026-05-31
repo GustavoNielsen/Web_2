@@ -1,8 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { InformacoesSolicitacaoDTO, SolicitacaoService } from '../../../services/solicitacao.service';
+import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 
 type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
 
@@ -13,125 +12,212 @@ type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
   templateUrl: './visualizar-servico.html',
   styleUrl: './visualizar-servico.css',
 })
-
-export class VisualizarServico implements OnInit {
+export class VisualizarServico implements OnChanges, OnInit {
   @Input() idSolicitacao!: number;
   @Input() solicitacao: any;
-  detalhes?: InformacoesSolicitacaoDTO;
-  loading = true;
-  perfil = 'CLIENTE'; // troque para 'CLIENTE' para testar
-  historico: any[] = [];
+
   @Output() fechar = new EventEmitter<void>();
   @Output() acao = new EventEmitter<AcaoCliente>();
   @Output() atualizado = new EventEmitter<any>();
 
+  detalhes?: InformacoesSolicitacaoDTO;
+  erroCarregamento = '';
+  historico: Array<{ status: string; data: Date; funcionario?: string; observacao?: string }> = [];
+  loading = true;
+  perfil = 'CLIENTE';
+  private idCarregado?: number;
+
   constructor(
-    private router: Router,
-    private solicitacaoService: SolicitacaoService
+    private solicitacaoService: SolicitacaoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    this.historico = this.solicitacao?.historico
-      ? [...this.solicitacao.historico]
-      : [];
+  ngOnInit(): void {
+    this.carregarDetalhes();
+  }
 
-    if (!this.idSolicitacao) {
-      this.loading = false;
-      return;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['solicitacao'] || changes['idSolicitacao']) {
+      this.historico = this.normalizarHistorico(this.solicitacao?.historico ?? []);
+      this.carregarDetalhes();
     }
+  }
 
-    this.solicitacaoService.buscarInformacoesCliente(this.idSolicitacao).subscribe({
-      next: (detalhes) => {
-        this.detalhes = detalhes;
-        this.solicitacao = {
-          ...this.solicitacao,
-          id: detalhes.id,
-          descricaoEquipamento: detalhes.equipamento,
-          categoria: detalhes.categoria,
-          descricaoDefeito: detalhes.defeito,
-          estado: detalhes.status,
-          dataHora: new Date(detalhes.dataCriacao),
-          valorOrcamento: detalhes.orcamento?.valor,
-          dataPagamento: detalhes.dataPagamento ? new Date(detalhes.dataPagamento) : undefined,
-          dataFinalizacao: detalhes.dataFinalizacao ? new Date(detalhes.dataFinalizacao) : undefined,
-          descricaoManutencao: detalhes.manutencao?.descricao,
-          orientacoesCliente: detalhes.manutencao?.orientacao,
-        };
-        this.historico = detalhes.historico.map(h => ({
-          data: new Date(h.data),
-          estado: h.status,
-          funcionario: 'Sistema',
-        }));
-        this.loading = false;
-      },
-      error: (erro) => {
-        console.error('Erro ao buscar detalhes da solicitação:', erro);
-        this.loading = false;
-      }
-    });
-}
+  get id(): number | undefined {
+    return this.detalhes?.id ?? this.solicitacao?.id;
+  }
 
-  getStatusClass(estado: string) {
-    const map: any = {
-      'ABERTA': 's-aberta', 'ORÇADA': 's-orcada', 'REJEITADA': 's-rejeitada',
-      'APROVADA': 's-aprovada', 'REDIRECIONADA': 's-redirecionada',
-      'ARRUMADA': 's-arrumada', 'PAGA': 's-paga', 'FINALIZADA': 's-finalizada',
+  get equipamento(): string {
+    return this.detalhes?.equipamento ?? this.solicitacao?.descricaoEquipamento ?? '-';
+  }
+
+  get categoria(): string {
+    return this.detalhes?.categoria ?? this.solicitacao?.categoria ?? '-';
+  }
+
+  get defeito(): string {
+    return this.detalhes?.defeito ?? this.solicitacao?.descricaoDefeito ?? '-';
+  }
+
+  get status(): string {
+    return this.detalhes?.status ?? this.solicitacao?.estado ?? '';
+  }
+
+  get statusNormalizado(): string {
+    return this.normalizarStatus(this.status);
+  }
+
+  get dataCriacao(): Date | undefined {
+    return this.converterData(this.detalhes?.dataCriacao ?? this.solicitacao?.dataHora);
+  }
+
+  get dataPagamento(): Date | undefined {
+    return this.converterData(this.detalhes?.dataPagamento ?? this.solicitacao?.dataPagamento);
+  }
+
+  get dataFinalizacao(): Date | undefined {
+    return this.converterData(this.detalhes?.dataFinalizacao ?? this.solicitacao?.dataFinalizacao);
+  }
+
+  get valorOrcamento(): number | undefined {
+    return this.detalhes?.orcamento?.valor ?? this.solicitacao?.valorOrcamento;
+  }
+
+  get dataOrcamento(): Date | undefined {
+    return this.converterData(this.detalhes?.orcamento?.dataOrcamento ?? this.solicitacao?.dataOrcamento);
+  }
+
+  get funcionarioOrcamento(): string | undefined {
+    return this.detalhes?.orcamento?.funcionario ?? this.solicitacao?.funcionarioOrcamento;
+  }
+
+  get manutencaoDescricao(): string | undefined {
+    return this.detalhes?.manutencao?.descricao ?? this.solicitacao?.descricaoManutencao;
+  }
+
+  get manutencaoOrientacao(): string | undefined {
+    return this.detalhes?.manutencao?.orientacao ?? this.solicitacao?.orientacoesCliente;
+  }
+
+  get dataManutencao(): Date | undefined {
+    return this.converterData(this.detalhes?.manutencao?.dataManutencao ?? this.solicitacao?.dataManutencao);
+  }
+
+  get funcionarioManutencao(): string | undefined {
+    return this.detalhes?.manutencao?.funcionario ?? this.solicitacao?.funcionarioManutencao;
+  }
+
+  get temOrcamento(): boolean {
+    return this.valorOrcamento !== undefined && this.valorOrcamento !== null;
+  }
+
+  get temManutencao(): boolean {
+    return !!this.manutencaoDescricao || !!this.manutencaoOrientacao;
+  }
+
+  getStatusClass(estado: string): string {
+    const map: Record<string, string> = {
+      ABERTA: 's-aberta',
+      ORCADA: 's-orcada',
+      REJEITADA: 's-rejeitada',
+      APROVADA: 's-aprovada',
+      REDIRECIONADA: 's-redirecionada',
+      ARRUMADA: 's-arrumada',
+      PAGA: 's-paga',
+      FINALIZADA: 's-finalizada',
     };
-    return map[estado] ?? '';
+
+    return map[this.normalizarStatus(estado)] ?? '';
   }
 
-  getInitials(nome: string) {
-    return nome.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('');
-  }
-
-  voltar() {
+  voltar(): void {
     this.fechar.emit();
   }
 
-  private mudar(novoEstado: string, descricao: string, responsavel?: string) {
-  const anterior = this.solicitacao.estado;
-
-  this.solicitacao.estado = novoEstado;
-
-  this.historico = [{
-    estadoAnterior: anterior,
-    estadoNovo: novoEstado,
-    descricao,
-    responsavel: responsavel ?? 'Sistema',
-    dataHora: new Date(),
-  }, ...this.historico];
-
-  // Atualiza a tabela
-  this.atualizado.emit({
-  ...this.solicitacao,
-  historico: this.historico,
-});
-}
-
-  // Ações do FUNCIONARIO
-  efetuarOrcamento() {
-    this.solicitacao = { ...this.solicitacao, valorOrcamento: 350, funcionarioOrcamento: 'Carlos Técnico', dataOrcamento: new Date() };
-    this.mudar('ORÇADA', 'Orçamento realizado.', 'Carlos Técnico');
+  acaoCliente(acao: AcaoCliente): void {
+    this.acao.emit(acao);
   }
 
-  efetuarManutencao() {
+  private carregarDetalhes(): void {
+    const id = this.idSolicitacao || this.solicitacao?.id;
+
+    if (!id) {
+      this.erroCarregamento = 'Solicitacao sem ID para buscar detalhes.';
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (this.idCarregado === id) {
+      return;
+    }
+
+    this.idCarregado = id;
+    this.erroCarregamento = '';
+    this.loading = true;
+    this.cdr.detectChanges();
+
+    this.solicitacaoService.buscarInformacoesCliente(id).subscribe({
+      next: (detalhes) => {
+        console.log('Detalhes recebidos no modal:', detalhes);
+        this.detalhes = detalhes;
+        this.aplicarDetalhes(detalhes);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar detalhes da solicitacao:', erro);
+        this.erroCarregamento = 'Nao foi possivel carregar os detalhes completos da solicitacao.';
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private aplicarDetalhes(detalhes: InformacoesSolicitacaoDTO): void {
     this.solicitacao = {
       ...this.solicitacao,
-      descricaoManutencao: 'Substituição da placa de vídeo e limpeza interna.',
-      orientacoesCliente: 'Evitar quedas. Retornar em caso de reincidência.',
-      funcionarioManutencao: 'Carlos Técnico',
-      dataManutencao: new Date(),
+      id: detalhes.id,
+      descricaoEquipamento: detalhes.equipamento,
+      categoria: detalhes.categoria,
+      descricaoDefeito: detalhes.defeito,
+      estado: detalhes.status,
+      dataHora: this.converterData(detalhes.dataCriacao),
+      valorOrcamento: detalhes.orcamento?.valor,
+      funcionarioOrcamento: detalhes.orcamento?.funcionario,
+      dataOrcamento: this.converterData(detalhes.orcamento?.dataOrcamento),
+      dataPagamento: this.converterData(detalhes.dataPagamento),
+      dataFinalizacao: this.converterData(detalhes.dataFinalizacao),
+      descricaoManutencao: detalhes.manutencao?.descricao,
+      orientacoesCliente: detalhes.manutencao?.orientacao,
+      funcionarioManutencao: detalhes.manutencao?.funcionario,
+      dataManutencao: this.converterData(detalhes.manutencao?.dataManutencao),
     };
-    this.mudar('ARRUMADA', 'Manutenção concluída.', 'Carlos Técnico');
+
+    this.historico = this.normalizarHistorico(detalhes.historico);
   }
 
-  finalizarSolicitacao() {
-    this.mudar('FINALIZADA', 'Solicitação finalizada.', 'Carlos Técnico');
+  private normalizarHistorico(historico: any[]): Array<{ status: string; data: Date; funcionario?: string; observacao?: string }> {
+    return historico.map(item => ({
+      status: item.status ?? item.estado ?? '',
+      data: this.converterData(item.data) ?? new Date(),
+      funcionario: item.funcionario,
+      observacao: item.observacao,
+    }));
   }
 
-  // Ações do CLIENTE
-  acaoCliente(acao: AcaoCliente): void {
-  this.acao.emit(acao);
-}
+  private converterData(data?: string | Date | null): Date | undefined {
+    if (!data) {
+      return undefined;
+    }
 
+    return data instanceof Date ? data : new Date(data);
+  }
+
+  private normalizarStatus(status: string): string {
+    return status
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase();
+  }
 }
