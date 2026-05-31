@@ -6,8 +6,8 @@ import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.Solicitacao;
 import com.web2.Back.service.ClienteService;
-import com.web2.Back.service.SolicitacaoService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,28 +19,27 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ClienteController {
 
+    @Autowired
     private final ClienteService clienteService;
-    private final SolicitacaoService solicitacaoService;
 
     public ClienteController(
-            ClienteService clienteService,
-            SolicitacaoService solicitacaoService
+            ClienteService clienteService
+
     ) {
         this.clienteService = clienteService;
-        this.solicitacaoService = solicitacaoService;
     }
 
 
     @GetMapping("/listarcategorias")
     public ResponseEntity<List<CategoriaEquipamentos>> ListarCategorias(){
-        List<CategoriaEquipamentos> lista = solicitacaoService.ListCategorias();
+        List<CategoriaEquipamentos> lista = clienteService.ListCategorias();
         return ResponseEntity.ok(lista);
     }
 
     @PostMapping("/abrirsolicitacao")
     public ResponseEntity<?> novaSolicitacao(@RequestBody AberturaSolicitacaoDTO dto, @CookieValue("jwt") String token) {
 
-        Solicitacao solicitacao = solicitacaoService.criarSolicitacao(dto, token);
+        Solicitacao solicitacao = clienteService.criarSolicitacao(dto, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -48,14 +47,14 @@ public class ClienteController {
     @PutMapping("/aprovarsolicitacao")
     public ResponseEntity<?> aprovarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
 
-        solicitacaoService.aprovarOrcamentoService(dto, token);
+        clienteService.aprovarOrcamentoService(dto, token);
 
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/rejeitarlicitacao")
     public ResponseEntity<?> rejeitarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
-        solicitacaoService.RejeitarOrcamentoService(dto, token);
+        clienteService.RejeitarOrcamentoService(dto, token);
 
         return ResponseEntity.ok().build();
     }
