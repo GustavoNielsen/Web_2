@@ -100,38 +100,50 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
   }
 }
   private carregarSolicitacoes(): void {
-  this.solicitacoes = this.solicitacaoService
-    .listarTodos()
-    .sort((a, b) =>
-      new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
-    );
+    this.solicitacaoService.listarTodos().subscribe({
+    next: (data: any) => {
+      this.solicitacoes = data.sort((a: any, b: any) => 
+        new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
+      );
+    },
+    error: (erro) => {
+      console.error('Erro ao buscar as solicitações da API:', erro);
+    }
+  });
 }
 
   atualizarSolicitacao(evento: Partial<Solicitacao> & { id: number }): void {
-  if (!evento) {
+    if (!evento) {
+      this.fecharModal();
+      return;
+    }
+
+    const index = this.solicitacoes.findIndex(
+      s => Number(s.id) === Number(evento.id)
+    );
+
+    if (index !== -1) {
+      this.solicitacoes[index] = {
+        ...this.solicitacoes[index],
+        ...evento,
+        historico: [
+          ...(this.solicitacoes[index].historico || []),
+          ...((evento as any).historico || []),
+        ],
+      };
+
+      this.solicitacaoService.atualizar(this.solicitacoes[index]).subscribe({
+        next: () => {
+          console.log('Status da Ordem de Serviço atualizado no Banco de Dados!');
+        },
+        error: (erro) => {
+          console.error('Erro ao tentar atualizar a OS no backend:', erro);
+        }
+      });
+    }
+
     this.fecharModal();
-    return;
   }
-
-  const index = this.solicitacoes.findIndex(
-    s => Number(s.id) === Number(evento.id)
-  );
-
-  if (index !== -1) {
-    this.solicitacoes[index] = {
-      ...this.solicitacoes[index],
-      ...evento,
-      historico: [
-        ...(this.solicitacoes[index].historico || []),
-        ...((evento as any).historico || []),
-      ],
-    };
-
-    this.solicitacaoService.atualizar(this.solicitacoes[index]);
-  }
-
-  this.fecharModal();
-}
 
  irParaVisualizar(solicitacao: Solicitacao): void {
   this.router.navigate(['/cliente/servico', solicitacao.id]);

@@ -10,6 +10,10 @@ export class Solicitacao {
   id!: number;
   dataHora!: Date;
   nomeCliente!: string;
+  email!: string;
+  cpf!: string;
+  telefone!: string;
+  endereco!: string;
   descricaoEquipamento!: string;
   categoria!: string;
   descricaoDefeito!: string;

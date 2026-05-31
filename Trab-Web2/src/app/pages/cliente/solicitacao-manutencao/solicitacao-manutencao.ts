@@ -23,11 +23,17 @@ export class SolicitacaoManutencao {
   private router = inject(Router);
 
   inserir(): void {
-  if (this.formulario.form.valid) {
-    this.solicitacao.nomeCliente = 'Cliente';
-    this.solicitacaoService.inserir(this.solicitacao);
-
-    this.router.navigate(['/cliente/home']);
+    if (this.formulario.form.valid) {
+      this.solicitacao.nomeCliente = 'Cliente';
+      
+      this.solicitacaoService.inserir(this.solicitacao).subscribe({
+        next: () => {
+          this.router.navigate(['/cliente/home']);
+        },
+        error: (erro) => {
+          console.error('Erro ao criar solicitação no backend:', erro);
+        }
+      });
+    }
   }
-}
 }
