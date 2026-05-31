@@ -11,6 +11,7 @@ import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 import { inject } from '@angular/core';
 import { InformacoesSolicitacaoDTO, SolicitacaoService } from '../../../services/solicitacao.service';
 import { FuncionarioService } from '../../../services/funcionario.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pag-funcionario',
@@ -92,7 +93,12 @@ export class PagFuncionario implements OnInit {
       chamada = this.solicitacaoService.solicitacoesTotais(0);
     }
  
-    chamada.subscribe({
+    chamada.pipe(
+      finalize(() => {
+        this.loading = false;
+        this.CDR.detectChanges();
+      })
+    ).subscribe({
       next: (data: any[]) => {
         this.solicitacoesFiltradas = data;
         this.loading = false;
@@ -170,6 +176,23 @@ export class PagFuncionario implements OnInit {
  
   rolarTabela(event: any) {
     // Scroll infinito desativado no modo "filtra no back".
+  }
+
+  orcamentoRegistrado(dados: any) {
+    const idSolicitacao = dados?.id;
+
+    this.loading = false;
+    this.solicitacaoSelecionada = null;
+
+    if (this.filtro === 'SOLICITACOES-ABERTAS') {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .filter(s => s.id !== idSolicitacao);
+    } else {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .map(s => s.id === idSolicitacao ? { ...s, estado: 'ORÇADA' } : s);
+    }
+
+    this.CDR.detectChanges();
   }
 
   efetuarOrcamento(dados: any) {

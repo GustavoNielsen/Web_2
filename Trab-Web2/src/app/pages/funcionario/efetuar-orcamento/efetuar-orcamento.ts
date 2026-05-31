@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-efetuar-orcamento',
@@ -16,8 +17,12 @@ export class EfetuarOrcamento implements OnInit {
   @Output() cancelado = new EventEmitter<void>();
 
   form!: FormGroup;
+  salvando = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private solicitacaoService: SolicitacaoService
+  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({valor: [null, [Validators.required, Validators.pattern('^\\d+,\\d{2}$')]],observacao: ['']});
@@ -36,20 +41,37 @@ export class EfetuarOrcamento implements OnInit {
   }
 
   confirmar(): void {
-    if (this.form.invalid) {
+    if (this.form.invalid || this.salvando) {
       this.form.markAllAsTouched();
+      return;
+    }
+
+    if (!this.solicitacao?.id) {
+      alert('Solicitação inválida.');
       return;
     }
 
     const valorString = this.form.value.valor;
     const valorNumerico = parseFloat(valorString.replace(',', '.'));
 
-    this.orcamentoConfirmado.emit({
-      id: this.solicitacao?.id,
-      valor: valorNumerico,
-      observacao: this.form.value.observacao
-    });
+    this.salvando = true;
 
-    this.form.reset();
+    this.solicitacaoService.orcarSolicitacao(this.solicitacao.id, valorNumerico).subscribe({
+      next: () => {
+        this.orcamentoConfirmado.emit({
+          id: this.solicitacao.id,
+          valor: valorNumerico,
+          observacao: this.form.value.observacao
+        });
+
+        this.form.reset();
+        this.salvando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao registrar orçamento:', erro);
+        alert('Não foi possível registrar o orçamento.');
+        this.salvando = false;
+      }
+    });
   }
 }

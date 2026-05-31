@@ -235,6 +235,14 @@ export class SolicitacaoService {
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
 
+  orcarSolicitacao(idSolicitacao: number, valor: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.funcionarioBaseUrl}/orcar`,
+      { idSolicitacao, valor },
+      { withCredentials: true }
+    );
+  }
+
   obterRelatorioCategoria(): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/relatorio/categoria`, 

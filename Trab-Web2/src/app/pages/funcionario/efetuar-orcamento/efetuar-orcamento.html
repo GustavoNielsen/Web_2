@@ -1,47 +1,49 @@
 <div class="modal-header bg-warning text-dark">
-  <h5 class="modal-title fw-bold">Efetuar Orçamento - OS #{{ solicitacao?.id }}</h5>
+  <h5 class="modal-title fw-bold">Efetuar Orcamento - OS #{{ solicitacao?.id }}</h5>
   <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="cancelado.emit()"></button>
 </div>
 
 <div class="modal-body p-4">
-  <!-- Resumo da OS -->
   <div class="alert alert-info small mb-4">
     <strong>Equipamento:</strong> {{ solicitacao?.equipamento }}<br>
     <strong>Defeito Relatado:</strong> {{ solicitacao?.descricao }}
   </div>
 
-  <!-- Formulário de Orçamento -->
   <form [formGroup]="form">
     <div class="mb-3">
-      <label class="form-label fw-bold small">VALOR DO ORÇAMENTO (R$)</label>
+      <label class="form-label fw-bold small">VALOR DO ORCAMENTO (R$)</label>
       <div class="input-group has-validation">
         <span class="input-group-text bg-light text-secondary fw-bold">R$</span>
-        
-        <input type="text" formControlName="valor" class="form-control form-control-lg" [ngClass]="{ 'is-invalid': form.controls['valor'].touched && form.controls['valor'].errors }" placeholder="150,00" (keydown)="bloquearPonto($event)">
-        
-        <!-- Mensagens de Erro Inteligentes -->
+
+        <input
+          type="text"
+          formControlName="valor"
+          class="form-control form-control-lg"
+          [ngClass]="{ 'is-invalid': form.controls['valor'].touched && form.controls['valor'].errors }"
+          placeholder="150,00"
+          (keydown)="bloquearPonto($event)"
+        >
+
         @if (form.controls['valor'].touched && form.controls['valor'].errors) {
           <div class="invalid-feedback">
             @if (form.controls['valor'].errors['required']) {
-              <small class="d-block">O valor do orçamento é obrigatório.</small>
+              <small class="d-block">O valor do orcamento e obrigatorio.</small>
             }
             @if (form.controls['valor'].errors['pattern']) {
-              <small class="d-block">Digite o valor usando vírgula e duas casas decimais (Ex: 150,00).</small>
+              <small class="d-block">Digite o valor usando virgula e duas casas decimais (Ex: 150,00).</small>
             }
           </div>
         }
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label fw-bold small">OBSERVAÇÕES DOS SERVIÇOS (OPCIONAL)</label>
-      <textarea class="form-control" formControlName="observacao" rows="3" placeholder="Descreva os serviços incluídos no orçamento..."></textarea>
-    </div>
   </form>
 </div>
 
 <div class="modal-footer bg-light justify-content-between">
   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelado.emit()">Cancelar</button>
-  
-  <button type="button" class="btn btn-warning fw-bold text-dark" data-bs-dismiss="modal" [disabled]="form.invalid" (click)="confirmar()">Registrar Orçamento</button>
+
+  <button type="button" class="btn btn-warning fw-bold text-dark" data-bs-dismiss="modal" [disabled]="form.invalid || salvando" (click)="confirmar()">
+    {{ salvando ? 'Registrando...' : 'Registrar Orcamento' }}
+  </button>
 </div>
