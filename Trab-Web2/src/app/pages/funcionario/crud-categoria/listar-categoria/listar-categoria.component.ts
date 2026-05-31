@@ -1,4 +1,4 @@
-import { Component, inject, OnInit,  } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit,  } from '@angular/core';
 import { CategoriasService } from '../../../../services/categorias.service';
 import { Categoria } from '../../../../shared/models/categoria.model';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ import { Funcionario } from '../../../../shared/models/funcionario.model';
 })
 export class ListarCategoriaComponent implements OnInit {
   private categoriasService = inject(CategoriasService)
+  private cdr = inject(ChangeDetectorRef)
   categorias: Categoria[] = []
 
   ngOnInit(): void {
@@ -21,7 +22,7 @@ export class ListarCategoriaComponent implements OnInit {
 
   carregarCategorias(): void {
     this.categoriasService.listarTodos().subscribe({
-      next: (data) => this.categorias = data,
+      next: (data) => {this.categorias = data; this.cdr.detectChanges();},
       error: (err) => console.error('Erro ao listar categorias:', err)
     });
   }
