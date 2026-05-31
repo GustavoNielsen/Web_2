@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from "@angular/router";
 import { FormsModule, NgForm } from '@angular/forms';
@@ -19,7 +19,8 @@ export class Login {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   login(form: NgForm) {
@@ -58,8 +59,9 @@ export class Login {
 
         console.error(error);
 
-        this.erroLogin =
-          error.error || 'Email ou senha inválidos';
+        this.erroLogin = 'Email ou senha inválidos';
+
+        this.cdr.detectChanges();
       }
     });
   }

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-pagar-servico',
@@ -16,6 +17,9 @@ export class PagarServico {
   @Input() idSolicitacao!: number;
   @Input() solicitacao: any;
   @Output() atualizado = new EventEmitter<any>();
+
+  private solicitacaoService= inject(SolicitacaoService);
+
   perfil: string = 'CLIENTE';
 
 
@@ -23,30 +27,34 @@ export class PagarServico {
     this.fechar.emit();
   }
 
-confirmarPagamento(){
-  this.atualizado.emit({
-    id: this.solicitacao.id,
-    estado: 'PAGA',
-    dataPagamento: new Date(),
-    historico: [
-      {
-        data: new Date(),
+confirmarPagamento(): void {
+  const id = this.idSolicitacao || this.solicitacao?.id;
+
+  if (!id) {
+    return;
+  }
+
+  this.solicitacaoService.pagarSolicitacao(id).subscribe({
+    next: () => {
+      this.atualizado.emit({
+        id,
+        backendAtualizado: true,
         estado: 'PAGA',
-        funcionario: 'Cliente'
-      }
-    ]
+        dataPagamento: new Date(),
+        historico: [
+          {
+            data: new Date(),
+            estado: 'PAGA',
+            funcionario: 'Cliente',
+          },
+        ],
+      });
+
+      this.fechar.emit();
+    },
+    error: (erro) => {
+      console.error('Erro ao pagar solicitacao:', erro);
+    },
   });
-
-  this.fechar.emit();
 }
-
-  irParaOrcamento() {}
-
-  irParaPagamento() {}
-
-  irParaManutencao() {}
-
-  finalizarSolicitacao() {}
-
-  resgatarServico() {}
 }

@@ -53,13 +53,13 @@ export class SolicitacaoService {
   private clienteApiUrl = 'http://localhost:8080/api/clientes/solicitacoes';
   private clienteBaseUrl = 'http://localhost:8080/api/clientes';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   listarTodos(): Observable<Solicitacao[]> {
     return this.http.get<SolicitacoesClienteResponseDTO>(
       this.clienteApiUrl,
       {
-        withCredentials: true 
+        withCredentials: true
       }
     ).pipe(
       map(response => response.solicitacoes.map(s => this.mapResumoCliente(s)))
@@ -73,17 +73,41 @@ export class SolicitacaoService {
     );
   }
 
-   listarCategorias(): Observable<{ id: number; nome: string }[]> {
+  listarCategorias(): Observable<{ id: number; nome: string }[]> {
     return this.http.get<{ id: number; nome: string }[]>(
       'http://localhost:8080/api/clientes/listarcategorias',
       { withCredentials: true }
     );
   }
-  
+
   rejeitarSolicitacao(idSolicitacao: number, motivo: string): Observable<void> {
     return this.http.put<void>(
       `${this.clienteBaseUrl}/rejeitarsolicitacao`,
       { idSolicitacao, motivo },
+      { withCredentials: true }
+    );
+  }
+
+  aprovarSolicitacao(idSolicitacao: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.clienteBaseUrl}/aprovarsolicitacao`,
+      { idSolicitacao },
+      { withCredentials: true }
+    );
+  }
+
+  resgatarSolicitacao(idSolicitacao: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.clienteBaseUrl}/resgatar`,
+      { idSolicitacao },
+      { withCredentials: true }
+    );
+  }
+
+  pagarSolicitacao(idSolicitacao: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.clienteBaseUrl}/pagar`,
+      { idSolicitacao },
       { withCredentials: true }
     );
   }
@@ -107,12 +131,12 @@ export class SolicitacaoService {
 
   atualizar(solicitacao: Solicitacao): Observable<Solicitacao> {
     return this.http.put<Solicitacao>(
-      `${this.apiUrl}/${solicitacao.id}`, 
+      `${this.apiUrl}/${solicitacao.id}`,
       solicitacao,
       { withCredentials: true }
     );
   }
-
+  // adiciona nova solicitacao
   inserir(solicitacao: Solicitacao): Observable<any> {
     const dto = {
       equipamento: solicitacao.descricaoEquipamento,
@@ -129,7 +153,7 @@ export class SolicitacaoService {
   //Paginação de funcionario com infinite scroll
   listarPaginado(pagina: number, tamanho: number = 50): Observable<Solicitacao[]> {
     return this.http.get<Solicitacao[]>(
-      `${this.apiUrl}?page=${pagina}&size=${tamanho}`, 
+      `${this.apiUrl}?page=${pagina}&size=${tamanho}`,
       { withCredentials: true }
     );
   }
@@ -153,28 +177,28 @@ export class SolicitacaoService {
       historico: [],
     } as Solicitacao));
   }
- 
+
   solicitacoesAbertas(pagina: number = 0): Observable<Solicitacao[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesAbertas/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
- 
+
   solicitacoesHoje(pagina: number = 0): Observable<Solicitacao[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesHoje/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
- 
+
   solicitacoesTotais(pagina: number = 0): Observable<Solicitacao[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesTotais/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
- 
+
   solicitacoesPorPeriodo(dataMin: string, dataMax: string, pagina: number = 0): Observable<Solicitacao[]> {
     return this.http.post<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoPeriodo`,

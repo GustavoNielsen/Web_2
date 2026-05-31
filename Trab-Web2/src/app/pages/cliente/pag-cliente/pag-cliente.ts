@@ -143,6 +143,7 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
 
       if (evento.backendAtualizado) {
         this.fecharModal();
+        this.carregarSolicitacoes();
         return;
       }
 
