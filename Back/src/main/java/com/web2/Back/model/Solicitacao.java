@@ -17,9 +17,8 @@ public class Solicitacao {
     @Column(nullable = false)
     private String descricaoEquipamento;
 
-    @ManyToOne
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private CategoriaEquipamentos categoria;
+    @Column(nullable = false)
+    private String categoria;
 
     @Column(nullable = false)
     private String descricaoDefeito;
@@ -32,7 +31,7 @@ public class Solicitacao {
 
     public Solicitacao() {}
 
-    public Solicitacao(Cliente cliente, String descricaoEquipamento, CategoriaEquipamentos categoria, String descricaoDefeito) {
+    public Solicitacao(Cliente cliente, String descricaoEquipamento, String categoria, String descricaoDefeito) {
         this.cliente = cliente;
         this.descricaoEquipamento = descricaoEquipamento;
         this.categoria = categoria;
@@ -46,8 +45,8 @@ public class Solicitacao {
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
     public String getDescricaoEquipamento() { return descricaoEquipamento; }
     public void setDescricaoEquipamento(String descricaoEquipamento) { this.descricaoEquipamento = descricaoEquipamento; }
-    public CategoriaEquipamentos getCategoria() { return categoria; }
-    public void setCategoria(CategoriaEquipamentos categoria) { this.categoria = categoria; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
     public String getDescricaoDefeito() { return descricaoDefeito; }
     public void setDescricaoDefeito(String descricaoDefeito) { this.descricaoDefeito = descricaoDefeito; }
     public LocalDateTime getDataCriacao() { return dataCriacao; }
