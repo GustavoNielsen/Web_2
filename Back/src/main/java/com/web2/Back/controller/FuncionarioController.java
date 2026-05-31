@@ -56,7 +56,7 @@ public class FuncionarioController {
         return ResponseEntity.ok().build();
     }
 
-    
+
 
 
 }

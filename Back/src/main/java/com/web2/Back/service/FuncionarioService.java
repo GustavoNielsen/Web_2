@@ -31,6 +31,9 @@ public class FuncionarioService {
     @Autowired
     private HistoricoSolicitacaoRepository historicoRepository;
 
+    @Autowired
+    private RedirecionamentoRepository redirecionamentoRepository;
+
 
     private final FuncionarioRepository funcionarioRepository;
 
@@ -124,6 +127,7 @@ public class FuncionarioService {
     }
 
     public void Manutencao(RealizarManutencaoDTO dto, String token){
+
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
@@ -152,23 +156,59 @@ public class FuncionarioService {
                         )
                 );
 
-        if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Orcamento não pertence a esse funcionario"
-            );
+        boolean existe = redirecionamentoRepository
+                .existsBySolicitacaoId(dto.idSolicitacao());
+
+        if(existe){
+
+            Redirecionamento ultimoRedirecionamento =
+                    redirecionamentoRepository
+                            .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(
+                                    dto.idSolicitacao()
+                            )
+                            .orElseThrow(() ->
+                                    new ResponseStatusException(
+                                            HttpStatus.NOT_FOUND,
+                                            "Redirecionamento não encontrado"
+                                    )
+                            );
+
+            if(!ultimoRedirecionamento
+                    .getFuncionarioDestino()
+                    .getId()
+                    .equals(funcionario.getId())){
+
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Solicitação não pertence a esse funcionário"
+                );
+            }
+
+        } else {
+
+            if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Orcamento não pertence a esse funcionario"
+                );
+            }
         }
 
-        Manutencao manutencao = new Manutencao(solicitacao, funcionario, dto.descricao(), dto.orientacao());
+        Manutencao manutencao = new Manutencao(
+                solicitacao,
+                funcionario,
+                dto.descricao(),
+                dto.orientacao()
+        );
 
         solicitacao.setStatus("ARRUMADA");
         solicitacao.setManutencao(manutencao);
-        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "APROVADA");
+
+        HistoricoSolicitacao historico =
+                new HistoricoSolicitacao(solicitacao, "APROVADA");
 
         manutencaoRepository.save(manutencao);
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
-
-
     }
 }
