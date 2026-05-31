@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { combineLatest } from 'rxjs';
@@ -27,6 +27,7 @@ export class PagCliente implements OnInit {
   private solicitacaoService = inject(SolicitacaoService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   
 
 
@@ -34,6 +35,7 @@ export class PagCliente implements OnInit {
   solicitacaoSelecionada: Solicitacao | null = null;
   colunaOrdenacao: ColunaOrdenacao | '' = '';
   direcaoOrdenacao: 'asc' | 'desc' = 'asc';
+  private rotaAtual: { id: number; modal: ModalCliente } = { id: 0, modal: null };
 
   solicitacoes: Solicitacao[] = [];
 
@@ -47,6 +49,7 @@ export class PagCliente implements OnInit {
     const id = Number(params.get('id'));
     const modal = data['modal'] as ModalCliente;
 
+    this.rotaAtual = { id, modal };
     this.atualizarModalPelaRota(id, modal);
     });
   }
@@ -63,6 +66,10 @@ private atualizarModalPelaRota(id: number, modal: ModalCliente): void {
 
   if (!id) {
     this.router.navigate(['/cliente/home']);
+    return;
+  }
+
+  if (this.solicitacoes.length === 0) {
     return;
   }
 
@@ -101,10 +108,12 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
 }
   private carregarSolicitacoes(): void {
     this.solicitacaoService.listarTodos().subscribe({
-    next: (data: any) => {
-      this.solicitacoes = data.sort((a: any, b: any) => 
-        new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
+    next: (data: Solicitacao[]) => {
+      this.solicitacoes = [...data].sort((a, b) =>
+        b.dataHora.getTime() - a.dataHora.getTime()
       );
+      this.atualizarModalPelaRota(this.rotaAtual.id, this.rotaAtual.modal);
+      this.cdr.detectChanges();
     },
     error: (erro) => {
       console.error('Erro ao buscar as solicitações da API:', erro);
@@ -145,24 +154,30 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
     this.fecharModal();
   }
 
- irParaVisualizar(solicitacao: Solicitacao): void {
-  this.router.navigate(['/cliente/servico', solicitacao.id]);
+private abrirModal(solicitacao: Solicitacao, modal: Exclude<ModalCliente, null>): void {
+  this.solicitacaoSelecionada = solicitacao;
+  this.modal = modal;
+  this.cdr.detectChanges();
+}
+
+irParaVisualizar(solicitacao: Solicitacao): void {
+  this.abrirModal(solicitacao, 'visualizar');
 }
 
 irParaOrcamento(solicitacao: Solicitacao): void {
-  this.router.navigate(['/cliente/orcamento', solicitacao.id]);
+  this.abrirModal(solicitacao, 'orcamento');
 }
 
 irParaRejeitar(solicitacao: Solicitacao): void {
-  this.router.navigate(['/cliente/rejeitar', solicitacao.id]);
+  this.abrirModal(solicitacao, 'rejeitar');
 }
 
 irParaResgatar(solicitacao: Solicitacao): void {
-  this.router.navigate(['/cliente/resgatar', solicitacao.id]);
+  this.abrirModal(solicitacao, 'resgatar');
 }
 
 irParaPagamento(solicitacao: Solicitacao): void {
-  this.router.navigate(['/cliente/pagamento', solicitacao.id]);
+  this.abrirModal(solicitacao, 'pagamento');
 }
 
 fecharModal(): void {

@@ -13,6 +13,7 @@ import { Solicitacao } from '../../../shared/models/solicitacao.model';
 export class RejeitarServico {
   motivoRejeicao = '';
 
+  @Input() idSolicitacao!: number;
   @Input() solicitacao!: Solicitacao;
 
   @Output() fechar = new EventEmitter<void>();

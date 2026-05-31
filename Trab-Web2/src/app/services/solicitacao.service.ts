@@ -1,26 +1,91 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Solicitacao } from '../shared/models/solicitacao.model';
 
 //const LS_CHAVE = 'solicitacoes';
+
+interface SolicitacaoClienteResumoDTO {
+  id: number;
+  dataCriacao: string;
+  descricaoEquipamento: string;
+  status: string;
+}
+
+interface SolicitacoesClienteResponseDTO {
+  solicitacoes: SolicitacaoClienteResumoDTO[];
+}
+
+export interface InformacoesSolicitacaoDTO {
+  id: number;
+  equipamento: string;
+  categoria: string;
+  defeito: string;
+  status: string;
+  dataCriacao: string;
+  dataPagamento: string | null;
+  dataFinalizacao: string | null;
+  orcamento: {
+    valor: number;
+    dataOrcamento: string;
+    funcionario: string;
+  } | null;
+  manutencao: {
+    descricao: string;
+    orientacao: string;
+    dataManutencao: string;
+    funcionario: string;
+  } | null;
+  historico: Array<{
+    status: string;
+    data: string;
+  }>;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class SolicitacaoService {
 
-  private apiUrl = 'http://localhost:8080/solicitacoes'; 
+  private apiUrl = 'http://localhost:8080/solicitacoes';
+  private clienteApiUrl = 'http://localhost:8080/api/clientes/solicitacoes';
 
   constructor(private http: HttpClient) {}
 
   listarTodos(): Observable<Solicitacao[]> {
-    return this.http.get<Solicitacao[]>(
-      this.apiUrl,
+    return this.http.get<SolicitacoesClienteResponseDTO>(
+      this.clienteApiUrl,
       {
         withCredentials: true 
       }
+    ).pipe(
+      map(response => response.solicitacoes.map(s => this.mapResumoCliente(s)))
     );
+  }
+
+  buscarInformacoesCliente(idSolicitacao: number): Observable<InformacoesSolicitacaoDTO> {
+    return this.http.get<InformacoesSolicitacaoDTO>(
+      `${this.clienteApiUrl}/${idSolicitacao}`,
+      { withCredentials: true }
+    );
+  }
+
+  private mapResumoCliente(dto: SolicitacaoClienteResumoDTO): Solicitacao {
+    return {
+      id: dto.id,
+      dataHora: new Date(dto.dataCriacao),
+      descricaoEquipamento: dto.descricaoEquipamento,
+      estado: dto.status,
+      nomeCliente: '',
+      email: '',
+      cpf: '',
+      telefone: '',
+      endereco: '',
+      categoria: '',
+      descricaoDefeito: '',
+      historico: [],
+    };
   }
 
   atualizar(solicitacao: Solicitacao): Observable<Solicitacao> {

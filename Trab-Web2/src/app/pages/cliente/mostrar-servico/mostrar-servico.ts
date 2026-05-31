@@ -11,6 +11,7 @@ import { Solicitacao } from '../../../shared/models/solicitacao.model';
 })
 
 export class MostrarServico {
+   @Input() idSolicitacao!: number;
    @Input() solicitacao!: Solicitacao;
 
   @Output() fechar = new EventEmitter<void>();

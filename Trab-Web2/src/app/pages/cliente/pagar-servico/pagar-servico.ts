@@ -13,6 +13,7 @@ import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 export class PagarServico {
 
   @Output() fechar = new EventEmitter<void>();
+  @Input() idSolicitacao!: number;
   @Input() solicitacao: any;
   @Output() atualizado = new EventEmitter<any>();
   perfil: string = 'CLIENTE';

@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
+import { InformacoesSolicitacaoDTO, SolicitacaoService } from '../../../services/solicitacao.service';
 
 type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
 
@@ -14,7 +15,9 @@ type AcaoCliente = 'orcamento' | 'resgatar' | 'pagamento';
 })
 
 export class VisualizarServico implements OnInit {
+  @Input() idSolicitacao!: number;
   @Input() solicitacao: any;
+  detalhes?: InformacoesSolicitacaoDTO;
   loading = true;
   perfil = 'CLIENTE'; // troque para 'CLIENTE' para testar
   historico: any[] = [];
@@ -22,14 +25,50 @@ export class VisualizarServico implements OnInit {
   @Output() acao = new EventEmitter<AcaoCliente>();
   @Output() atualizado = new EventEmitter<any>();
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private solicitacaoService: SolicitacaoService
+  ) {}
 
   ngOnInit() {
-  this.historico = this.solicitacao?.historico
-    ? [...this.solicitacao.historico]
-    : [];
+    this.historico = this.solicitacao?.historico
+      ? [...this.solicitacao.historico]
+      : [];
 
-  this.loading = false;
+    if (!this.idSolicitacao) {
+      this.loading = false;
+      return;
+    }
+
+    this.solicitacaoService.buscarInformacoesCliente(this.idSolicitacao).subscribe({
+      next: (detalhes) => {
+        this.detalhes = detalhes;
+        this.solicitacao = {
+          ...this.solicitacao,
+          id: detalhes.id,
+          descricaoEquipamento: detalhes.equipamento,
+          categoria: detalhes.categoria,
+          descricaoDefeito: detalhes.defeito,
+          estado: detalhes.status,
+          dataHora: new Date(detalhes.dataCriacao),
+          valorOrcamento: detalhes.orcamento?.valor,
+          dataPagamento: detalhes.dataPagamento ? new Date(detalhes.dataPagamento) : undefined,
+          dataFinalizacao: detalhes.dataFinalizacao ? new Date(detalhes.dataFinalizacao) : undefined,
+          descricaoManutencao: detalhes.manutencao?.descricao,
+          orientacoesCliente: detalhes.manutencao?.orientacao,
+        };
+        this.historico = detalhes.historico.map(h => ({
+          data: new Date(h.data),
+          estado: h.status,
+          funcionario: 'Sistema',
+        }));
+        this.loading = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar detalhes da solicitação:', erro);
+        this.loading = false;
+      }
+    });
 }
 
   getStatusClass(estado: string) {

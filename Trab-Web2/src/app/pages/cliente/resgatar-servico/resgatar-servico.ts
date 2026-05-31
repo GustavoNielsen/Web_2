@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 
 export class ResgatarServico {
 
+  @Input() idSolicitacao!: number;
   @Input() solicitacao: any;
   @Output() fechar = new EventEmitter<void>();
   @Output() atualizado = new EventEmitter<any>();
