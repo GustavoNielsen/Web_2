@@ -1,7 +1,7 @@
-import { Component, Output, EventEmitter, Input, inject } from '@angular/core';
+import { Component, Output, EventEmitter, Input, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Solicitacao } from '../../../shared/models/solicitacao.model';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
+import { SolicitacaoService, GetOrcamentoClienteDTO } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-mostrar-servico',
@@ -11,7 +11,7 @@ import { SolicitacaoService } from '../../../services/solicitacao.service';
   styleUrl: './mostrar-servico.css',
 })
 
-export class MostrarServico {
+export class MostrarServico implements OnInit {
    @Input() idSolicitacao!: number;
    @Input() solicitacao!: Solicitacao;
 
@@ -20,9 +20,57 @@ export class MostrarServico {
   @Output() rejeitar = new EventEmitter<void>();
 
   private solicitacaoService = inject(SolicitacaoService);
+  private cdr = inject(ChangeDetectorRef);
+  orcamento?: GetOrcamentoClienteDTO;
+  loading = false;
+  erroCarregamento = '';
+  
+
+  ngOnInit(): void {
+  const id = this.idSolicitacao || this.solicitacao?.id;
+
+  if (!id) {
+    this.erroCarregamento = 'Solicitação sem ID.';
+    this.loading = false;
+    this.cdr.detectChanges();
+    return;
+  }
+
+  this.loading = true;
+  this.erroCarregamento = '';
+  this.cdr.detectChanges();
+
+  this.solicitacaoService.buscarOrcamentoCliente(id).subscribe({
+    next: (dados) => {
+      this.orcamento = dados;
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+    error: (erro) => {
+      console.error('Erro ao buscar orçamento:', erro);
+      this.erroCarregamento = 'Não foi possível carregar os dados do orçamento.';
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+  });
+
+  this.loading = true;
+
+  this.solicitacaoService.buscarOrcamentoCliente(id).subscribe({
+    next: (dados) => {
+      this.orcamento = dados;
+      this.loading = false;
+    },
+    error: (erro) => {
+      console.error('Erro ao buscar orçamento:', erro);
+      this.erroCarregamento = 'Não foi possível carregar os dados do orçamento.';
+      this.loading = false;
+    },
+  });
+}
 
   get valor(): string {
-    const valor = this.solicitacao?.valorOrcamento ?? 0;
+    const valor = this.orcamento?.valor ?? 0;
 
     return valor.toLocaleString('pt-BR', {
       style: 'currency',
