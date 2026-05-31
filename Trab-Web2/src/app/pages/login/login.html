@@ -1,35 +1,50 @@
 <div class="container-fluid"> <!-- conteiner-fluid: largura da pagina-->
   <div class="row justify-content-center align-items-center" style="height: 100vh;"> <!-- row: linha do grid -->
     <div class="col-5"> <!-- col-5: largura da coluna-->
-      
-    <div class="card shadow border-0"> <!-- card: painel branco; shadow:sombra ao redor do card; border-0: tira a borda -->
-      <div class="card-header bg-primary text-white text-center py-3"> <!-- card-header: cabeçalho do card-->
-      <h1 class="mb-0 h4 fw-bold">ACESSO AO SISTEMA</h1> <!-- mb-0: margem inferior zero; h4: tamanho do título -->
-    </div>
 
-        <div class="card-body p-4 bg-light" > <!-- card-body: corpo do card; p-4: padding 4-->
-          <form #loginForm="ngForm"> <!-- ngForm: permite validar o formulário -->
+      <div class="card shadow border-0">
+        <!-- card: painel branco; shadow:sombra ao redor do card; border-0: tira a borda -->
+        <div class="card-header bg-primary text-white text-center py-3"> <!-- card-header: cabeçalho do card-->
+          <h1 class="mb-0 h4 fw-bold">ACESSO AO SISTEMA</h1> <!-- mb-0: margem inferior zero; h4: tamanho do título -->
+        </div>
+
+        <div class="card-body p-4 bg-light"> <!-- card-body: corpo do card; p-4: padding 4-->
+          <form #loginForm="ngForm" (ngSubmit)="login(loginForm)" novalidate>
+            <!-- ngForm: permite validar o formulário e ngSubmit chama o login() -->
             <div class="mb-4">
-              <label for="email" class="form-label fw-bold text-dark">E-mail de Acesso</label> <!-- for: atributo que vincula o label ao input; form-label: estilo de label;-->
-              <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="nome@email.com" ngModel required email> <!-- type: tipo do input; id: identificador; name: nome do campo para poder ser referenciado pelo ngModel; required: campo obrigatório -->
+              <label for="email" class="form-label fw-bold text-dark">E-mail de Acesso</label>
+              <!-- for: atributo que vincula o label ao input; form-label: estilo de label;-->
+              <input type="email" class="form-control form-control-lg" id="email" name="email"
+                placeholder="nome@email.com" ngModel required email>
+              <!-- type: tipo do input; id: identificador; name: nome do campo para poder ser referenciado pelo ngModel; required: campo obrigatório -->
             </div>
 
             <div class="mb-4">
               <label for="senha" class="form-label fw-bold text-dark">Senha</label>
-              <input type="password" class="form-control form-control-lg" id="senha" name="senha" placeholder="digite sua senha" ngModel required minlength="4">
+              <input type="password" class="form-control form-control-lg" id="senha" name="senha"
+                placeholder="digite sua senha" ngModel required minlength="4">
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg w-100 shadow fw-bold" [disabled]="!loginForm.valid" (click)="login(loginForm)"> ENTRAR NO SISTEMA </button> <!-- submit: tipo de botão que envia o formulário ;btn-lg: tamanho grande; w-100: largura completa disponível do botão -->
+            <div *ngIf="erroLogin" class="alert alert-danger text-center fw-bold" role="alert">
+              {{ erroLogin }}
+            </div>
+            <!-- condicional em caso de erro de login-->
+            <button type="submit" class="btn btn-primary btn-lg w-100 shadow fw-bold"
+              [disabled]="!loginForm.valid || loading">
+              {{ loading ? 'ENTRANDO...' : 'ENTRAR NO SISTEMA' }}
+            </button>
+            <!-- submit: tipo de botão que envia o formulário ;btn-lg: tamanho grande; w-100: largura completa disponível do botão -->
 
             <div class="text-center border-top mt-4 ">
               <p class="mb-1 mt-3 text-muted small">Ainda não possui uma conta?</p>
-              <a routerLink="/registrar" class="text-primary fw-bold text-decoration-none">Cadastre-se aqui</a> <!-- routerLink: item do angular para navegação; text-decoration-none: remover o sublinhado do link -->
+              <a routerLink="/registrar" class="text-primary fw-bold text-decoration-none">Cadastre-se aqui</a>
+              <!-- routerLink: item do angular para navegação; text-decoration-none: remover o sublinhado do link -->
             </div>
           </form>
-          
+
         </div> <!-- fim do card-body -->
       </div> <!-- final do card -->
-    <p class="text-center text-muted mt-3 small">Trabalho de Desenvolvimento Web II</p>
-  </div> <!-- fim da col -->
+      <p class="text-center text-muted mt-3 small">Trabalho de Desenvolvimento Web II</p>
+    </div> <!-- fim da col -->
   </div> <!-- fim da row-->
 </div> <!-- fim do container-fluid, a largura da página -->

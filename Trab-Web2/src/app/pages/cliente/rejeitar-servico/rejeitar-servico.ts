@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Solicitacao } from '../../../shared/models/solicitacao.model';
@@ -22,7 +22,7 @@ export class RejeitarServico {
   @Output() fechar = new EventEmitter<void>();
   @Output() atualizado = new EventEmitter<any>();
 
-  constructor(private solicitacaoService: SolicitacaoService) {}
+  private solicitacaoService = inject(SolicitacaoService);
 
   confirmarRejeicao(): void {
     const id = this.idSolicitacao || this.solicitacao?.id;
@@ -38,7 +38,8 @@ export class RejeitarServico {
 
     this.solicitacaoService.rejeitarSolicitacao(id, motivo).subscribe({
       next: () => {
-        alert('Servico Rejeitado');
+        this.loading = false;
+
         this.atualizado.emit({
           id,
           backendAtualizado: true,

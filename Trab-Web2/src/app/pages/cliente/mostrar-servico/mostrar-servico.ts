@@ -1,6 +1,7 @@
-import { Component, Output, EventEmitter, Input } from '@angular/core';
+import { Component, Output, EventEmitter, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Solicitacao } from '../../../shared/models/solicitacao.model';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-mostrar-servico',
@@ -17,6 +18,8 @@ export class MostrarServico {
   @Output() fechar = new EventEmitter<void>();
   @Output() atualizado = new EventEmitter<any>();
   @Output() rejeitar = new EventEmitter<void>();
+
+  private solicitacaoService = inject(SolicitacaoService);
 
   get valor(): string {
     const valor = this.solicitacao?.valorOrcamento ?? 0;
@@ -36,19 +39,33 @@ export class MostrarServico {
   }
 
   aprovarServico(): void {
-    this.atualizado.emit({
-      id: this.solicitacao.id,
-      estado: 'APROVADA',
-      historico: [
-        {
-          data: new Date(),
-          estado: 'APROVADA',
-          funcionario: 'Cliente',
-          observacao: `Serviço aprovado no valor ${this.valor}`,
-        },
-      ],
-    });
+  const id = this.idSolicitacao || this.solicitacao?.id;
 
-    this.fechar.emit();
+  if (!id) {
+    return;
   }
+
+  this.solicitacaoService.aprovarSolicitacao(id).subscribe({
+    next: () => {
+      this.atualizado.emit({
+        id,
+        backendAtualizado: true,
+        estado: 'APROVADA',
+        historico: [
+          {
+            data: new Date(),
+            estado: 'APROVADA',
+            funcionario: 'Cliente',
+            observacao: `Servico aprovado no valor ${this.valor}`,
+          },
+        ],
+      });
+
+      this.fechar.emit();
+    },
+    error: (erro) => {
+      console.error('Erro ao aprovar solicitacao:', erro);
+    },
+  });
+}
 }
