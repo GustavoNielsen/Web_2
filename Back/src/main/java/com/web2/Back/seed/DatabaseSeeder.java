@@ -218,7 +218,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Scroll sem resposta", 75.00, base.plusDays(6).plusHours(7));
         createRejeitada(clientes.get(3), maria, "Desktop Dell Optiplex", "Desktop",
                 "HD com falha intermitente", 260.00, base.plusDays(7).plusHours(8));
-        createRejeitada(clientes.get(0), mario, "Teclado Microsoft", "Teclado",
+        createRejeitada(clientes.get(1), mario, "Teclado Microsoft", "Teclado",
                 "Teclas numéricas falhando", 110.00, base.plusDays(8).plusHours(9));
 
         createAprovada(clientes.get(1), maria, "Notebook Acer Aspire", "Notebook",
@@ -233,7 +233,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         createRedirecionada(clientes.get(1), mario, maria, "Impressora Brother", "Impressora",
                 "Erro no cilindro", 190.00, base.plusDays(13).plusHours(5));
 
-        createArrumada(clientes.get(2), maria, "Mouse Microsoft Basic", "Mouse",
+        createArrumada(clientes.get(1), maria, "Mouse Microsoft Basic", "Mouse",
                 "Cabo com mau contato", 45.00, "Substituição do cabo USB",
                 "Evitar dobrar o cabo próximo ao conector", base.plusDays(14).plusHours(6));
         createArrumada(clientes.get(3), mario, "Teclado Logitech K120", "Teclado",
