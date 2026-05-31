@@ -33,7 +33,16 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
             where
                 (o is not null and o.funcionario.id = :funcionarioId)
                 or (m is not null and m.funcionario.id = :funcionarioId)
-                or (r is not null and r.funcionarioOrigem.id = :funcionarioId)
+                or (
+                    r is not null
+                    and r.funcionarioDestino.id = :funcionarioId
+                    and not exists (
+                        select 1
+                        from Redirecionamento r2
+                        where r2.solicitacao = s
+                        and r2.dataRedirecionamento > r.dataRedirecionamento
+                    )
+                )
                 or (s.funcionarioFinalizacao is not null and s.funcionarioFinalizacao.id = :funcionarioId)
             """)
     Page<Solicitacao> findAtuadasPorFuncionario(
@@ -64,9 +73,15 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
                 or
                 (
                     r is not null
-                    and r.funcionarioOrigem.id = :funcionarioId
+                    and r.funcionarioDestino.id = :funcionarioId
                     and r.dataRedirecionamento >= :dataMin
                     and r.dataRedirecionamento < :dataMax
+                    and not exists (
+                        select 1
+                        from Redirecionamento r2
+                        where r2.solicitacao = s
+                        and r2.dataRedirecionamento > r.dataRedirecionamento
+                    )
                 )
                 or
                 (

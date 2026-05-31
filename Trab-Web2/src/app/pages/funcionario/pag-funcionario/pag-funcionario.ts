@@ -58,6 +58,7 @@ export class PagFuncionario implements OnInit {
 
     this.filtro = 'SOLICITACOES-ABERTAS'; 
     this.dataAtual = new Date().toISOString().split('T')[0];
+    this.carregarFuncionariosDisponiveis();
     this.carregarDoBackend();
 
   }
@@ -70,6 +71,22 @@ export class PagFuncionario implements OnInit {
   constructor(private CDR: ChangeDetectorRef) {} // CDR é um gatilho que força a atualização da tela em momentos específicos
 
   //Método que busca as solicitações do backend de acordo com o filtro selecionado, e atualiza a tela com os resultados.
+  carregarFuncionariosDisponiveis() {
+    this.funcionarioService.listarTodos().subscribe({
+      next: (data: any[]) => {
+        this.listaFuncionarios = data;
+        this.funcionariosDisponiveis = this.listaFuncionarios
+          .filter(f => f.nome !== this.nomeUsuario);
+        this.CDR.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Erro ao carregar tecnicos:', err);
+        this.funcionariosDisponiveis = [];
+        this.CDR.detectChanges();
+      }
+    });
+  }
+
   carregarDoBackend() {
     this.loading = true;
     this.solicitacoesFiltradas = [];
@@ -100,7 +117,7 @@ export class PagFuncionario implements OnInit {
       })
     ).subscribe({
       next: (data: any[]) => {
-        this.solicitacoesFiltradas = data;
+        this.solicitacoesFiltradas = this.ordenarPorDataHoraCrescente(data);
         this.loading = false;
         this.CDR.detectChanges();
       },
@@ -111,6 +128,12 @@ export class PagFuncionario implements OnInit {
         this.CDR.detectChanges();
       }
     });
+  }
+
+  private ordenarPorDataHoraCrescente(solicitacoes: any[]) {
+    return [...(solicitacoes || [])].sort((a, b) =>
+      new Date(a.dataHora).getTime() - new Date(b.dataHora).getTime()
+    );
   }
 
   aplicarFiltro() {
@@ -195,6 +218,52 @@ export class PagFuncionario implements OnInit {
     this.CDR.detectChanges();
   }
 
+  finalizacaoRegistrada(dados: any) {
+    const idSolicitacao = dados?.id;
+
+    this.loading = false;
+    this.solicitacaoSelecionada = null;
+
+    if (this.filtro === 'HOJE' || this.filtro === 'TODAS' || this.filtro === 'PERIODO') {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .map(s => s.id === idSolicitacao ? { ...s, estado: 'FINALIZADA' } : s);
+    } else {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .filter(s => s.id !== idSolicitacao);
+    }
+
+    this.CDR.detectChanges();
+  }
+
+  manutencaoRegistrada(dados: any) {
+    const idSolicitacao = dados?.id;
+
+    this.loading = false;
+    this.solicitacaoSelecionada = null;
+
+    if (this.filtro === 'HOJE' || this.filtro === 'TODAS' || this.filtro === 'PERIODO') {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .map(s => s.id === idSolicitacao ? { ...s, estado: 'ARRUMADA' } : s);
+    } else {
+      this.solicitacoesFiltradas = this.solicitacoesFiltradas
+        .filter(s => s.id !== idSolicitacao);
+    }
+
+    this.CDR.detectChanges();
+  }
+
+  redirecionamentoRegistrado(dados: any) {
+    const idSolicitacao = dados?.id;
+
+    this.loading = false;
+    this.solicitacaoSelecionada = null;
+
+    this.solicitacoesFiltradas = this.solicitacoesFiltradas
+      .filter(s => s.id !== idSolicitacao);
+
+    this.CDR.detectChanges();
+  }
+
   efetuarOrcamento(dados: any) {
     if (this.solicitacaoSelecionada) {
       this.loading = true;
@@ -271,6 +340,7 @@ export class PagFuncionario implements OnInit {
         next: (data: any[]) => {
           this.listaFuncionarios = data;
           this.funcionariosDisponiveis = this.listaFuncionarios.filter(f => f.nome !== this.nomeUsuario);
+          this.CDR.detectChanges();
         },
         error: (err: any) => console.error('Erro ao carregar técnicos:', err)
       });

@@ -429,6 +429,7 @@ public class FuncionarioService {
                         PageRequest.of(Math.max(page, 0), pageSize)
                 )
                 .stream()
+                .filter(s -> podeListarSolicitacaoTotal(s, funcionario.getId()))
                 .map(s -> new SolicitacaoAbertasDTO(
                         s.getId(),
                         s.getDataCriacao(),
@@ -439,6 +440,22 @@ public class FuncionarioService {
                         s.getCategoria()
                 ))
                 .toList();
+    }
+
+    private boolean podeListarSolicitacaoTotal(Solicitacao solicitacao, Long funcionarioId) {
+        if (!"REDIRECIONADA".equals(solicitacao.getStatus())) {
+            return true;
+        }
+
+        return redirecionamentoRepository
+                .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(solicitacao.getId())
+                .map(redirecionamento ->
+                        redirecionamento
+                                .getFuncionarioDestino()
+                                .getId()
+                                .equals(funcionarioId)
+                )
+                .orElse(false);
     }
 
     public List<SolicitacaoAbertasDTO> SolicitacoesPorPeriodo(SolicitacaoDataDTO dto, String token) {

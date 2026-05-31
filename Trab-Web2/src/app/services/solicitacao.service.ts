@@ -243,6 +243,30 @@ export class SolicitacaoService {
     );
   }
 
+  finalizarSolicitacao(idSolicitacao: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.funcionarioBaseUrl}/finalizar`,
+      { idSolicitacao },
+      { withCredentials: true }
+    );
+  }
+
+  realizarManutencao(idSolicitacao: number, descricao: string, orientacao: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.funcionarioBaseUrl}/realizarmanutencao`,
+      { idSolicitacao, descricao, orientacao },
+      { withCredentials: true }
+    );
+  }
+
+  redirecionarSolicitacao(idSolicitacao: number, funcionarioDestino: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.funcionarioBaseUrl}/redirecionar`,
+      { idSolicitacao, funcionarioDestino },
+      { withCredentials: true }
+    );
+  }
+
   obterRelatorioCategoria(): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/relatorio/categoria`, 

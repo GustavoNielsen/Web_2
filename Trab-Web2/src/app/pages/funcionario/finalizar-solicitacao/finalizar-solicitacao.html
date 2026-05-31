@@ -1,18 +1,20 @@
 <div class="modal-header bg-success text-white">
-  <h5 class="modal-title fw-bold">Finalizar Ordem de Serviço</h5>
+  <h5 class="modal-title fw-bold">Finalizar Ordem de Servico</h5>
   <button type="button" class="btn btn-close" data-bs-dismiss="modal" (click)="cancelarFinalizacao()"></button>
 </div>
 
 <div class="modal-body">
-  <p>Deseja confirmar a finalização da OS <strong>#{{ solicitacao?.id }}</strong>?</p>
+  <p>Deseja confirmar a finalizacao da OS <strong>#{{ solicitacao?.id }}</strong>?</p>
   <div class="alert alert-info">
     <div><strong>Cliente:</strong> {{ solicitacao?.cliente }}</div>
     <div><strong>Equipamento:</strong> {{ solicitacao?.equipamento }}</div>
   </div>
-  <p class="text-muted small">Essa ação vai registrar a entrega do equipamento ao cliente.</p>
+  <p class="text-muted small">Essa acao vai registrar a entrega do equipamento ao cliente.</p>
 </div>
 
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" (click)="cancelarFinalizacao()">Voltar</button>
-  <button type="button" class="btn btn-success fw-bold" data-bs-dismiss="modal" (click)="confirmarFinalizacao()">Sim, Finalizar OS</button>
+  <button type="button" class="btn btn-success fw-bold" data-bs-dismiss="modal" [disabled]="salvando" (click)="confirmarFinalizacao()">
+    {{ salvando ? 'Finalizando...' : 'Sim, Finalizar OS' }}
+  </button>
 </div>

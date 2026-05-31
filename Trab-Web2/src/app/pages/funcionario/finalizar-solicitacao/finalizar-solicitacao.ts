@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SolicitacaoService } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-finalizar-solicitacao',
@@ -8,21 +9,42 @@ import { CommonModule } from '@angular/common';
   templateUrl: './finalizar-solicitacao.html',
   styleUrl: './finalizar-solicitacao.css',
 })
-
 export class FinalizarSolicitacao {
 
-  @Input() solicitacao: any; //Recebe a solicitação a ser finalizada
-  @Output() finalizada = new EventEmitter<void>(); //emite um evento quando a solicitação é finalizada
-  @Output() cancelado = new EventEmitter<void>(); //emite um evento quando o processo é cancelado
+  @Input() solicitacao: any;
+  @Output() finalizada = new EventEmitter<any>();
+  @Output() cancelado = new EventEmitter<void>();
+
+  salvando = false;
+
+  constructor(private solicitacaoService: SolicitacaoService) {}
 
   confirmarFinalizacao() {
-    console.log(`Solicitação ${this.solicitacao.id} finalizada.`);
-    this.finalizada.emit(); //Emiteo evento de finalização
+    if (this.salvando) {
+      return;
+    }
+
+    if (!this.solicitacao?.id) {
+      alert('Solicitacao invalida.');
+      return;
+    }
+
+    this.salvando = true;
+
+    this.solicitacaoService.finalizarSolicitacao(this.solicitacao.id).subscribe({
+      next: () => {
+        this.finalizada.emit({ id: this.solicitacao.id });
+        this.salvando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao finalizar solicitacao:', erro);
+        alert('Nao foi possivel finalizar a solicitacao.');
+        this.salvando = false;
+      }
+    });
   }
 
   cancelarFinalizacao() {
-    console.log(`Solicitação ${this.solicitacao.id} cancelada.`);
-    this.cancelado.emit(); //emite o evento de cancelamento
+    this.cancelado.emit();
   }
-
 }

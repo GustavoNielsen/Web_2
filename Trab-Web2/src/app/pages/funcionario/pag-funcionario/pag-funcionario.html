@@ -110,7 +110,7 @@
         <app-efetuar-manutencao
           #modalManutencaoRef 
           [solicitacao]="solicitacaoSelecionada"
-          (realizarManutencao)="efetuarManutencao($event)"
+          (realizarManutencao)="manutencaoRegistrada($event)"
           (abrirRedirecionar)="redirecionar()"
           (cancelado)="solicitacaoSelecionada = null">
         </app-efetuar-manutencao>
@@ -141,7 +141,7 @@
           #componenteRedirecionar
           [solicitacao]="solicitacaoSelecionada"
           [funcionarios]="funcionariosDisponiveis"
-          (redirecionado)="redirecionar($event)"
+          (redirecionado)="redirecionamentoRegistrado($event)"
           (cancelado)="solicitacaoSelecionada = solicitacaoSelecionada">
         </app-redirecionar-solicitcao>
       </div>
@@ -154,7 +154,7 @@
       <div class="modal-content"> <!--modal-content é a estrutura do modal-->
         <app-finalizar-solicitacao 
           [solicitacao]="solicitacaoSelecionada"
-          (finalizada)="finalizar()"
+          (finalizada)="finalizacaoRegistrada($event)"
           (cancelado)="solicitacaoSelecionada = null">
         </app-finalizar-solicitacao>
       </div>
