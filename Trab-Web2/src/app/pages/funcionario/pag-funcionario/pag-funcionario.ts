@@ -54,54 +54,60 @@ export class PagFuncionario implements OnInit {
 
     this.filtro = 'SOLICITACOES-ABERTAS'; 
     this.dataAtual = new Date().toISOString().split('T')[0];
-    this.carregarPagina();
+    this.carregarDoBackend();
 
   }
 
   setFiltro(f: 'SOLICITACOES-ABERTAS' | 'HOJE' | 'TODAS' | 'PERIODO') {
     this.filtro = f;
-    this.aplicarFiltro();
+    this.carregarDoBackend();
   } 
 
   constructor(private CDR: ChangeDetectorRef) {} // CDR é um gatilho que força a atualização da tela em momentos específicos
 
-  aplicarFiltro() {
+  //Método que busca as solicitações do backend de acordo com o filtro selecionado, e atualiza a tela com os resultados.
+  carregarDoBackend() {
     this.loading = true;
     this.solicitacoesFiltradas = [];
-    this.CDR.detectChanges(); //forca a atualizacão para mostrar o carregamento antes de aplicar o filtro
-
-    const hojeStr = new Date().toDateString(); //string com a data de hoje sem hora, usada para comparar apenas a data
-
-    let listaBase = this.todasSolicitacoes.filter(s => { //filtra as solicitações redirecionadas deacordo com o usuario
-      if (s.estado === 'REDIRECIONADA') {
-        return s.funcionarioDestino === this.nomeUsuario; //mostra as redirecionadas com o funcionário destino igual ao usuario logado
+    this.CDR.detectChanges();
+ 
+    let chamada;
+    if (this.filtro === 'SOLICITACOES-ABERTAS') {
+      chamada = this.solicitacaoService.solicitacoesAbertas(0);
+    } else if (this.filtro === 'HOJE') {
+      chamada = this.solicitacaoService.solicitacoesHoje(0);
+    } else if (this.filtro === 'PERIODO') {
+      // Só busca quando as duas datas estiverem preenchidas
+      if (!this.dataInicio || !this.dataFim) {
+        this.loading = false;
+        this.CDR.detectChanges();
+        return;
       }
-      return true;
+      chamada = this.solicitacaoService.solicitacoesPorPeriodo(this.dataInicio, this.dataFim, 0);
+    } else {
+      // TODAS
+      chamada = this.solicitacaoService.solicitacoesTotais(0);
+    }
+ 
+    chamada.subscribe({
+      next: (data: any[]) => {
+        this.solicitacoesFiltradas = data;
+        this.loading = false;
+        this.CDR.detectChanges();
+      },
+      error: (erro: any) => {
+        console.error('Erro ao buscar as solicitações:', erro);
+        this.solicitacoesFiltradas = [];
+        this.loading = false;
+        this.CDR.detectChanges();
+      }
     });
+  }
 
-    if (this.filtro === 'SOLICITACOES-ABERTAS') { //filtro para mostrar apenas as solicitações abertas
-      this.solicitacoesFiltradas = listaBase.filter(s => s.estado === 'ABERTA');
+  aplicarFiltro() {
+    if (this.filtro === 'PERIODO') {
+      this.carregarDoBackend();
     }
-    else if (this.filtro === 'HOJE') {
-      this.solicitacoesFiltradas = listaBase.filter(s => new Date(s.dataHora).toDateString() === hojeStr);
-    } 
-    else if (this.filtro === 'PERIODO' && this.dataInicio && this.dataFim) {
-      // Converte as strings dos inputs de data para objetos Date
-      const dataInicio = new Date(this.dataInicio + 'T00:00:00');
-      const dataFim = new Date(this.dataFim + 'T23:59:59');
-
-      this.solicitacoesFiltradas = listaBase.filter(s => {
-        const dataSolicitacao = new Date(s.dataHora);
-        return dataSolicitacao >= dataInicio && dataSolicitacao <= dataFim;
-      });
-    } 
-    else {
-      // Se for 'TODAS' ou período incompleto, mostra tudo
-      this.solicitacoesFiltradas = [...listaBase];
-    }
-
-    this.loading = false;
-    this.CDR.detectChanges(); // Força a atualização depois do filtro seraplicado //simula um delay de 500ms para mostrar o carregamento
   }
 
   // Lógica de cores para os Badges padronizada com Constantes
@@ -120,38 +126,13 @@ export class PagFuncionario implements OnInit {
     }
   }
 
-  carregarPagina() {
-    // Evita múltiplas chamadas se já estiver carregando ou se chegou no fim
-    if (this.carregandoMais || this.fimDosDados) return;
-    
-    this.carregandoMais = true;
-    
-    // Chama a API passando a página atual (0, 1, 2...)
-    this.solicitacaoService.listarPaginado(this.paginaAtual).subscribe({
-      next: (data: any[]) => {
-        if (data.length === 0) {
-          this.fimDosDados = true; // Se o Java devolver vazio, acabaram as OS
-        } else {
-          // Pega os dados que já existem na tela e "soma" com os novos que chegaram
-          this.todasSolicitacoes = [...this.todasSolicitacoes, ...data];
-          this.paginaAtual++; // Prepara para a próxima página
-          this.aplicarFiltro(); // Aplica os filtros visuais na nova lista
-        }
-        this.carregandoMais = false;
-      },
-      error: (erro) => {
-        console.error('Erro ao buscar as solicitações da página:', erro);
-        this.carregandoMais = false;
-      }
-    });
+   carregarPagina() {
+    // Scroll infinito desativado no modo "filtra no back" (cada aba traz sua página).
+    return;
   }
-
+ 
   rolarTabela(event: any) {
-    const elemento = event.target;
-    // Se a barra de rolagem chegou a 50px do fim, ele pede a próxima página
-    if (elemento.scrollHeight - elemento.scrollTop <= elemento.clientHeight + 50) {
-      this.carregarPagina();
-    }
+    // Scroll infinito desativado no modo "filtra no back".
   }
 
   efetuarOrcamento(dados: any) {
