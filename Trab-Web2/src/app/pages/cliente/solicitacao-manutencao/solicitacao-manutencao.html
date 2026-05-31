@@ -54,13 +54,9 @@
           required
         >
           <option value="">Selecione o tipo...</option>
-          <option value="Notebooks">Notebook</option>
-          <option value="Smartphones">Smartphone</option>
-          <option value="Monitores">Monitor</option>
-          <option value="Impressoras">Impressora</option>
-          <option value="Desktops">Desktop</option>
-          <option value="Periféricos">Periférico</option>
-          <option value="Consoles">Console</option>
+           @for (cat of categorias; track cat.id) {
+            <option [value]="cat.nome">{{ cat.nome }}</option>
+          }
         </select>
 
         <div
