@@ -36,10 +36,6 @@ export class EditarFuncionarioComponent {
 
   atualizar(): void {
     if (this.formulario.form.valid) {
-      if (typeof this.funcionario.nasc === 'string') {
-        this.funcionario.nasc = new Date(this.funcionario.nasc);
-      }
-      
       //manda as alterações para o Java e aguarda a confirmação
       this.funcionarioService.atualizar(this.funcionario).subscribe({
         next: () => this.router.navigate(['/funcionario/users']),
