@@ -2,6 +2,7 @@ package com.web2.Back.service;
 
 import com.web2.Back.dto.OrcarSolicitacaoDTO;
 import com.web2.Back.dto.RealizarManutencaoDTO;
+import com.web2.Back.dto.RedirecionamentoDTO;
 import com.web2.Back.model.*;
 import com.web2.Back.repository.*;
 import com.web2.Back.security.JwtService;
@@ -210,5 +211,98 @@ public class FuncionarioService {
         manutencaoRepository.save(manutencao);
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
+    }
+
+    public void RedirecionarManutencao(RedirecionamentoDTO dto, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário origem não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        Orcamento orcamento = orcamentoRepository
+                .findBySolicitacaoId(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Orcamento não encontrado"
+                        )
+                );
+
+        boolean existe = redirecionamentoRepository
+                .existsBySolicitacaoId(dto.idSolicitacao());
+
+        if(existe){
+
+            Redirecionamento ultimoRedirecionamento =
+                    redirecionamentoRepository
+                            .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(
+                                    dto.idSolicitacao()
+                            )
+                            .orElseThrow(() ->
+                                    new ResponseStatusException(
+                                            HttpStatus.NOT_FOUND,
+                                            "Redirecionamento não encontrado"
+                                    )
+                            );
+
+            if(!ultimoRedirecionamento
+                    .getFuncionarioDestino()
+                    .getId()
+                    .equals(funcionario.getId())){
+
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Solicitação não pertence a esse funcionário"
+                );
+            }
+
+        } else {
+
+            if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Orcamento não pertence a esse funcionario"
+                );
+            }
+        }
+
+        Funcionario funcionarioDestino = funcionarioRepository.findById(dto.funcionarioDestino())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário destino não encontrado"
+                        )
+                );
+
+        if(funcionario.getId().equals(funcionarioDestino.getId())){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Funcionário não pode redirecionar para si mesmo"
+            );
+        }
+
+        Redirecionamento redirecionamento = new Redirecionamento(solicitacao, funcionario, funcionarioDestino);
+
+        solicitacao.setStatus("REDIRECIONADA");
+        HistoricoSolicitacao historico =
+                new HistoricoSolicitacao(solicitacao, "APROVADA");
+
+        solicitacaoRepository.save(solicitacao);
+        historicoRepository.save(historico);
+        redirecionamentoRepository.save(redirecionamento);
     }
 }

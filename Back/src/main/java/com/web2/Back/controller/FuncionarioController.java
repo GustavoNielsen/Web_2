@@ -2,6 +2,7 @@ package com.web2.Back.controller;
 
 import com.web2.Back.dto.OrcarSolicitacaoDTO;
 import com.web2.Back.dto.RealizarManutencaoDTO;
+import com.web2.Back.dto.RedirecionamentoDTO;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.service.FuncionarioService;
 
@@ -56,7 +57,12 @@ public class FuncionarioController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/redirecionar")
+    public ResponseEntity<?> redirecionarManutencao(@RequestBody RedirecionamentoDTO dto, @CookieValue("jwt") String token){
+        funcionarioService.RedirecionarManutencao(dto, token);
 
+        return ResponseEntity.ok().build();
+    }
 
 
 }
