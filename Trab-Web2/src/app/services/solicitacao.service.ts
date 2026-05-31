@@ -113,10 +113,15 @@ export class SolicitacaoService {
     );
   }
 
-  inserir(solicitacao: Solicitacao): Observable<Solicitacao> {
-    return this.http.post<Solicitacao>(
-      this.apiUrl, 
-      solicitacao, 
+  inserir(solicitacao: Solicitacao): Observable<any> {
+    const dto = {
+      equipamento: solicitacao.descricaoEquipamento,
+      categoria: solicitacao.categoria,
+      descricao: solicitacao.descricaoDefeito
+    };
+    return this.http.post(
+      'http://localhost:8080/api/clientes/abrirsolicitacao',
+      dto,
       { withCredentials: true }
     );
   }
