@@ -1,51 +1,79 @@
 <div class="modal-header bg-light">
-  <h5 class="modal-title fw-bold">Detalhes da Solicitação #{{ solicitacao?.id }}</h5>
+  <h5 class="modal-title fw-bold">Detalhes da Solicitacao #{{ solicitacao?.id }}</h5>
   <button type="button" class="btn btn-close" data-bs-dismiss="modal" (click)="fechar.emit()"></button>
 </div>
 
 <div class="modal-body">
+  @if (carregando) {
+    <div class="text-center py-4">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted small mt-2 mb-0">Carregando detalhes...</p>
+    </div>
+  } @else if (erro) {
+    <div class="alert alert-danger mb-0">{{ erro }}</div>
+  } @else {
     <div class="d-flex justify-content-between align-items-start mb-3">
       <div>
         <p class="small text-muted mb-0">Cliente:</p>
-        <span class="fw-bold">{{ solicitacao?.nomeCliente }}</span>
+        <span class="fw-bold">{{ solicitacao?.cliente }}</span>
       </div>
-        <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(solicitacao?.estado)">{{ solicitacao?.estado | statusFormat }}</span>
+      <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(statusAtual)">
+        {{ statusAtual | statusFormat }}
+      </span>
     </div>
 
-  <div class="mb-3 p-3 bg-light rounded border">
-    <h6 class="fw-bold small">EQUIPAMENTO</h6>
-    <p class="mb-1">{{ solicitacao?.descricaoEquipamento }}</p>
-    <label class="small text-muted">Categoria: {{ solicitacao?.categoria || 'Não informada' }}</label>
-  </div>
+    <div class="mb-3 p-3 bg-light rounded border">
+      <h6 class="fw-bold small">EQUIPAMENTO</h6>
+      <p class="mb-1">{{ equipamento }}</p>
+      <label class="small text-muted">Categoria: {{ categoria }}</label>
+    </div>
 
-  <div class="mb-3">
-    <h6 class="fw-bold small">DESCRIÇÃO DO DEFEITO</h6>
-    <p class="text-secondary small">{{ solicitacao?.descricaoDefeito || 'Nenhuma descrição detalhada.' }}</p>
-  </div>
+    <div class="mb-3">
+      <h6 class="fw-bold small">DESCRIÇÃO DO DEFEITO</h6>
+      <p class="text-secondary small">{{ descricao }}</p>
+    </div>
 
-  <h6 class="fw-bold small mb-0 border-bottom pb-2">HISTÓRICO DE ATUALIZAÇÕES</h6>
-  <div class="table-responsive" style="max-height: 140px; overflow-y: auto;">
-    <table class="table table-sm table-hover small">
-      <thead class="text-muted sticky-top">
-        <tr>
-          <th>Data/Hora</th>
-          <th>Estado</th>
-          <th>Responsável</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (h of solicitacao?.historico; track h.data) {
-          <tr class="border-bottom-0">
-            <td>{{ h.data | date:'dd/MM/yyyy HH:mm' }}</td>
-            <td><span class="fw-bold text-dark">{{ h.estado | statusFormat }}</span></td>
-            <td>{{ h.funcionario }} {{ h.destino ? '-> ' + h.destino : '' }}</td> 
+    @if (detalhes?.orcamento) {
+      <div class="mb-3 p-2 border rounded">
+        <h6 class="fw-bold small">ORÇAMENTO</h6>
+        <p class="mb-1">Valor: <strong>{{ detalhes?.orcamento?.valor | currency:'BRL':'symbol':'1.2-2' }}</strong></p>
+        <p class="mb-1 small text-muted">Funcionario: {{ detalhes?.orcamento?.funcionario }}</p>
+        <p class="mb-0 small text-muted">Data: {{ detalhes?.orcamento?.dataOrcamento | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    }
+
+    @if (detalhes?.manutencao) {
+      <div class="mb-3 p-2 border rounded">
+        <h6 class="fw-bold small">MANUTENÇÃO</h6>
+        <p class="mb-1">{{ detalhes?.manutencao?.descricao }}</p>
+        <p class="mb-1 small text-muted">Orientacao: {{ detalhes?.manutencao?.orientacao }}</p>
+        <p class="mb-1 small text-muted">Funcionario: {{ detalhes?.manutencao?.funcionario }}</p>
+        <p class="mb-0 small text-muted">Data: {{ detalhes?.manutencao?.dataManutencao | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    }
+
+    <h6 class="fw-bold small mb-0 border-bottom pb-2">HISTORICO DE ATUALIZACOES</h6>
+    <div class="table-responsive" style="max-height: 140px; overflow-y: auto;">
+      <table class="table table-sm table-hover small">
+        <thead class="text-muted sticky-top">
+          <tr>
+            <th>Data/Hora</th>
+            <th>Estado</th>
           </tr>
-        } @empty {
-          <tr><td colspan="3" class="text-center text-muted">Nenhum histórico registrado.</td></tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          @for (h of detalhes?.historico; track h.data) {
+            <tr class="border-bottom-0">
+              <td>{{ h.data | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="fw-bold text-dark">{{ h.status | statusFormat }}</span></td>
+            </tr>
+          } @empty {
+            <tr><td colspan="3" class="text-center text-muted">Nenhum historico registrado.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>
 
 <div class="modal-footer">

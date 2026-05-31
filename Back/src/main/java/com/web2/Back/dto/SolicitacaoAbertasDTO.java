@@ -7,6 +7,8 @@ public record SolicitacaoAbertasDTO(
         LocalDateTime dataCriacao,
         String cliente,
         String equipamento,
-        String status
+        String status,
+        String descricao,
+        String categoria
 ) {
 }

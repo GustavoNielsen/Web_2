@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { STATUS_SOLICITACAO } from '../../../shared/constants/status.constants';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
+import { InformacoesSolicitacaoDTO } from '../../../services/solicitacao.service';
 
 @Component({
   selector: 'app-visualizar-solicitacao',
@@ -12,7 +13,26 @@ import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 })
 export class VisualizarSolicitacao {
   @Input() solicitacao: any;
+  @Input() detalhes: InformacoesSolicitacaoDTO | null = null;
+  @Input() carregando = false;
+  @Input() erro = '';
   @Output() fechar = new EventEmitter<void>();
+
+  get statusAtual(): string {
+    return this.detalhes?.status ?? this.solicitacao?.estado ?? '';
+  }
+
+  get equipamento(): string {
+    return this.detalhes?.equipamento ?? this.solicitacao?.equipamento ?? '-';
+  }
+
+  get categoria(): string {
+    return this.detalhes?.categoria ?? this.solicitacao?.categoria ?? 'Não informada';
+  }
+
+  get descricao(): string {
+    return this.detalhes?.defeito ?? this.solicitacao?.descricao ?? 'Nenhuma descrição detalhada.';
+  }
 
   // Reutilizando sua escala de cores oficial do RF013
   getStatusClass(status: string): string {

@@ -364,7 +364,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -398,7 +400,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -427,7 +431,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -461,7 +467,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
