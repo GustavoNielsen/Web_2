@@ -3,202 +3,173 @@ package com.web2.Back.controller;
 import com.web2.Back.dto.FuncionarioCreateDTO;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.repository.FuncionarioRepository;
+import com.web2.Back.security.JwtService;
 import com.web2.Back.service.EmailService;
 import com.web2.Back.service.SenhaService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/crudfuncionarios")
 public class CrudFuncionarioController {
 
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    private final FuncionarioRepository funcionarioRepository;
+    private final SenhaService senhaService;
+    private final EmailService emailService;
+    private final JwtService jwtService;
 
-    @Autowired
-    private SenhaService senhaService;
-
-    @Autowired
-    private EmailService emailService;
-
-    // LISTAR TODOS
-    @GetMapping
-    public List<Funcionario> listarTodos() {
-        return funcionarioRepository.findAll();
+    public CrudFuncionarioController(
+            FuncionarioRepository funcionarioRepository,
+            SenhaService senhaService,
+            EmailService emailService,
+            JwtService jwtService
+    ) {
+        this.funcionarioRepository = funcionarioRepository;
+        this.senhaService = senhaService;
+        this.emailService = emailService;
+        this.jwtService = jwtService;
     }
 
-    // BUSCAR POR ID
+    @GetMapping
+    public ResponseEntity<List<Funcionario>> listarTodos() {
+        return ResponseEntity.ok(funcionarioRepository.findAll());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<Funcionario> buscarPorId(
-            @PathVariable Long id
-    ) {
-
-        Optional<Funcionario> funcionario =
-                funcionarioRepository.findById(id);
-
-        return funcionario
+    public ResponseEntity<Funcionario> buscarPorId(@PathVariable Long id) {
+        return funcionarioRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // CADASTRAR
     @PostMapping
-    public ResponseEntity<?> cadastrar(
-            @RequestBody FuncionarioCreateDTO dados
-    ) {
+    public ResponseEntity<?> cadastrar(@RequestBody FuncionarioCreateDTO dados) {
+        validarDadosCadastro(dados);
+        validarEmailDisponivel(dados.email(), null);
 
-        // verifica email duplicado
-        if (funcionarioRepository
-                .findByEmail(dados.email())
-                .isPresent()) {
+        String senhaPura = senhaService.gerarSenhaAleatoria();
+        String salt = senhaService.gerarSalt();
 
-            return ResponseEntity
-                    .badRequest()
-                    .body("E-mail já cadastrado.");
-        }
-
-        // gera senha aleatória
-        String senhaPura =
-                senhaService.gerarSenhaAleatoria();
-
-        // gera salt
-        String salt =
-                senhaService.gerarSalt();
-
-        // gera hash da senha
-        String senhaHash =
-                senhaService.hashSenha(
-                        senhaPura,
-                        salt
-                );
-
-        // cria funcionário
         Funcionario funcionario = new Funcionario();
-
-        funcionario.setNome(dados.nome());
-        funcionario.setEmail(dados.email());
+        funcionario.setNome(dados.nome().trim());
+        funcionario.setEmail(dados.email().trim());
         funcionario.setTelefone(dados.telefone());
-        funcionario.setDataNascimento(
-                dados.dataNascimento()
-        );
-
-        funcionario.setSenha(senhaHash);
+        funcionario.setDataNascimento(dados.dataNascimento());
+        funcionario.setSenha(senhaService.hashSenha(senhaPura, salt));
         funcionario.setSalt(salt);
-
         funcionario.setTipo("FUNCIONARIO");
         funcionario.setAtivo(true);
 
-        // salva no banco
         funcionarioRepository.save(funcionario);
+        emailService.enviarSenha(funcionario.getEmail(), senhaPura);
 
-        // envia senha por email
-        emailService.enviarSenha(
-                funcionario.getEmail(),
-                senhaPura
-        );
-
-        return ResponseEntity.ok(
-                "Funcionário cadastrado com sucesso."
-        );
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Funcionario cadastrado com sucesso.");
     }
 
-    // ATUALIZAR
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(
             @PathVariable Long id,
-            @RequestBody Funcionario dados
+            @RequestBody FuncionarioCreateDTO dados
     ) {
+        validarDadosCadastro(dados);
+        validarEmailDisponivel(dados.email(), id);
 
-        Optional<Funcionario> funcionarioOptional =
-                funcionarioRepository.findById(id);
+        Funcionario funcionario = funcionarioRepository.findById(id)
+                .orElse(null);
 
-        if (funcionarioOptional.isEmpty()) {
+        if (funcionario == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Funcionario funcionario =
-                funcionarioOptional.get();
-
-        // verifica email duplicado
-        Optional<Funcionario> emailExistente =
-                funcionarioRepository.findByEmail(
-                        dados.getEmail()
-                );
-
-        if (
-                emailExistente.isPresent()
-                        && !emailExistente.get()
-                        .getId()
-                        .equals(id)
-        ) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("E-mail já está em uso.");
-        }
-
-        funcionario.setNome(dados.getNome());
-        funcionario.setEmail(dados.getEmail());
-        funcionario.setTelefone(dados.getTelefone());
-
-        funcionario.setDataNascimento(
-                dados.getDataNascimento()
-        );
-
-        funcionario.setAtivo(dados.getAtivo());
+        funcionario.setNome(dados.nome().trim());
+        funcionario.setEmail(dados.email().trim());
+        funcionario.setTelefone(dados.telefone());
+        funcionario.setDataNascimento(dados.dataNascimento());
 
         funcionarioRepository.save(funcionario);
 
-        return ResponseEntity.ok(
-                "Funcionário atualizado com sucesso."
-        );
+        return ResponseEntity.ok("Funcionario atualizado com sucesso.");
     }
 
-    // REMOVER
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> remover(
-            @PathVariable Long id,
-            @RequestParam Long funcionarioLogadoId
-    ) {
+    public ResponseEntity<?> remover(@PathVariable Long id, @CookieValue("jwt") String token) {
 
-        Optional<Funcionario> funcionario =
-                funcionarioRepository.findById(id);
+        Long userId = jwtService.extrairUserId(token);
 
-        if (funcionario.isEmpty()) {
+        Funcionario funcionarioRequest = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionario nao encontrado"
+                        )
+                );
+
+        Funcionario funcionario = funcionarioRepository.findById(id)
+                .orElse(null);
+
+        if (funcionario == null) {
             return ResponseEntity.notFound().build();
         }
 
-        // não pode remover a si mesmo
-        if (id.equals(funcionarioLogadoId)) {
-
+        if (funcionario.getId().equals(funcionarioRequest.getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(
-                            "Você não pode remover a si mesmo."
-                    );
+                    .body("Voce nao pode remover a si mesmo.");
         }
 
-        // não pode remover último funcionário
-        long quantidade =
-                funcionarioRepository.count();
-
-        if (quantidade <= 1) {
-
+        if (funcionarioRepository.count() <= 1) {
             return ResponseEntity
                     .badRequest()
-                    .body(
-                            "Não é possível remover o último funcionário."
-                    );
+                    .body("Nao e possivel remover o ultimo funcionario.");
         }
 
-        funcionarioRepository.deleteById(id);
+        funcionarioRepository.delete(funcionario);
 
-        return ResponseEntity.ok(
-                "Funcionário removido com sucesso."
-        );
+        return ResponseEntity.ok("Funcionario removido com sucesso.");
+    }
+
+    private Funcionario buscarFuncionario(Long id) {
+        return funcionarioRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionario nao encontrado"
+                        )
+                );
+    }
+
+    private void validarDadosCadastro(FuncionarioCreateDTO dados) {
+        if (dados == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dados do funcionario sao obrigatorios");
+        }
+
+        if (dados.nome() == null || dados.nome().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome e obrigatorio");
+        }
+
+        if (dados.email() == null || dados.email().isBlank() || !dados.email().contains("@")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email invalido");
+        }
+
+        if (dados.dataNascimento() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data de nascimento e obrigatoria");
+        }
+    }
+
+    private void validarEmailDisponivel(String email, Long funcionarioIdIgnorado) {
+        funcionarioRepository.findByEmail(email.trim())
+                .filter(funcionario -> !funcionario.getId().equals(funcionarioIdIgnorado))
+                .ifPresent(funcionario -> {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Email ja esta em uso"
+                    );
+                });
     }
 }
