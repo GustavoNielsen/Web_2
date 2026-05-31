@@ -1,32 +1,60 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Solicitacao } from '../shared/models/solicitacao.model';
 
-const LS_CHAVE = 'solicitacoes';
+//const LS_CHAVE = 'solicitacoes';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SolicitacaoService {
 
+  private apiUrl = 'http://localhost:8080/solicitacoes'; 
+
+  constructor(private http: HttpClient) {}
+
+  listarTodos(): Observable<Solicitacao[]> {
+    return this.http.get<Solicitacao[]>(
+      this.apiUrl,
+      {
+        withCredentials: true 
+      }
+    );
+  }
+
+  atualizar(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.put<Solicitacao>(
+      `${this.apiUrl}/${solicitacao.id}`, 
+      solicitacao,
+      { withCredentials: true }
+    );
+  }
+
+  inserir(solicitacao: Solicitacao): Observable<Solicitacao> {
+    return this.http.post<Solicitacao>(
+      this.apiUrl, 
+      solicitacao, 
+      { withCredentials: true }
+    );
+  }
+
+  /**
+  
   listarTodos(): Solicitacao[] {
     const solicitacoes = localStorage[LS_CHAVE];
-
     if (!solicitacoes) {
       return this.carregarSolicitacoesPadrao();
     }
-
     const lista: Solicitacao[] = JSON.parse(solicitacoes);
-
     lista.forEach(s => {
       s.dataHora = new Date(s.dataHora);
-
       if (s.historico) {
         s.historico.forEach(h => {
           h.data = new Date(h.data);
         });
       }
     });
-
     return lista;
   }
 
@@ -78,6 +106,10 @@ export class SolicitacaoService {
         id: 1001,
         dataHora: new Date('2026-04-05T09:00:00'),
         nomeCliente: 'João',
+        email: 'joao.silva@email.com',
+        cpf: '111.222.333-44',
+        telefone: '(41) 98888-7777',
+        endereco: 'Rua A, 1, Curitiba - PR',
         descricaoEquipamento: 'Notebook positivo',
         categoria: 'Notebooks',
         descricaoDefeito: 'Tela quebrada após queda e dobradiça esquerda solta.',
@@ -90,6 +122,10 @@ export class SolicitacaoService {
         id: 1002,
         dataHora: new Date('2026-04-03T14:30:00'),
         nomeCliente: 'José',
+        email: 'jose.silva@email.com',
+        cpf: '222.333.444-55',
+        telefone: '(41) 98888-6666',
+        endereco: 'Rua B, 2, Curitiba - PR',
         descricaoEquipamento: 'Computador desktop',
         categoria: 'Desktops',
         descricaoDefeito: 'Lentidão extrema, demora 10 minutos para iniciar o Windows.',
@@ -103,6 +139,10 @@ export class SolicitacaoService {
         id: 1003,
         dataHora: new Date('2026-04-02T10:15:00'),
         nomeCliente: 'Joana',
+        email: 'joana.silva@email.com',
+        cpf: '333.444.555-66',
+        telefone: '(41) 98888-5555',
+        endereco: 'Rua C, 3, Curitiba - PR',
         descricaoEquipamento: 'Impressora HP',
         categoria: 'Impressoras',
         descricaoDefeito: 'Não imprime, luz de erro piscando',
@@ -118,4 +158,5 @@ export class SolicitacaoService {
     localStorage[LS_CHAVE] = JSON.stringify(solicitacoes);
     return solicitacoes;
   }
+  **/
 }
