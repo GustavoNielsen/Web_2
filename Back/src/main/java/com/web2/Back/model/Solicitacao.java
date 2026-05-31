@@ -1,11 +1,13 @@
 package com.web2.Back.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "solicitacoes")
 public class Solicitacao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,9 +19,8 @@ public class Solicitacao {
     @Column(nullable = false)
     private String descricaoEquipamento;
 
-    @ManyToOne
-    @JoinColumn(name = "categoria_id", nullable = false)
-    private CategoriaEquipamentos categoria;
+    @Column(nullable = false)
+    private String categoria;
 
     @Column(nullable = false)
     private String descricaoDefeito;
@@ -28,30 +29,112 @@ public class Solicitacao {
     private LocalDateTime dataCriacao;
 
     @Column
-    private Double valorOrcado;
+    private LocalDateTime dataPagamento;
 
-    public Solicitacao() {}
+    @OneToOne(mappedBy = "solicitacao")
+    private Manutencao manutencao;
 
-    public Solicitacao(Cliente cliente, String descricaoEquipamento, CategoriaEquipamentos categoria, String descricaoDefeito) {
+    @OneToOne(mappedBy = "solicitacao")
+    private Orcamento orcamento;
+
+    @Column(nullable = false)
+    private String status;
+
+    public Solicitacao() {
+    }
+
+    public Solicitacao(
+            Cliente cliente,
+            String descricaoEquipamento,
+            String categoria,
+            String descricaoDefeito,
+            String status
+    ) {
         this.cliente = cliente;
         this.descricaoEquipamento = descricaoEquipamento;
         this.categoria = categoria;
         this.descricaoDefeito = descricaoDefeito;
         this.dataCriacao = LocalDateTime.now();
+        this.status = status;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Cliente getCliente() { return cliente; }
-    public void setCliente(Cliente cliente) { this.cliente = cliente; }
-    public String getDescricaoEquipamento() { return descricaoEquipamento; }
-    public void setDescricaoEquipamento(String descricaoEquipamento) { this.descricaoEquipamento = descricaoEquipamento; }
-    public CategoriaEquipamentos getCategoria() { return categoria; }
-    public void setCategoria(CategoriaEquipamentos categoria) { this.categoria = categoria; }
-    public String getDescricaoDefeito() { return descricaoDefeito; }
-    public void setDescricaoDefeito(String descricaoDefeito) { this.descricaoDefeito = descricaoDefeito; }
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
-    public Double getValorOrcado() { return valorOrcado; }
-    public void setValorOrcado(Double valorOrcado) { this.valorOrcado = valorOrcado; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getDescricaoEquipamento() {
+        return descricaoEquipamento;
+    }
+
+    public void setDescricaoEquipamento(String descricaoEquipamento) {
+        this.descricaoEquipamento = descricaoEquipamento;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getDescricaoDefeito() {
+        return descricaoDefeito;
+    }
+
+    public void setDescricaoDefeito(String descricaoDefeito) {
+        this.descricaoDefeito = descricaoDefeito;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    public Manutencao getManutencao() {
+        return manutencao;
+    }
+
+    public void setManutencao(Manutencao manutencao) {
+        this.manutencao = manutencao;
+    }
+
+    public Orcamento getOrcamento() {
+        return orcamento;
+    }
+
+    public void setOrcamento(Orcamento orcamento) {
+        this.orcamento = orcamento;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
