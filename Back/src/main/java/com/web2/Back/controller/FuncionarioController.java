@@ -1,9 +1,6 @@
 package com.web2.Back.controller;
 
-import com.web2.Back.dto.FinalizarSolicitacaoDTO;
-import com.web2.Back.dto.OrcarSolicitacaoDTO;
-import com.web2.Back.dto.RealizarManutencaoDTO;
-import com.web2.Back.dto.RedirecionamentoDTO;
+import com.web2.Back.dto.*;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.service.FuncionarioService;
 
@@ -50,7 +47,26 @@ public class FuncionarioController {
         );
     }
 
-    
+    @GetMapping("/solicitacaoesHoje/{page}")
+    public ResponseEntity<?>GetSolicitacoesHoje(@PathVariable int page, @CookieValue("jwt") String token){
+        return ResponseEntity.ok(
+                funcionarioService.SolicitacoesHoje(page, token)
+        );
+    }
+
+    @GetMapping("/solicitacaoesTotais/{page}")
+    public ResponseEntity<?>GetSolicitacoesTotais(@PathVariable int page, @CookieValue("jwt") String token){
+        return ResponseEntity.ok(
+                funcionarioService.SolicitacoesTotais(page, token)
+        );
+    }
+
+    @PostMapping("/solicitacaoPeriodo")
+    public ResponseEntity<?>GetSolicitacaoPeriodo(@RequestBody SolicitacaoDataDTO dto, @CookieValue("jwt") String token){
+        return ResponseEntity.ok(
+                funcionarioService.SolicitacoesPorPeriodo(dto, token)
+        );
+    }
 
     @PutMapping("/orcar")
     public ResponseEntity<?> orcarSolicitacao(@RequestBody OrcarSolicitacaoDTO dto, @CookieValue("jwt") String token) {

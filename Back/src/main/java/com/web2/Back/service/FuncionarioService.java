@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -356,6 +357,100 @@ public class FuncionarioService {
                 .findByStatus(
                         "ABERTA",
                         PageRequest.of(page, 30)
+                )
+                .stream()
+                .map(s -> new SolicitacaoAbertasDTO(
+                        s.getDataCriacao(),
+                        s.getCliente().getNome(),
+                        s.getDescricaoEquipamento(),
+                        s.getStatus()
+                ))
+                .toList();
+    }
+
+    public List<SolicitacaoAbertasDTO> SolicitacoesHoje(int page, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário origem não encontrado"
+                        )
+                );
+
+        int pageSize = 30;
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.plusDays(1).atStartOfDay();
+
+        return solicitacaoRepository
+                .findAtuadasPorFuncionarioNoPeriodo(
+                        funcionario.getId(),
+                        inicio,
+                        fim,
+                        PageRequest.of(Math.max(page, 0), pageSize)
+                )
+                .stream()
+                .map(s -> new SolicitacaoAbertasDTO(
+                        s.getDataCriacao(),
+                        s.getCliente().getNome(),
+                        s.getDescricaoEquipamento(),
+                        s.getStatus()
+                ))
+                .toList();
+    }
+
+    public List<SolicitacaoAbertasDTO> SolicitacoesTotais(int page, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário origem não encontrado"
+                        )
+                );
+
+        int pageSize = 30;
+
+        return solicitacaoRepository
+                .findAtuadasPorFuncionario(
+                        funcionario.getId(),
+                        PageRequest.of(Math.max(page, 0), pageSize)
+                )
+                .stream()
+                .map(s -> new SolicitacaoAbertasDTO(
+                        s.getDataCriacao(),
+                        s.getCliente().getNome(),
+                        s.getDescricaoEquipamento(),
+                        s.getStatus()
+                ))
+                .toList();
+    }
+
+    public List<SolicitacaoAbertasDTO> SolicitacoesPorPeriodo(SolicitacaoDataDTO dto, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário origem não encontrado"
+                        )
+                );
+
+        int pageSize = 30;
+        int page = Math.max(dto.page(), 0);
+        LocalDateTime inicio = dto.dataMin().atStartOfDay();
+        LocalDateTime fim = dto.dataMax().plusDays(1).atStartOfDay();
+
+        return solicitacaoRepository
+                .findAtuadasPorFuncionarioNoPeriodo(
+                        funcionario.getId(),
+                        inicio,
+                        fim,
+                        PageRequest.of(page, pageSize)
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
