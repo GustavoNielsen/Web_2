@@ -17,6 +17,16 @@ interface SolicitacoesClienteResponseDTO {
   solicitacoes: SolicitacaoClienteResumoDTO[];
 }
 
+export interface GetOrcamentoClienteDTO {
+  idSolicitacao: number;
+  descricaoEquipamento: string;
+  categoria: string;
+  defeito: string;
+  dataAbertura: string;
+  status: string;
+  valor: number;
+}
+
 export interface InformacoesSolicitacaoDTO {
   id: number;
   equipamento: string;
@@ -82,6 +92,13 @@ export class SolicitacaoService {
       { withCredentials: true }
     );
   }
+
+  buscarOrcamentoCliente(idSolicitacao: number): Observable<GetOrcamentoClienteDTO> {
+  return this.http.get<GetOrcamentoClienteDTO>(
+    `${this.clienteBaseUrl}/orcamento/${idSolicitacao}`,
+    { withCredentials: true }
+  );
+}
 
   buscarInformacoesFuncionario(idSolicitacao: number): Observable<InformacoesSolicitacaoDTO> {
     return this.http.get<InformacoesSolicitacaoDTO>(
