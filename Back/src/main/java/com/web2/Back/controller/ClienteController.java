@@ -82,6 +82,20 @@ public class ClienteController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/resgatar/{id}")
+    public ResponseEntity<GetResgateDTO> getResgate(@PathVariable Long id, @CookieValue("jwt") String token){
+        GetResgateDTO response = clienteService.getResgateService(id, token);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/resgatar")
+    public ResponseEntity<?> resgatarSolicitacao(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+        clienteService.resgatarSolicitacaoService(dto, token);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/pagar/{id}")
     public ResponseEntity<GetPagarDTO> getPagamento(@PathVariable Long id, @CookieValue("jwt") String token){
         GetPagarDTO response = clienteService.getPagarService(id, token);
