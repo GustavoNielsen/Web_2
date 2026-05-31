@@ -2,23 +2,46 @@
   <div class="col-11 col-md-5">
     <div class="card shadow border-0">
       <div class="card-header bg-danger text-white text-center py-3">
-        <h2 class="mb-0 h4 fw-bold">MOTIVO DA REJEIÇÃO</h2>
+        <h2 class="mb-0 h4 fw-bold">MOTIVO DA REJEICAO</h2>
       </div>
 
       <div class="card-body p-4 bg-light">
         <form #rejeicaoForm="ngForm">
-          
           <div class="mb-4">
-            <label for="motivo" class="form-label fw-bold text-dark">Descreva o motivo da rejeição (obrigatório)</label>
-            <textarea class="form-control" id="motivo" name="motivo" rows="4" placeholder="Ex: Desisti de consertar o aparelho." minlength="10" [(ngModel)]="motivoRejeicao" required></textarea>
-            <p class="text-muted small mt-1">OBS: Mínimo de 10 caracteres para confirmar a rejeição.</p>
+            <label for="motivo" class="form-label fw-bold text-dark">
+              Descreva o motivo da rejeicao (obrigatorio)
+            </label>
+            <textarea
+              class="form-control"
+              id="motivo"
+              name="motivo"
+              rows="4"
+              placeholder="Ex: Desisti de consertar o aparelho."
+              minlength="10"
+              [(ngModel)]="motivoRejeicao"
+              required>
+            </textarea>
+            <p class="text-muted small mt-1">OBS: Minimo de 10 caracteres para confirmar a rejeicao.</p>
+            <div class="alert alert-danger mt-3 mb-0" *ngIf="erro">{{ erro }}</div>
           </div>
 
           <div class="d-flex justify-content-between mt-5">
-            <button type="button" class="btn btn-outline-secondary px-5 shadow" (click)="cancelar()">CANCELAR</button>
-            <button type="submit" class="btn btn-danger btn-lg px-5 shadow" [disabled]="!rejeicaoForm.valid" (click)="confirmarRejeicao()">CONFIRMAR REJEIÇÃO</button>
-          </div>
+            <button
+              type="button"
+              class="btn btn-outline-secondary px-5 shadow"
+              [disabled]="loading"
+              (click)="cancelar()">
+              CANCELAR
+            </button>
 
+            <button
+              type="submit"
+              class="btn btn-danger btn-lg px-5 shadow"
+              [disabled]="!rejeicaoForm.valid || loading"
+              (click)="confirmarRejeicao()">
+              {{ loading ? 'REJEITANDO...' : 'CONFIRMAR REJEICAO' }}
+            </button>
+          </div>
         </form>
       </div>
     </div>

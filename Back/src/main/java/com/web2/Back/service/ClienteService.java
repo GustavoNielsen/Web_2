@@ -164,6 +164,7 @@ public class ClienteService {
                 solicitacao.getDescricaoEquipamento(),
                 solicitacao.getCategoria(),
                 solicitacao.getDescricaoDefeito(),
+                solicitacao.getMotivoRejeicao(),
                 solicitacao.getStatus(),
                 solicitacao.getDataCriacao(),
                 solicitacao.getDataPagamento(),
@@ -246,7 +247,7 @@ public class ClienteService {
 
     }
 
-    public void RejeitarOrcamentoService(AprovarRecusarDTO dto, String token){
+    public void RejeitarOrcamentoService(RejeitarSolicitacaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
         Cliente cliente = clienteRepository.findById(userId)
@@ -273,12 +274,166 @@ public class ClienteService {
             );
         }
 
+        if (dto.motivo() == null || dto.motivo().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Motivo da rejeição é obrigatório"
+            );
+        }
+
         solicitacao.setStatus("REJEITADA");
+        solicitacao.setMotivoRejeicao(dto.motivo().trim());
         HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ORÇADA");
         solicitacaoRepository.save(solicitacao);
 
         historicoRepository.save(historico);
 
+    }
+
+    public GetOrcamentoClienteDTO getOrcamentoClienteService(Long idSolicitacao, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(idSolicitacao)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getCliente().getId().equals(cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitacao não pertence ao cliente"
+            );
+        }
+
+        if (!solicitacao.getStatus().equals("ORÇADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não está aguardando aprovação de orçamento"
+            );
+        }
+
+        if (solicitacao.getOrcamento() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não possui orçamento"
+            );
+        }
+
+        Orcamento orcamento = solicitacao.getOrcamento();
+
+        return new GetOrcamentoClienteDTO(
+                solicitacao.getId(),
+                solicitacao.getDescricaoEquipamento(),
+                solicitacao.getCategoria(),
+                solicitacao.getDescricaoDefeito(),
+                solicitacao.getDataCriacao(),
+                solicitacao.getStatus(),
+                orcamento.getValor()
+        );
+    }
+
+    public GetResgateDTO getResgateService(Long idSolicitacao, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(idSolicitacao)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getCliente().getId().equals(cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitacao não pertence ao cliente"
+            );
+        }
+
+        if (!solicitacao.getStatus().equals("REJEITADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não está rejeitada"
+            );
+        }
+
+        if (solicitacao.getOrcamento() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não possui orçamento"
+            );
+        }
+
+        return new GetResgateDTO(
+                solicitacao.getId(),
+                solicitacao.getDescricaoEquipamento(),
+                solicitacao.getDescricaoDefeito(),
+                solicitacao.getStatus(),
+                solicitacao.getOrcamento().getValor()
+        );
+    }
+
+    public void resgatarSolicitacaoService(AprovarRecusarDTO dto, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getCliente().getId().equals(cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitacao não pertence ao cliente"
+            );
+        }
+
+        if (!solicitacao.getStatus().equals("REJEITADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não está rejeitada"
+            );
+        }
+
+        solicitacao.setStatus("APROVADA");
+
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "APROVADA");
+
+        solicitacaoRepository.save(solicitacao);
+        historicoRepository.save(historico);
     }
 
 

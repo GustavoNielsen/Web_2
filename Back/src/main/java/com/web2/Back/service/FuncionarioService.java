@@ -1,13 +1,11 @@
 package com.web2.Back.service;
 
-import com.web2.Back.dto.FinalizarSolicitacaoDTO;
-import com.web2.Back.dto.OrcarSolicitacaoDTO;
-import com.web2.Back.dto.RealizarManutencaoDTO;
-import com.web2.Back.dto.RedirecionamentoDTO;
+import com.web2.Back.dto.*;
 import com.web2.Back.model.*;
 import com.web2.Back.repository.*;
 import com.web2.Back.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -349,6 +347,24 @@ public class FuncionarioService {
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
 
+    }
+
+
+    public List<SolicitacaoAbertasDTO> SolicitacoesAbertas(int page){
+
+        return solicitacaoRepository
+                .findByStatus(
+                        "ABERTA",
+                        PageRequest.of(page, 30)
+                )
+                .stream()
+                .map(s -> new SolicitacaoAbertasDTO(
+                        s.getDataCriacao(),
+                        s.getCliente().getNome(),
+                        s.getDescricaoEquipamento(),
+                        s.getStatus()
+                ))
+                .toList();
     }
 
 }

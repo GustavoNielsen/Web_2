@@ -43,6 +43,15 @@ public class FuncionarioController {
         }
     }
 
+    @GetMapping("/solicitacaoesAbertas/{page}")
+    public ResponseEntity<?>GetSolicitacoesAbertas(@PathVariable int page){
+        return ResponseEntity.ok(
+                funcionarioService.SolicitacoesAbertas(page)
+        );
+    }
+
+    
+
     @PutMapping("/orcar")
     public ResponseEntity<?> orcarSolicitacao(@RequestBody OrcarSolicitacaoDTO dto, @CookieValue("jwt") String token) {
 

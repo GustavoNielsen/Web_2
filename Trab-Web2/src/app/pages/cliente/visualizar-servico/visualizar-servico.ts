@@ -59,6 +59,10 @@ export class VisualizarServico implements OnChanges, OnInit {
     return this.detalhes?.defeito ?? this.solicitacao?.descricaoDefeito ?? '-';
   }
 
+  get motivoRejeicao(): string | undefined {
+    return this.detalhes?.motivoRejeicao ?? this.solicitacao?.motivoRejeicao;
+  }
+
   get status(): string {
     return this.detalhes?.status ?? this.solicitacao?.estado ?? '';
   }
@@ -180,6 +184,7 @@ export class VisualizarServico implements OnChanges, OnInit {
       descricaoEquipamento: detalhes.equipamento,
       categoria: detalhes.categoria,
       descricaoDefeito: detalhes.defeito,
+      motivoRejeicao: detalhes.motivoRejeicao,
       estado: detalhes.status,
       dataHora: this.converterData(detalhes.dataCriacao),
       valorOrcamento: detalhes.orcamento?.valor,

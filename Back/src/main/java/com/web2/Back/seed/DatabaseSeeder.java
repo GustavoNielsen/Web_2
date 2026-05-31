@@ -311,6 +311,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     ) {
         Solicitacao solicitacao = createOrcada(cliente, funcionario, equipamento, categoria, defeito, valor, criadaEm);
         solicitacao.setStatus("REJEITADA");
+        solicitacao.setMotivoRejeicao("Cliente recusou o valor do orçamento.");
         solicitacaoRepository.save(solicitacao);
         addHistorico(solicitacao, "ORÇADA", criadaEm.plusHours(5));
     }
