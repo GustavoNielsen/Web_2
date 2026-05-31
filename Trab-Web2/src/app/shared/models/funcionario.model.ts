@@ -6,7 +6,7 @@ form: any;
         public id: number = 0,
         public email: string = "",
         public nome: string = "",
-        public nasc: Date = new Date(),
+        public nasc: string = "",
         public senha: string = ""
     ){
 

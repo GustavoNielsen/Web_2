@@ -21,13 +21,8 @@ export class InserirFuncionarioComponent {
   email: any;
   nasc: any;
 
-  inserir(): void {
+ inserir(): void {
     if (this.formulario.form.valid) {
-      if (typeof this.funcionario.nasc === 'string') {
-        
-        this.funcionario.nasc = new Date(this.funcionario.nasc);
-      }
-
       this.funcionarioService.inserir(this.funcionario).subscribe({
         next: () => this.router.navigate(["/funcionario/users"]),
         error: (err) => console.error('Erro ao inserir funcionário:', err)
