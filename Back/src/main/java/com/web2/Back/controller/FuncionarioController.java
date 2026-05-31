@@ -1,5 +1,6 @@
 package com.web2.Back.controller;
 
+import com.web2.Back.dto.FinalizarSolicitacaoDTO;
 import com.web2.Back.dto.OrcarSolicitacaoDTO;
 import com.web2.Back.dto.RealizarManutencaoDTO;
 import com.web2.Back.dto.RedirecionamentoDTO;
@@ -60,6 +61,14 @@ public class FuncionarioController {
     @PutMapping("/redirecionar")
     public ResponseEntity<?> redirecionarManutencao(@RequestBody RedirecionamentoDTO dto, @CookieValue("jwt") String token){
         funcionarioService.RedirecionarManutencao(dto, token);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/finalizar")
+    public ResponseEntity<?> finalizarSolicitacao(@RequestBody FinalizarSolicitacaoDTO dto, @CookieValue("jwt") String token){
+
+        funcionarioService.Finalizar(dto, token);
 
         return ResponseEntity.ok().build();
     }

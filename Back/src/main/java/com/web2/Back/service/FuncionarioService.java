@@ -1,5 +1,6 @@
 package com.web2.Back.service;
 
+import com.web2.Back.dto.FinalizarSolicitacaoDTO;
 import com.web2.Back.dto.OrcarSolicitacaoDTO;
 import com.web2.Back.dto.RealizarManutencaoDTO;
 import com.web2.Back.dto.RedirecionamentoDTO;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -297,12 +299,56 @@ public class FuncionarioService {
 
         Redirecionamento redirecionamento = new Redirecionamento(solicitacao, funcionario, funcionarioDestino);
 
+        String statusAnterior = solicitacao.getStatus();
+
         solicitacao.setStatus("REDIRECIONADA");
+
         HistoricoSolicitacao historico =
-                new HistoricoSolicitacao(solicitacao, "APROVADA");
+                new HistoricoSolicitacao(solicitacao, statusAnterior);
 
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
         redirecionamentoRepository.save(redirecionamento);
     }
+
+    public void Finalizar(FinalizarSolicitacaoDTO dto, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionário origem não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getStatus().equals("PAGA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação ainda não está paga"
+            );
+        }
+
+        solicitacao.setStatus("FINALIZADA");
+        solicitacao.setDataFinalizacao(LocalDateTime.now());
+        solicitacao.setFuncionarioFinalizacao(funcionario);
+
+        HistoricoSolicitacao historico =
+                new HistoricoSolicitacao(solicitacao, "PAGA");
+
+
+        solicitacaoRepository.save(solicitacao);
+        historicoRepository.save(historico);
+
+    }
+
 }
