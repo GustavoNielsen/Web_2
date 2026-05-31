@@ -1,8 +1,11 @@
 package com.web2.Back.controller;
 
 import com.web2.Back.dto.AberturaSolicitacaoDTO;
+import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
+import com.web2.Back.model.Solicitacao;
 import com.web2.Back.service.ClienteService;
+import com.web2.Back.service.SolicitacaoService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,25 +19,39 @@ import java.util.List;
 public class ClienteController {
 
     private final ClienteService clienteService;
+    private final SolicitacaoService solicitacaoService;
 
-    public ClienteController(ClienteService clienteService) {
+    public ClienteController(
+            ClienteService clienteService,
+            SolicitacaoService solicitacaoService
+    ) {
         this.clienteService = clienteService;
+        this.solicitacaoService = solicitacaoService;
     }
 
 
-//    @PostMapping("/abrirsolicitacao")
-//    public ResponseEntity<?> novaSolicitacao(@RequestBody AberturaSolicitacaoDTO dto){
-//
-//    }
+    @GetMapping("/listarcategorias")
+    public ResponseEntity<List<CategoriaEquipamentos>> ListarCategorias(){
+        List<CategoriaEquipamentos> lista = solicitacaoService.ListCategorias();
+        return ResponseEntity.ok(lista);
+    }
 
-    // 🔹 Listar todos os clientes
+    @PostMapping("/abrirsolicitacao")
+    public ResponseEntity<?> novaSolicitacao(@RequestBody AberturaSolicitacaoDTO dto, @CookieValue("jwt") String token) {
+
+        Solicitacao solicitacao = solicitacaoService.criarSolicitacao(dto, token);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
     @GetMapping
     public ResponseEntity<List<Cliente>> listarTodos() {
         List<Cliente> clientes = clienteService.listarTodos();
         return ResponseEntity.ok(clientes);
     }
 
-    // 🔹 Buscar cliente por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
         try {
@@ -45,7 +62,7 @@ public class ClienteController {
         }
     }
 
-    // 🔹 Criar cliente
+
     @PostMapping
     public ResponseEntity<Cliente> criar(@RequestBody Cliente cliente) {
         try {
@@ -56,18 +73,25 @@ public class ClienteController {
         }
     }
 
-    // 🔹 Atualizar cliente
+
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @RequestBody Cliente novoCliente) {
+    public ResponseEntity<Cliente> atualizar(
+            @PathVariable Long id,
+            @RequestBody Cliente novoCliente
+    ) {
         try {
-            Cliente clienteAtualizado = clienteService.atualizar(id, novoCliente);
+            Cliente clienteAtualizado =
+                    clienteService.atualizar(id, novoCliente);
+
             return ResponseEntity.ok(clienteAtualizado);
+
         } catch (RuntimeException e) {
+
             return ResponseEntity.notFound().build();
         }
     }
 
-    // 🔹 Deletar cliente
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         try {
