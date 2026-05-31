@@ -40,6 +40,14 @@ public class FuncionarioController {
         }
     }
 
+    @GetMapping("/solicitacoes/{id}")
+    public ResponseEntity<InformacoesSolicitacaoDTO> VisualizarSolicitacao(@PathVariable Long id, @CookieValue("jwt") String token){
+        InformacoesSolicitacaoDTO response =
+                funcionarioService.visualizarSolicitacao(id, token);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/solicitacaoesAbertas/{page}")
     public ResponseEntity<?>GetSolicitacoesAbertas(@PathVariable int page){
         return ResponseEntity.ok(

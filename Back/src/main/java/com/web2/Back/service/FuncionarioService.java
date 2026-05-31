@@ -360,6 +360,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -393,6 +394,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -421,6 +423,7 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
@@ -454,12 +457,122 @@ public class FuncionarioService {
                 )
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
+                        s.getId(),
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
                         s.getStatus()
                 ))
                 .toList();
+    }
+
+    public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Funcionario funcionario = funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Funcionario não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(idSolicitacao)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!podeVisualizarSolicitacao(funcionario, solicitacao)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitação não pertence a esse funcionário"
+            );
+        }
+
+
+        List<HistoricoInfoDTO> historico =
+                historicoRepository.findBySolicitacaoId(idSolicitacao)
+                        .stream()
+                        .map(h -> new HistoricoInfoDTO(
+                                h.getStatus(),
+                                h.getData()
+                        ))
+                        .toList();
+
+        OrcamentoInfoDTO orcamento = null;
+
+        if (solicitacao.getOrcamento() != null) {
+            orcamento = new OrcamentoInfoDTO(
+                    solicitacao.getOrcamento().getValor(),
+                    solicitacao.getOrcamento().getDataOrcamento(),
+                    solicitacao.getOrcamento().getFuncionario().getNome()
+            );
+        }
+
+        ManutencaoInfoDTO manutencao = null;
+
+        Manutencao manutencaoEntity =
+                manutencaoRepository
+                        .findBySolicitacaoId(idSolicitacao)
+                        .orElse(null);
+
+        if (manutencaoEntity != null) {
+            manutencao = new ManutencaoInfoDTO(
+                    manutencaoEntity.getDescricaoManutencao(),
+                    manutencaoEntity.getOrientacoesCliente(),
+                    manutencaoEntity.getDataManutencao(),
+                    manutencaoEntity.getFuncionario().getNome()
+            );
+        }
+
+        return new InformacoesSolicitacaoDTO(
+                solicitacao.getId(),
+                solicitacao.getDescricaoEquipamento(),
+                solicitacao.getCategoria(),
+                solicitacao.getDescricaoDefeito(),
+                solicitacao.getMotivoRejeicao(),
+                solicitacao.getStatus(),
+                solicitacao.getDataCriacao(),
+                solicitacao.getDataPagamento(),
+                solicitacao.getDataFinalizacao(),
+                orcamento,
+                manutencao,
+                historico
+        );
+    }
+
+    private boolean podeVisualizarSolicitacao(Funcionario funcionario, Solicitacao solicitacao) {
+        Long funcionarioId = funcionario.getId();
+
+        if ("ABERTA".equals(solicitacao.getStatus())) {
+            return true;
+        }
+
+        if (solicitacao.getOrcamento() != null
+                && solicitacao.getOrcamento().getFuncionario().getId().equals(funcionarioId)) {
+            return true;
+        }
+
+        if (solicitacao.getManutencao() != null
+                && solicitacao.getManutencao().getFuncionario().getId().equals(funcionarioId)) {
+            return true;
+        }
+
+        if (solicitacao.getFuncionarioFinalizacao() != null
+                && solicitacao.getFuncionarioFinalizacao().getId().equals(funcionarioId)) {
+            return true;
+        }
+
+        return redirecionamentoRepository.findBySolicitacaoId(solicitacao.getId())
+                .stream()
+                .anyMatch(redirecionamento ->
+                        redirecionamento.getFuncionarioOrigem().getId().equals(funcionarioId)
+                                || redirecionamento.getFuncionarioDestino().getId().equals(funcionarioId)
+                );
     }
 
 }
