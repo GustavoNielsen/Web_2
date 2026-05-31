@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-topbar-user',
@@ -12,7 +13,12 @@ export class TopbarUser {
 
   username : string = "";
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.username = this.authService.getUsername();
+  }
 
 
   getHome(){
@@ -25,6 +31,7 @@ export class TopbarUser {
 
 
   getLogout(){
+    this.authService.logout();
     this.router.navigate([''])
   }
 

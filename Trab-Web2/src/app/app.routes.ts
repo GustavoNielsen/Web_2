@@ -4,6 +4,7 @@ import { PagCliente } from './pages/cliente/pag-cliente/pag-cliente';
 import { SolicitacaoManutencao } from './pages/cliente/solicitacao-manutencao/solicitacao-manutencao';
 import { Login } from './pages/login/login';
 import { TelaAutocadastro } from './pages/tela-autocadastro/tela-autocadastro';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = 
 [{
@@ -20,6 +21,8 @@ export const routes: Routes =
 {
   path: 'cliente',
   component: TopbarUser,
+  canActivate: [authGuard],
+  data: { roles: ['C'] },
   children: [
     {
       path: '',
@@ -67,12 +70,16 @@ export const routes: Routes =
 
 {
   path: 'homefuncionario',
+  canActivate: [authGuard],
+  data: { roles: ['F'] },
   loadComponent: () =>
     import("./pages/funcionario/pag-funcionario/pag-funcionario").then(m => m.PagFuncionario),
 },
 
 {
   path: 'funcionario',
+  canActivate: [authGuard],
+  data: { roles: ['F'] },
   loadComponent: () =>
     import('./pages/topbar-executor/topbar-executor.component').then(m => m.TopbarExecutorComponent),
   children: [

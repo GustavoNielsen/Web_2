@@ -42,8 +42,7 @@ export class Login {
         console.log(response);
 
 
-        localStorage.setItem('username', response.nome);
-        localStorage.setItem('cargo', response.tipo);
+        this.authService.salvarSessao(response);
 
         if (response.cargo === 'C') {
           this.router.navigate(['/cliente/home']);

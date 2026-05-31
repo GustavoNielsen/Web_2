@@ -35,4 +35,29 @@ export class AuthService {
       }
     );
   }
+
+  salvarSessao(response: any): void {
+    const username = response?.username ?? response?.nome ?? '';
+    const cargo = response?.cargo ?? response?.tipo ?? '';
+
+    localStorage.setItem('username', username);
+    localStorage.setItem('cargo', cargo);
+  }
+
+  getCargo(): string | null {
+    return localStorage.getItem('cargo');
+  }
+
+  getUsername(): string {
+    return localStorage.getItem('username') || '';
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getCargo();
+  }
+
+  logout(): void {
+    localStorage.removeItem('username');
+    localStorage.removeItem('cargo');
+  }
 }

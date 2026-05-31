@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router'; 
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-topbar-executor',
@@ -11,7 +12,12 @@ import { Router } from '@angular/router';
 export class TopbarExecutorComponent {
   username : string = "";
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.username = this.authService.getUsername();
+  }
 
 
   getHome(){
@@ -33,6 +39,7 @@ export class TopbarExecutorComponent {
 
 
   getLogout(){
+    this.authService.logout();
     this.router.navigate([''])
   }
 

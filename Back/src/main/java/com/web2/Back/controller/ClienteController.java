@@ -6,6 +6,7 @@ import com.web2.Back.model.Cliente;
 import com.web2.Back.model.Solicitacao;
 import com.web2.Back.service.ClienteService;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,7 @@ public class ClienteController {
         return ResponseEntity.ok(response);
     }
 
+
     @PutMapping("/aprovarsolicitacao")
     public ResponseEntity<?> aprovarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
 
@@ -73,6 +75,12 @@ public class ClienteController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/pagar/{id}")
+    public ResponseEntity<GetPagarDTO> getPagamento(@PathVariable Long id, @CookieValue("jwt") String token){
+        GetPagarDTO response = clienteService.getPagarService(id, token);
+
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/pagar")
     public ResponseEntity<?> pagarSolicitacao(@RequestBody PagarSolicitacaoDTO dto, @CookieValue("jwt") String token){
