@@ -20,7 +20,6 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ClienteController {
 
-    @Autowired
     private final ClienteService clienteService;
 
     public ClienteController(
