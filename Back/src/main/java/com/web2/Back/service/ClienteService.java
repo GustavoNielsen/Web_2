@@ -1,14 +1,8 @@
 package com.web2.Back.service;
 
 import com.web2.Back.dto.*;
-import com.web2.Back.model.CategoriaEquipamentos;
-import com.web2.Back.model.Cliente;
-import com.web2.Back.model.HistoricoSolicitacao;
-import com.web2.Back.model.Solicitacao;
-import com.web2.Back.repository.CategoriaRepository;
-import com.web2.Back.repository.ClienteRepository;
-import com.web2.Back.repository.HistoricoSolicitacaoRepository;
-import com.web2.Back.repository.SolicitacaoRepository;
+import com.web2.Back.model.*;
+import com.web2.Back.repository.*;
 import com.web2.Back.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,6 +29,9 @@ public class ClienteService {
 
     @Autowired
     private HistoricoSolicitacaoRepository historicoRepository;
+
+    @Autowired
+    private ManutencaoRepository manutencaoRepository;
 
     public List<Cliente> listarTodos() {
         return clienteRepository.findAll();
@@ -97,6 +94,83 @@ public class ClienteService {
 
         return new SolicitacoesClienteResponseDTO(solicitacoes);
 
+    }
+
+    public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(idSolicitacao)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getCliente().getId().equals(cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitação não pertence ao cliente"
+            );
+        }
+
+        List<HistoricoInfoDTO> historico =
+                historicoRepository.findBySolicitacaoId(idSolicitacao)
+                        .stream()
+                        .map(h -> new HistoricoInfoDTO(
+                                h.getStatus(),
+                                h.getData()
+                        ))
+                        .toList();
+
+        OrcamentoInfoDTO orcamento = null;
+
+        if (solicitacao.getOrcamento() != null) {
+            orcamento = new OrcamentoInfoDTO(
+                    solicitacao.getOrcamento().getValor(),
+                    solicitacao.getOrcamento().getDataOrcamento(),
+                    solicitacao.getOrcamento().getFuncionario().getNome()
+            );
+        }
+
+        ManutencaoInfoDTO manutencao = null;
+
+        Manutencao manutencaoEntity =
+                manutencaoRepository
+                        .findBySolicitacaoId(idSolicitacao)
+                        .orElse(null);
+
+        if (manutencaoEntity != null) {
+            manutencao = new ManutencaoInfoDTO(
+                    manutencaoEntity.getDescricaoManutencao(),
+                    manutencaoEntity.getOrientacoesCliente(),
+                    manutencaoEntity.getDataManutencao(),
+                    manutencaoEntity.getFuncionario().getNome()
+            );
+        }
+
+        return new InformacoesSolicitacaoDTO(
+                solicitacao.getId(),
+                solicitacao.getDescricaoEquipamento(),
+                solicitacao.getCategoria(),
+                solicitacao.getDescricaoDefeito(),
+                solicitacao.getStatus(),
+                solicitacao.getDataCriacao(),
+                solicitacao.getDataPagamento(),
+                solicitacao.getDataFinalizacao(),
+                orcamento,
+                manutencao,
+                historico
+        );
     }
 
     public Solicitacao criarSolicitacao(AberturaSolicitacaoDTO dto, String token) {

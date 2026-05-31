@@ -1,9 +1,6 @@
 package com.web2.Back.controller;
 
-import com.web2.Back.dto.AberturaSolicitacaoDTO;
-import com.web2.Back.dto.AprovarRecusarDTO;
-import com.web2.Back.dto.PagarSolicitacaoDTO;
-import com.web2.Back.dto.SolicitacoesClienteResponseDTO;
+import com.web2.Back.dto.*;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.Solicitacao;
@@ -49,6 +46,14 @@ public class ClienteController {
     public ResponseEntity<SolicitacoesClienteResponseDTO> Solicitoes(@CookieValue("jwt") String token){
         SolicitacoesClienteResponseDTO response =
                 clienteService.enviarSolicitacoes(token);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/solicitacoes/{id}")
+    public ResponseEntity<InformacoesSolicitacaoDTO> VisualizarSolicitacao(@PathVariable Long id, @CookieValue("jwt") String token){
+        InformacoesSolicitacaoDTO response =
+                clienteService.visualizarSolicitacao(id, token);
 
         return ResponseEntity.ok(response);
     }
