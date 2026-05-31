@@ -4,12 +4,12 @@
     <div class="col-md-8 mb-4">
       <div class="card shadow-sm border-primary h-100">
         <div class="card-header bg-primary text-white py-3">
-          <h5 class="mb-0 fw-bold text-uppercase"><i class="bi bi-graph-up me-2"></i> Relatórios Financeiros</h5>
+          <h5 class="mb-0 fw-bold text-uppercase"><i class="bi bi-graph-up me-2"></i> Relatorios Financeiros</h5>
         </div>
         <div class="card-body p-4">
 
           <div class="mb-4 pb-4 border-bottom">
-            <h6 class="fw-bold text-primary mb-3">Receitas por Período</h6>
+            <h6 class="fw-bold text-primary mb-3">Receitas por Periodo</h6>
             <form (ngSubmit)="gerarRelatorioPeriodo()" class="row g-2">
               <div class="col-6">
                 <label class="form-label small text-muted">Data Inicial</label>
@@ -20,14 +20,18 @@
                 <input type="date" class="form-control" [(ngModel)]="dataFim" name="fim" [min]="dataInicio" [max]="dataAtual">
               </div>
               <div class="col-12 mt-3">
-                <button type="submit" class="btn btn-outline-primary w-100 fw-bold">Gerar PDF por Período</button>
+                <button type="submit" class="btn btn-outline-primary w-100 fw-bold" [disabled]="gerandoRelatorioPeriodo">
+                  {{ gerandoRelatorioPeriodo ? 'Gerando PDF...' : 'Gerar PDF por Periodo' }}
+                </button>
               </div>
             </form>
           </div>
 
           <div>
             <h6 class="fw-bold text-primary mb-3">Receitas por Categoria</h6>
-            <button (click)="gerarRelatorioCategoria()" class="btn btn-success w-100 fw-bold">Gerar PDF Completo</button>
+            <button (click)="gerarRelatorioCategoria()" class="btn btn-success w-100 fw-bold" [disabled]="gerandoRelatorioCategoria">
+              {{ gerandoRelatorioCategoria ? 'Gerando PDF...' : 'Gerar PDF Completo' }}
+            </button>
           </div>
 
         </div>

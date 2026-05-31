@@ -36,6 +36,9 @@ public class FuncionarioService {
     @Autowired
     private RedirecionamentoRepository redirecionamentoRepository;
 
+    @Autowired
+    private RelatorioReceitasPdfService relatorioReceitasPdfService;
+
 
     private final FuncionarioRepository funcionarioRepository;
 
@@ -364,7 +367,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -398,7 +403,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -427,7 +434,9 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
     }
@@ -461,9 +470,33 @@ public class FuncionarioService {
                         s.getDataCriacao(),
                         s.getCliente().getNome(),
                         s.getDescricaoEquipamento(),
-                        s.getStatus()
+                        s.getStatus(),
+                        s.getDescricaoDefeito(),
+                        s.getCategoria()
                 ))
                 .toList();
+    }
+
+    public byte[] gerarRelatorioReceitasPorDia(LocalDate dataInicial, LocalDate dataFinal, String token) {
+        validarFuncionarioLogado(token);
+        return relatorioReceitasPdfService.gerarReceitasPorDia(dataInicial, dataFinal);
+    }
+
+    public byte[] gerarRelatorioReceitasPorCategoria(String token) {
+        validarFuncionarioLogado(token);
+        return relatorioReceitasPdfService.gerarReceitasPorCategoria();
+    }
+
+    private void validarFuncionarioLogado(String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        funcionarioRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "FuncionÃ¡rio nÃ£o encontrado"
+                        )
+                );
     }
 
     public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {

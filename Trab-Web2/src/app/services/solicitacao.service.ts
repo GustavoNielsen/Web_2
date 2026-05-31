@@ -44,6 +44,16 @@ export interface InformacoesSolicitacaoDTO {
   }>;
 }
 
+export interface SolicitacaoPainelFuncionario {
+  id: number;
+  dataHora: Date;
+  cliente: string;
+  equipamento: string;
+  estado: string;
+  descricao: string;
+  categoria: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +79,13 @@ export class SolicitacaoService {
   buscarInformacoesCliente(idSolicitacao: number): Observable<InformacoesSolicitacaoDTO> {
     return this.http.get<InformacoesSolicitacaoDTO>(
       `${this.clienteApiUrl}/${idSolicitacao}`,
+      { withCredentials: true }
+    );
+  }
+
+  buscarInformacoesFuncionario(idSolicitacao: number): Observable<InformacoesSolicitacaoDTO> {
+    return this.http.get<InformacoesSolicitacaoDTO>(
+      `${this.funcionarioBaseUrl}/solicitacoes/${idSolicitacao}`,
       { withCredentials: true }
     );
   }
@@ -161,45 +178,39 @@ export class SolicitacaoService {
   // Painel de Funcionário - Listar solicitações
   private funcionarioBaseUrl = 'http://localhost:8080/api/funcionarios';
 
-  private mapPainelFuncionario(lista: any[]): Solicitacao[] {
+  private mapPainelFuncionario(lista: any[]): SolicitacaoPainelFuncionario[] {
     return (lista || []).map((s) => ({
       id: s.id,
       dataHora: new Date(s.dataCriacao),
-      nomeCliente: s.cliente,
-      descricaoEquipamento: s.equipamento,
+      cliente: s.cliente,
+      equipamento: s.equipamento,
       estado: s.status,
-      email: '',
-      cpf: '',
-      telefone: '',
-      endereco: '',
-      categoria: '',
-      descricaoDefeito: '',
-      historico: [],
-    } as Solicitacao));
+      descricao: s.descricao,
+      categoria: s.categoria,
+    }));
   }
-
-  solicitacoesAbertas(pagina: number = 0): Observable<Solicitacao[]> {
+  solicitacoesAbertas(pagina: number = 0): Observable<SolicitacaoPainelFuncionario[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesAbertas/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
 
-  solicitacoesHoje(pagina: number = 0): Observable<Solicitacao[]> {
+  solicitacoesHoje(pagina: number = 0): Observable<SolicitacaoPainelFuncionario[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesHoje/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
 
-  solicitacoesTotais(pagina: number = 0): Observable<Solicitacao[]> {
+  solicitacoesTotais(pagina: number = 0): Observable<SolicitacaoPainelFuncionario[]> {
     return this.http.get<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoesTotais/${pagina}`,
       { withCredentials: true }
     ).pipe(map(lista => this.mapPainelFuncionario(lista)));
   }
 
-  solicitacoesPorPeriodo(dataMin: string, dataMax: string, pagina: number = 0): Observable<Solicitacao[]> {
+  solicitacoesPorPeriodo(dataMin: string, dataMax: string, pagina: number = 0): Observable<SolicitacaoPainelFuncionario[]> {
     return this.http.post<any[]>(
       `${this.funcionarioBaseUrl}/solicitacaoPeriodo`,
       { dataMin, dataMax, page: pagina },
@@ -212,6 +223,31 @@ export class SolicitacaoService {
       `${this.funcionarioBaseUrl}/relatorio/categoria`, 
       { withCredentials: true }
     );
+  }
+
+  gerarRelatorioReceitas(dataInicial?: string, dataFinal?: string): Observable<Blob> {
+    const params: Record<string, string> = {};
+
+    if (dataInicial) {
+      params['dataInicial'] = dataInicial;
+    }
+
+    if (dataFinal) {
+      params['dataFinal'] = dataFinal;
+    }
+
+    return this.http.get(`${this.funcionarioBaseUrl}/relatorio/receitas`, {
+      params,
+      responseType: 'blob',
+      withCredentials: true,
+    });
+  }
+
+  gerarRelatorioReceitasPorCategoria(): Observable<Blob> {
+    return this.http.get(`${this.funcionarioBaseUrl}/relatorio/receitas/categorias`, {
+      responseType: 'blob',
+      withCredentials: true,
+    });
   }
 
   /**

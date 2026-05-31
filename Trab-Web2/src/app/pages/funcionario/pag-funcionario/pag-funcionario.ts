@@ -9,7 +9,7 @@ import { EfetuarManutencao } from '../efetuar-manutencao/efetuar-manutencao';
 import { STATUS_SOLICITACAO } from '../../../shared/constants/status.constants';
 import { StatusFormatPipe } from '../../../shared/pipes/status-format.pipe';
 import { inject } from '@angular/core';
-import { SolicitacaoService } from '../../../services/solicitacao.service';
+import { InformacoesSolicitacaoDTO, SolicitacaoService } from '../../../services/solicitacao.service';
 import { FuncionarioService } from '../../../services/funcionario.service';
 
 @Component({
@@ -33,6 +33,9 @@ export class PagFuncionario implements OnInit {
   dataAtual: string = '';
 
   solicitacaoSelecionada: any = null; //variavel que guarda a s selecionada pra passar pro popup
+  detalhesSolicitacaoSelecionada: InformacoesSolicitacaoDTO | null = null;
+  carregandoDetalhesSolicitacao = false;
+  erroDetalhesSolicitacao = '';
 
   paginaAtual = 0;
   carregandoMais = false;
@@ -110,6 +113,40 @@ export class PagFuncionario implements OnInit {
     }
   }
 
+  abrirVisualizacao(solicitacao: any) {
+    this.solicitacaoSelecionada = solicitacao;
+    this.detalhesSolicitacaoSelecionada = null;
+    this.erroDetalhesSolicitacao = '';
+    this.carregandoDetalhesSolicitacao = true;
+
+    this.solicitacaoService.buscarInformacoesFuncionario(solicitacao.id).subscribe({
+      next: (detalhes) => {
+        if (this.solicitacaoSelecionada?.id !== solicitacao.id) {
+          return;
+        }
+        this.detalhesSolicitacaoSelecionada = detalhes;
+        this.carregandoDetalhesSolicitacao = false;
+        this.CDR.detectChanges();
+      },
+      error: (erro: any) => {
+        if (this.solicitacaoSelecionada?.id !== solicitacao.id) {
+          return;
+        }
+        console.error('Erro ao carregar detalhes da solicitação:', erro);
+        this.erroDetalhesSolicitacao = 'Não foi possível carregar os detalhes da solicitação.';
+        this.carregandoDetalhesSolicitacao = false;
+        this.CDR.detectChanges();
+      }
+    });
+  }
+
+  fecharVisualizacao() {
+    this.solicitacaoSelecionada = null;
+    this.detalhesSolicitacaoSelecionada = null;
+    this.carregandoDetalhesSolicitacao = false;
+    this.erroDetalhesSolicitacao = '';
+  }
+
   // Lógica de cores para os Badges padronizada com Constantes
   getStatusClass(status: string): string {
     switch (status) {
@@ -144,10 +181,7 @@ export class PagFuncionario implements OnInit {
       this.solicitacaoSelecionada.estado = 'ORÇADA';
       this.solicitacaoSelecionada.valorOrcamento = dados.valor;
       
-      if (!this.solicitacaoSelecionada.historico) {
-        this.solicitacaoSelecionada.historico = [];
-      }
-      
+      this.solicitacaoSelecionada.historico ??= [];
       this.solicitacaoSelecionada.historico.push({
         data: new Date(),
         estado: 'ORÇADA',
@@ -183,6 +217,7 @@ export class PagFuncionario implements OnInit {
         funcionario: this.nomeUsuario
       };
       
+      this.solicitacaoSelecionada.historico ??= [];
       this.solicitacaoSelecionada.historico.push({
         data: dados.dataHora,
         estado: 'ARRUMADA',
@@ -224,6 +259,7 @@ export class PagFuncionario implements OnInit {
 
     this.solicitacaoSelecionada.estado = 'REDIRECIONADA';
     this.solicitacaoSelecionada.funcionarioDestino = dadosRedirecionamento.funcionarioDestino;
+    this.solicitacaoSelecionada.historico ??= [];
     this.solicitacaoSelecionada.historico.push({
       data: dadosRedirecionamento.dataHora,
       estado: 'REDIRECIONADA',
@@ -253,6 +289,7 @@ export class PagFuncionario implements OnInit {
       this.CDR.detectChanges(); 
 
       this.solicitacaoSelecionada.estado = 'FINALIZADA';
+      this.solicitacaoSelecionada.historico ??= [];
       this.solicitacaoSelecionada.historico.push({
         data: new Date(),
         estado: 'FINALIZADA',

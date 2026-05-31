@@ -4,10 +4,14 @@ import com.web2.Back.dto.*;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.service.FuncionarioService;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -74,6 +78,30 @@ public class FuncionarioController {
         return ResponseEntity.ok(
                 funcionarioService.SolicitacoesPorPeriodo(dto, token)
         );
+    }
+
+    @GetMapping(value = "/relatorio/receitas", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> gerarRelatorioReceitas(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal,
+            @CookieValue("jwt") String token
+    ) {
+        byte[] pdf = funcionarioService.gerarRelatorioReceitasPorDia(dataInicial, dataFinal, token);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio-receitas.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @GetMapping(value = "/relatorio/receitas/categorias", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> gerarRelatorioReceitasPorCategoria(@CookieValue("jwt") String token) {
+        byte[] pdf = funcionarioService.gerarRelatorioReceitasPorCategoria(token);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio-receitas-categorias.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @PutMapping("/orcar")

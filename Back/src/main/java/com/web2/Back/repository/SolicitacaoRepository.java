@@ -16,6 +16,15 @@ public interface SolicitacaoRepository extends JpaRepository<Solicitacao, Long> 
     Page<Solicitacao> findByStatus(String status, Pageable pageable);
 
     @Query("""
+            select s
+            from Solicitacao s
+            join fetch s.orcamento o
+            where s.dataPagamento is not null
+            order by s.dataPagamento asc
+            """)
+    List<Solicitacao> findPagasComOrcamento();
+
+    @Query("""
             select distinct s
             from Solicitacao s
             left join s.orcamento o

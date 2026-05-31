@@ -52,14 +52,14 @@
               @for (s of solicitacoesFiltradas; track s.id) {
                 <tr>
                   <td class="td-data">{{ s.dataHora | date:'dd/MM/yyyy HH:mm' }}</td>
-                  <td class="td-cliente fw-bold">{{ s.nomeCliente }}</td>
-                  <td class="td-desc">{{ s.descricaoEquipamento | slice:0:30 }}{{ s.descricaoEquipamento.length > 30 ? '...' : '' }}</td>
+                  <td class="td-cliente fw-bold">{{ s.cliente }}</td>
+                  <td class="td-desc">{{ s.equipamento | slice:0:30 }}{{ s.equipamento.length > 30 ? '...' : '' }}</td>
                   <td>
                     <span class="badge rounded-pill fw-bold" [ngClass]="getStatusClass(s.estado)">{{ s.estado | statusFormat }}</span>
                   </td>
                   <td>
                     <div class="td-acoes d-flex gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="solicitacaoSelecionada = s">Ver</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalVisualizar" (click)="abrirVisualizacao(s)">Ver</button>
 
                       @if (s.estado === 'ABERTA') {
                         <button type="button" class="btn btn-sm btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#modalOrcamento" (click)="solicitacaoSelecionada = s; modalOrcamentoRef.limparFormulario()">Efetuar Orçamento</button>
@@ -124,7 +124,10 @@
       <div class="modal-content">
         <app-visualizar-solicitacao 
           [solicitacao]="solicitacaoSelecionada"
-          (fechar)="solicitacaoSelecionada = null">
+          [detalhes]="detalhesSolicitacaoSelecionada"
+          [carregando]="carregandoDetalhesSolicitacao"
+          [erro]="erroDetalhesSolicitacao"
+          (fechar)="fecharVisualizacao()">
         </app-visualizar-solicitacao>
       </div>
     </div>
