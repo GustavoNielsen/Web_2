@@ -73,6 +73,13 @@
               </div>
             </div>
 
+            <div class="card mb-3 border border-danger" *ngIf="motivoRejeicao">
+              <div class="card-header fw-bold bg-danger text-white">Motivo da Rejeicao</div>
+              <div class="card-body">
+                <p class="mb-0">{{ motivoRejeicao }}</p>
+              </div>
+            </div>
+
             <div class="card mb-3 border border-dark" *ngIf="dataFinalizacao">
               <div class="card-header fw-bold bg-dark text-white">Finalizacao</div>
               <div class="card-body">

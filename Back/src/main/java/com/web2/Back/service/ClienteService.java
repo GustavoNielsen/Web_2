@@ -164,6 +164,7 @@ public class ClienteService {
                 solicitacao.getDescricaoEquipamento(),
                 solicitacao.getCategoria(),
                 solicitacao.getDescricaoDefeito(),
+                solicitacao.getMotivoRejeicao(),
                 solicitacao.getStatus(),
                 solicitacao.getDataCriacao(),
                 solicitacao.getDataPagamento(),
@@ -246,7 +247,7 @@ public class ClienteService {
 
     }
 
-    public void RejeitarOrcamentoService(AprovarRecusarDTO dto, String token){
+    public void RejeitarOrcamentoService(RejeitarSolicitacaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
         Cliente cliente = clienteRepository.findById(userId)
@@ -273,7 +274,15 @@ public class ClienteService {
             );
         }
 
+        if (dto.motivo() == null || dto.motivo().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Motivo da rejeição é obrigatório"
+            );
+        }
+
         solicitacao.setStatus("REJEITADA");
+        solicitacao.setMotivoRejeicao(dto.motivo().trim());
         HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ORÇADA");
         solicitacaoRepository.save(solicitacao);
 

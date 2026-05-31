@@ -40,6 +40,9 @@ public class Solicitacao {
     @Column(nullable = false)
     private String status;
 
+    @Column
+    private String motivoRejeicao;
+
     @ManyToOne
     @JoinColumn(name = "funcionario_finalizacao_id")
     private Funcionario funcionarioFinalizacao;
@@ -143,6 +146,14 @@ public class Solicitacao {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getMotivoRejeicao() {
+        return motivoRejeicao;
+    }
+
+    public void setMotivoRejeicao(String motivoRejeicao) {
+        this.motivoRejeicao = motivoRejeicao;
     }
 
     public LocalDateTime getDataFinalizacao() {

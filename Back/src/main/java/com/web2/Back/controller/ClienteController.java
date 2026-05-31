@@ -68,8 +68,8 @@ public class ClienteController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/rejeitarlicitacao")
-    public ResponseEntity<?> rejeitarOrcamento(@RequestBody AprovarRecusarDTO dto, @CookieValue("jwt") String token){
+    @PutMapping({"/rejeitarsolicitacao", "/rejeitarlicitacao"})
+    public ResponseEntity<?> rejeitarOrcamento(@RequestBody RejeitarSolicitacaoDTO dto, @CookieValue("jwt") String token){
         clienteService.RejeitarOrcamentoService(dto, token);
 
         return ResponseEntity.ok().build();

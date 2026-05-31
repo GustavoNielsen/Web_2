@@ -121,7 +121,7 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
   });
 }
 
-  atualizarSolicitacao(evento: Partial<Solicitacao> & { id: number }): void {
+  atualizarSolicitacao(evento: Partial<Solicitacao> & { id: number; backendAtualizado?: boolean }): void {
     if (!evento) {
       this.fecharModal();
       return;
@@ -140,6 +140,11 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
           ...((evento as any).historico || []),
         ],
       };
+
+      if (evento.backendAtualizado) {
+        this.fecharModal();
+        return;
+      }
 
       this.solicitacaoService.atualizar(this.solicitacoes[index]).subscribe({
         next: () => {

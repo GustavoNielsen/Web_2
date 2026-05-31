@@ -8,6 +8,7 @@ public record InformacoesSolicitacaoDTO(
         String equipamento,
         String categoria,
         String defeito,
+        String motivoRejeicao,
         String status,
         LocalDateTime dataCriacao,
         LocalDateTime dataPagamento,
