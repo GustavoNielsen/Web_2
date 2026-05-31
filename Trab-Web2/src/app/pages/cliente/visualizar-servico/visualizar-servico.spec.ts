@@ -231,7 +231,7 @@ export class VisualizarServico implements OnInit {
     this.http.patch<Solicitacao>(`/api/solicitacoes/${s.id}/finalizar`, {}).subscribe({
       next: (atualizada) => {
         this.solicitacao.set(atualizada);
-        this.carregarHistorico(atualizada.id); // Atualiza o histórico após a mudança
+        this.carregarHistorico(atualizada.id);
       },
       error: (err) => console.error('Erro ao finalizar solicitação:', err),
     });

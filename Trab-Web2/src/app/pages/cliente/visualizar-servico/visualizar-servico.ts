@@ -159,7 +159,6 @@ export class VisualizarServico implements OnChanges, OnInit {
 
     this.solicitacaoService.buscarInformacoesCliente(id).subscribe({
       next: (detalhes) => {
-        console.log('Detalhes recebidos no modal:', detalhes);
         this.detalhes = detalhes;
         this.aplicarDetalhes(detalhes);
         this.loading = false;
