@@ -44,8 +44,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/crudfuncionarios").hasAnyAuthority("F")
-                        .requestMatchers("/api/categorias/**").permitAll()
+                        .requestMatchers("/api/categorias/**").hasAnyAuthority("F")
                         .requestMatchers("/api/clientes/**").hasAnyAuthority("C")
+                        .requestMatchers("/api/funcionarios/**").hasAnyAuthority("F")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

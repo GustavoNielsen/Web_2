@@ -30,7 +30,6 @@ public class AuthController {
             @RequestBody LoginDTO dto
     ) {
 
-        System.out.println("1");
 
         try {
 
