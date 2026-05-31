@@ -75,6 +75,13 @@ public class ClienteController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/orcamento/{id}")
+    public ResponseEntity<GetOrcamentoClienteDTO> getOrcamento(@PathVariable Long id, @CookieValue("jwt") String token){
+        GetOrcamentoClienteDTO response = clienteService.getOrcamentoClienteService(id, token);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/pagar/{id}")
     public ResponseEntity<GetPagarDTO> getPagamento(@PathVariable Long id, @CookieValue("jwt") String token){
         GetPagarDTO response = clienteService.getPagarService(id, token);

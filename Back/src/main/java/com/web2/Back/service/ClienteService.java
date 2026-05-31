@@ -281,6 +281,60 @@ public class ClienteService {
 
     }
 
+    public GetOrcamentoClienteDTO getOrcamentoClienteService(Long idSolicitacao, String token) {
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(idSolicitacao)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if (!solicitacao.getCliente().getId().equals(cliente.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solicitacao não pertence ao cliente"
+            );
+        }
+
+        if (!solicitacao.getStatus().equals("ORÇADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não está aguardando aprovação de orçamento"
+            );
+        }
+
+        if (solicitacao.getOrcamento() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação não possui orçamento"
+            );
+        }
+
+        Orcamento orcamento = solicitacao.getOrcamento();
+
+        return new GetOrcamentoClienteDTO(
+                solicitacao.getId(),
+                solicitacao.getDescricaoEquipamento(),
+                solicitacao.getCategoria(),
+                solicitacao.getDescricaoDefeito(),
+                solicitacao.getDataCriacao(),
+                solicitacao.getStatus(),
+                orcamento.getValor()
+        );
+    }
+
 
     public GetPagarDTO getPagarService(Long idSolicitacao, String token){
         Long userId = jwtService.extrairUserId(token);
