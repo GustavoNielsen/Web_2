@@ -1,7 +1,11 @@
 package com.web2.Back.controller;
 
+import com.web2.Back.dto.FuncionarioCreateDTO;
 import com.web2.Back.model.Funcionario;
 import com.web2.Back.repository.FuncionarioRepository;
+import com.web2.Back.service.EmailService;
+import com.web2.Back.service.SenhaService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +20,12 @@ public class CrudFuncionarioController {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Autowired
+    private SenhaService senhaService;
+
+    @Autowired
+    private EmailService emailService;
+
     // LISTAR TODOS
     @GetMapping
     public List<Funcionario> listarTodos() {
@@ -24,7 +34,9 @@ public class CrudFuncionarioController {
 
     // BUSCAR POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<Funcionario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Funcionario> buscarPorId(
+            @PathVariable Long id
+    ) {
 
         Optional<Funcionario> funcionario =
                 funcionarioRepository.findById(id);
@@ -37,12 +49,12 @@ public class CrudFuncionarioController {
     // CADASTRAR
     @PostMapping
     public ResponseEntity<?> cadastrar(
-            @RequestBody Funcionario funcionario
+            @RequestBody FuncionarioCreateDTO dados
     ) {
 
-        // verifica email único
+        // verifica email duplicado
         if (funcionarioRepository
-                .findByEmail(funcionario.getEmail())
+                .findByEmail(dados.email())
                 .isPresent()) {
 
             return ResponseEntity
@@ -50,12 +62,49 @@ public class CrudFuncionarioController {
                     .body("E-mail já cadastrado.");
         }
 
+        // gera senha aleatória
+        String senhaPura =
+                senhaService.gerarSenhaAleatoria();
+
+        // gera salt
+        String salt =
+                senhaService.gerarSalt();
+
+        // gera hash da senha
+        String senhaHash =
+                senhaService.hashSenha(
+                        senhaPura,
+                        salt
+                );
+
+        // cria funcionário
+        Funcionario funcionario = new Funcionario();
+
+        funcionario.setNome(dados.nome());
+        funcionario.setEmail(dados.email());
+        funcionario.setTelefone(dados.telefone());
+        funcionario.setDataNascimento(
+                dados.dataNascimento()
+        );
+
+        funcionario.setSenha(senhaHash);
+        funcionario.setSalt(salt);
+
         funcionario.setTipo("FUNCIONARIO");
+        funcionario.setAtivo(true);
 
-        Funcionario novoFuncionario =
-                funcionarioRepository.save(funcionario);
+        // salva no banco
+        funcionarioRepository.save(funcionario);
 
-        return ResponseEntity.ok(novoFuncionario);
+        // envia senha por email
+        emailService.enviarSenha(
+                funcionario.getEmail(),
+                senhaPura
+        );
+
+        return ResponseEntity.ok(
+                "Funcionário cadastrado com sucesso."
+        );
     }
 
     // ATUALIZAR
@@ -72,15 +121,20 @@ public class CrudFuncionarioController {
             return ResponseEntity.notFound().build();
         }
 
-        Funcionario funcionario = funcionarioOptional.get();
+        Funcionario funcionario =
+                funcionarioOptional.get();
 
         // verifica email duplicado
         Optional<Funcionario> emailExistente =
-                funcionarioRepository.findByEmail(dados.getEmail());
+                funcionarioRepository.findByEmail(
+                        dados.getEmail()
+                );
 
         if (
                 emailExistente.isPresent()
-                        && !emailExistente.get().getId().equals(id)
+                        && !emailExistente.get()
+                        .getId()
+                        .equals(id)
         ) {
             return ResponseEntity
                     .badRequest()
@@ -89,9 +143,8 @@ public class CrudFuncionarioController {
 
         funcionario.setNome(dados.getNome());
         funcionario.setEmail(dados.getEmail());
-        funcionario.setSenha(dados.getSenha());
-
         funcionario.setTelefone(dados.getTelefone());
+
         funcionario.setDataNascimento(
                 dados.getDataNascimento()
         );
@@ -100,7 +153,9 @@ public class CrudFuncionarioController {
 
         funcionarioRepository.save(funcionario);
 
-        return ResponseEntity.ok(funcionario);
+        return ResponseEntity.ok(
+                "Funcionário atualizado com sucesso."
+        );
     }
 
     // REMOVER
@@ -119,19 +174,25 @@ public class CrudFuncionarioController {
 
         // não pode remover a si mesmo
         if (id.equals(funcionarioLogadoId)) {
+
             return ResponseEntity
                     .badRequest()
-                    .body("Você não pode remover a si mesmo.");
+                    .body(
+                            "Você não pode remover a si mesmo."
+                    );
         }
 
-        // não pode remover o último funcionário
+        // não pode remover último funcionário
         long quantidade =
                 funcionarioRepository.count();
 
         if (quantidade <= 1) {
+
             return ResponseEntity
                     .badRequest()
-                    .body("Não é possível remover o último funcionário.");
+                    .body(
+                            "Não é possível remover o último funcionário."
+                    );
         }
 
         funcionarioRepository.deleteById(id);

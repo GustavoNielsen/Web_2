@@ -1,5 +1,6 @@
 package com.web2.Back.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,8 +15,6 @@ public abstract class Usuario {
     @Column(nullable = false, unique = true)
     protected String email;
 
-    @Column(nullable = false)
-    protected String senha;
 
     @Column(nullable = false)
     protected String nome;
@@ -23,7 +22,12 @@ public abstract class Usuario {
     @Column(nullable = false)
     protected String tipo;
 
-    // 🔐 NEW: salt for SHA-256 hashing
+
+    @JsonIgnore
+    @Column(nullable = false)
+    protected String senha;
+
+    @JsonIgnore
     @Column(nullable = false)
     protected String salt;
 
