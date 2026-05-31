@@ -40,6 +40,13 @@ public class Solicitacao {
     @Column(nullable = false)
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name = "funcionario_finalizacao_id")
+    private Funcionario funcionarioFinalizacao;
+
+    @Column
+    private LocalDateTime dataFinalizacao;
+
     public Solicitacao() {
     }
 
@@ -136,5 +143,20 @@ public class Solicitacao {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDateTime getDataFinalizacao() {
+        return dataFinalizacao;
+    }
+    public void setDataFinalizacao(LocalDateTime dataFinalizacao) {
+        this.dataFinalizacao = dataFinalizacao;
+    }
+
+    public Funcionario getFuncionarioFinalizacao() {
+        return funcionarioFinalizacao;
+    }
+
+    public void setFuncionarioFinalizacao(Funcionario funcionarioFinalizacao) {
+        this.funcionarioFinalizacao = funcionarioFinalizacao;
     }
 }

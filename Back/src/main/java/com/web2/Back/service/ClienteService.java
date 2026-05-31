@@ -2,6 +2,7 @@ package com.web2.Back.service;
 
 import com.web2.Back.dto.AberturaSolicitacaoDTO;
 import com.web2.Back.dto.AprovarRecusarDTO;
+import com.web2.Back.dto.PagarSolicitacaoDTO;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.HistoricoSolicitacao;
@@ -124,7 +125,7 @@ public class ClienteService {
                 );
 
         Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicaitacao())
+                .findById(dto.idSolicitacao())
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -159,7 +160,7 @@ public class ClienteService {
                 );
 
         Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicaitacao())
+                .findById(dto.idSolicitacao())
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -180,5 +181,50 @@ public class ClienteService {
 
         historicoRepository.save(historico);
 
+    }
+
+
+    public void PagarSolicitacao(PagarSolicitacaoDTO dto, String token){
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        Solicitacao solicitacao = solicitacaoRepository
+                .findById(dto.idSolicitacao())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Solicitação não encontrada"
+                        )
+                );
+
+        if(!solicitacao.getCliente().getId().equals(cliente.getId())){
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Solitacao não pertence ao cliente"
+            );
+        }
+
+        if (!solicitacao.getStatus().equals("ARRUMADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Solicitação ainda não está arrumada"
+            );
+        }
+
+        solicitacao.setDataPagamento(LocalDateTime.now());
+
+        solicitacao.setStatus("PAGA");
+
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ARRUMADA");
+
+        solicitacaoRepository.save(solicitacao);
+        historicoRepository.save(historico);
     }
 }
