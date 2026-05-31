@@ -1,12 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core'; 
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SolicitacaoService } from '../../../services/solicitacao.service';
-
-// Gerador de PDF
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-painel-orcamento',
@@ -15,97 +11,65 @@ import autoTable from 'jspdf-autotable';
   templateUrl: './painel-orcamento.component.html',
   styleUrls: ['./painel-orcamento.component.css']
 })
-
 export class PainelOrcamentoComponent implements OnInit {
 
   private solicitacaoService = inject(SolicitacaoService);
 
-  // --- Variáveis dos Relatórios ---
   dataInicio: string = '';
   dataFim: string = '';
   dataAtual: string = '';
+  gerandoRelatorioPeriodo = false;
+  gerandoRelatorioCategoria = false;
 
   ngOnInit(): void {
     this.dataAtual = new Date().toISOString().split('T')[0];
   }
 
-  // --- Por Período ---
   gerarRelatorioPeriodo(): void {
-    if (!this.dataInicio || !this.dataFim) {
-      alert('Selecione o período inicial e final.');
+    if (this.dataInicio && this.dataFim && this.dataInicio > this.dataFim) {
+      alert('A data inicial nao pode ser maior que a data final.');
       return;
     }
 
-    this.solicitacaoService.solicitacoesPorPeriodo(this.dataInicio, this.dataFim).subscribe({
-      next: (dados: any[]) => {
-        const doc = new jsPDF();
-        
-        // Título do Documento
-        doc.setFontSize(16);
-        doc.text('Relatório Financeiro - Receitas por Período', 14, 20);
-        doc.setFontSize(10);
-        doc.text(`Período: ${this.dataInicio} até ${this.dataFim}`, 14, 28);
+    this.gerandoRelatorioPeriodo = true;
 
-        //mapeia os dados devolvidos
-        const linhasTabela = dados.map(item => [
-          item.dataHora ? new Date(item.dataHora).toLocaleDateString('pt-BR') : '-', 
-          item.descricaoEquipamento, 
-          item.estado
-        ]);
-
-        // Gerando a Tabela
-        autoTable(doc, {
-          startY: 35,
-          head: [['Data', 'Equipamento', 'Estado']],
-          body: linhasTabela,
-          theme: 'striped',
-          headStyles: { fillColor: [13, 110, 253] } // Cor azul do Bootstrap
-        });
-
-        // Download do arquivo
-        doc.save('relatorio-periodo.pdf');
+    this.solicitacaoService.gerarRelatorioReceitas(this.dataInicio, this.dataFim).subscribe({
+      next: (pdf: Blob) => {
+        this.baixarPdf(pdf, 'relatorio-receitas.pdf');
+        this.gerandoRelatorioPeriodo = false;
       },
       error: (err) => {
-        console.error('Erro de comunicação com a API:', err);
-        alert('Não foi possível gerar o relatório. Verifique a conexão.');
+        console.error('Erro de comunicacao com a API:', err);
+        alert('Nao foi possivel gerar o relatorio. Verifique a conexao.');
+        this.gerandoRelatorioPeriodo = false;
       }
     });
   }
 
-  // --- Por Categoria ---
   gerarRelatorioCategoria(): void {
-    this.solicitacaoService.obterRelatorioCategoria().subscribe({
-      next: (dados: any[]) => {
-        const doc = new jsPDF();
-        
-        // Título do Documento
-        doc.setFontSize(16);
-        doc.text('Relatório Financeiro - Receitas por Categoria', 14, 20);
-        doc.setFontSize(10);
-        doc.text('Histórico completo consolidado.', 14, 28);
+    this.gerandoRelatorioCategoria = true;
 
-        const linhasTabela = dados.map(item => [
-          item.categoria || '-', 
-          item.quantidadeServicos?.toString() || '0', 
-          item.receitaTotal ? `R$ ${item.receitaTotal}` : 'R$ 0,00'
-        ]);
-
-        // Gera a Tabela
-        autoTable(doc, {
-          startY: 35,
-          head: [['Categoria de Equipamento', 'Qtd. Serviços', 'Receita Total']],
-          body: linhasTabela,
-          theme: 'striped',
-          headStyles: { fillColor: [25, 135, 84] } // Cor verde do Bootstrap
-        });
-
-        //download do arquivo
-        doc.save('relatorio-categorias.pdf');
+    this.solicitacaoService.gerarRelatorioReceitasPorCategoria().subscribe({
+      next: (pdf: Blob) => {
+        this.baixarPdf(pdf, 'relatorio-receitas-categorias.pdf');
+        this.gerandoRelatorioCategoria = false;
       },
       error: (err) => {
-        console.error('Erro de comunicação com a API de Relatórios:', err);
-        alert('Não foi possível gerar o relatório. Verifique a conexão.');
+        console.error('Erro de comunicacao com a API de relatorios:', err);
+        alert('Nao foi possivel gerar o relatorio. Verifique a conexao.');
+        this.gerandoRelatorioCategoria = false;
       }
     });
+  }
+
+  private baixarPdf(pdf: Blob, nomeArquivo: string): void {
+    const url = URL.createObjectURL(pdf);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+
+    URL.revokeObjectURL(url);
   }
 }

@@ -27,11 +27,9 @@ public class JwtService {
 
     public String gerarToken(Long userId, String role) {
 
-        System.out.println("7");
 
         SecretKey key = getKey();
 
-        System.out.println("8");
 
         String token = Jwts.builder()
                 .setSubject(String.valueOf(userId))
@@ -41,7 +39,6 @@ public class JwtService {
                 .signWith(key)
                 .compact();
 
-        System.out.println("9");
 
         return token;
     }

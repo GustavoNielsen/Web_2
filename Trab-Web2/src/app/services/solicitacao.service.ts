@@ -225,6 +225,31 @@ export class SolicitacaoService {
     );
   }
 
+  gerarRelatorioReceitas(dataInicial?: string, dataFinal?: string): Observable<Blob> {
+    const params: Record<string, string> = {};
+
+    if (dataInicial) {
+      params['dataInicial'] = dataInicial;
+    }
+
+    if (dataFinal) {
+      params['dataFinal'] = dataFinal;
+    }
+
+    return this.http.get(`${this.funcionarioBaseUrl}/relatorio/receitas`, {
+      params,
+      responseType: 'blob',
+      withCredentials: true,
+    });
+  }
+
+  gerarRelatorioReceitasPorCategoria(): Observable<Blob> {
+    return this.http.get(`${this.funcionarioBaseUrl}/relatorio/receitas/categorias`, {
+      responseType: 'blob',
+      withCredentials: true,
+    });
+  }
+
   /**
   
   listarTodos(): Solicitacao[] {
