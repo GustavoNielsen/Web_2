@@ -71,6 +71,13 @@ export class SolicitacaoService {
     );
   }
 
+   listarCategorias(): Observable<{ id: number; nome: string }[]> {
+    return this.http.get<{ id: number; nome: string }[]>(
+      'http://localhost:8080/api/clientes/listarcategorias',
+      { withCredentials: true }
+    );
+  }
+
   private mapResumoCliente(dto: SolicitacaoClienteResumoDTO): Solicitacao {
     return {
       id: dto.id,
