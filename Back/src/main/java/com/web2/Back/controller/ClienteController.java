@@ -3,6 +3,7 @@ package com.web2.Back.controller;
 import com.web2.Back.dto.AberturaSolicitacaoDTO;
 import com.web2.Back.dto.AprovarRecusarDTO;
 import com.web2.Back.dto.PagarSolicitacaoDTO;
+import com.web2.Back.dto.SolicitacoesClienteResponseDTO;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.Solicitacao;
@@ -42,6 +43,14 @@ public class ClienteController {
         Solicitacao solicitacao = clienteService.criarSolicitacao(dto, token);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/solicitacoes")
+    public ResponseEntity<SolicitacoesClienteResponseDTO> Solicitoes(@CookieValue("jwt") String token){
+        SolicitacoesClienteResponseDTO response =
+                clienteService.enviarSolicitacoes(token);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/aprovarsolicitacao")

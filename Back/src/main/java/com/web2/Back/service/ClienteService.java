@@ -1,8 +1,6 @@
 package com.web2.Back.service;
 
-import com.web2.Back.dto.AberturaSolicitacaoDTO;
-import com.web2.Back.dto.AprovarRecusarDTO;
-import com.web2.Back.dto.PagarSolicitacaoDTO;
+import com.web2.Back.dto.*;
 import com.web2.Back.model.CategoriaEquipamentos;
 import com.web2.Back.model.Cliente;
 import com.web2.Back.model.HistoricoSolicitacao;
@@ -75,6 +73,31 @@ public class ClienteService {
     }
 
 
+    public SolicitacoesClienteResponseDTO enviarSolicitacoes(String token){
+
+        Long userId = jwtService.extrairUserId(token);
+
+        Cliente cliente = clienteRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Cliente não encontrado"
+                        )
+                );
+
+        List<SolicitacaoResumoDTO> solicitacoes =
+                solicitacaoRepository.findByClienteId(cliente.getId())
+                        .stream()
+                        .map(s -> new SolicitacaoResumoDTO(
+                                s.getDataCriacao(),
+                                s.getDescricaoEquipamento(),
+                                s.getStatus()
+                        ))
+                        .toList();
+
+        return new SolicitacoesClienteResponseDTO(solicitacoes);
+
+    }
 
     public Solicitacao criarSolicitacao(AberturaSolicitacaoDTO dto, String token) {
 
