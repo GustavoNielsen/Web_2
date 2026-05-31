@@ -28,7 +28,7 @@
         </div>
 
     <!-- Tabela -->
-    <div class="table-responsive table-scroll" style="max-height: 50vh; overflow-y: auto;">
+    <div class="table-responsive table-scroll" style="max-height: 50vh; overflow-y: auto;" (scroll)="rolarTabela($event)">
 
       @if (loading) {
         <div class="loading">

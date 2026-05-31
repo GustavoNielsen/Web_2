@@ -19,9 +19,11 @@ export class InserirCategoriaComponent {
   private router = inject(Router)
 
   inserir(): void {
-if (this.formulario.form.valid) {
-this.categoriasService.inserir(this.categoria);
-this.router.navigate( ["/funcionario/equipamento"] );
-}
-}
+    if (this.formulario.form.valid) {
+      this.categoriasService.inserir(this.categoria).subscribe({
+        next: () => this.router.navigate(["/funcionario/equipamento"]),
+        error: (err) => console.error('Erro ao inserir categoria:', err)
+      });
+    }
+  }
 }

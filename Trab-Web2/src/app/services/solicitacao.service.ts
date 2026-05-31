@@ -39,6 +39,14 @@ export class SolicitacaoService {
     );
   }
 
+  //Paginação de funcionario com infinite scroll
+  listarPaginado(pagina: number, tamanho: number = 50): Observable<Solicitacao[]> {
+    return this.http.get<Solicitacao[]>(
+      `${this.apiUrl}?page=${pagina}&size=${tamanho}`, 
+      { withCredentials: true }
+    );
+  }
+
   /**
   
   listarTodos(): Solicitacao[] {
