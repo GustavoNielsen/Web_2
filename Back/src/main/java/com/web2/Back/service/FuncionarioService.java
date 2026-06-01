@@ -4,12 +4,12 @@ import com.web2.Back.dto.*;
 import com.web2.Back.model.*;
 import com.web2.Back.repository.*;
 import com.web2.Back.security.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Session;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,32 +18,37 @@ import java.util.List;
 @Service
 public class FuncionarioService {
 
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private OrcamentoRepository orcamentoRepository;
-
-    @Autowired
-    private SolicitacaoRepository solicitacaoRepository;
-
-    @Autowired
-    private ManutencaoRepository manutencaoRepository;
-
-    @Autowired
-    private HistoricoSolicitacaoRepository historicoRepository;
-
-    @Autowired
-    private RedirecionamentoRepository redirecionamentoRepository;
-
-    @Autowired
-    private RelatorioReceitasPdfService relatorioReceitasPdfService;
-
-
+    private final JwtService jwtService;
+    private final OrcamentoRepository orcamentoRepository;
+    private final SolicitacaoRepository solicitacaoRepository;
+    private final ManutencaoRepository manutencaoRepository;
+    private final HistoricoSolicitacaoRepository historicoRepository;
+    private final RedirecionamentoRepository redirecionamentoRepository;
+    private final RelatorioReceitasPdfService relatorioReceitasPdfService;
     private final FuncionarioRepository funcionarioRepository;
+    private final EntityManager entityManager; // <- Adicionado com sucesso
 
-    public FuncionarioService(FuncionarioRepository funcionarioRepository) {
+    // Injeção de dependências unificada via Construtor
+    public FuncionarioService(
+            JwtService jwtService,
+            OrcamentoRepository orcamentoRepository,
+            SolicitacaoRepository solicitacaoRepository,
+            ManutencaoRepository manutencaoRepository,
+            HistoricoSolicitacaoRepository historicoRepository,
+            RedirecionamentoRepository redirecionamentoRepository,
+            RelatorioReceitasPdfService relatorioReceitasPdfService,
+            FuncionarioRepository funcionarioRepository,
+            EntityManager entityManager
+    ) {
+        this.jwtService = jwtService;
+        this.orcamentoRepository = orcamentoRepository;
+        this.solicitacaoRepository = solicitacaoRepository;
+        this.manutencaoRepository = manutencaoRepository;
+        this.historicoRepository = historicoRepository;
+        this.redirecionamentoRepository = redirecionamentoRepository;
+        this.relatorioReceitasPdfService = relatorioReceitasPdfService;
         this.funcionarioRepository = funcionarioRepository;
+        this.entityManager = entityManager;
     }
 
     public List<Funcionario> listarTodos() {
@@ -73,7 +78,6 @@ public class FuncionarioService {
         funcionarioRepository.deleteById(id);
     }
 
-
     private void validarFuncionario(Funcionario funcionario) {
         if (funcionario.getNome() == null || funcionario.getNome().isBlank()) {
             throw new IllegalArgumentException("Nome é obrigatório");
@@ -83,41 +87,20 @@ public class FuncionarioService {
         }
     }
 
-
     public void Orcar(OrcarSolicitacaoDTO dto, String token) {
-
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
 
-        Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Solicitação não encontrada"
-                        )
-                );
+        Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
 
         if (solicitacao.getOrcamento() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Solicitação já possui orçamento"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solicitação já possui orçamento");
         }
 
-        Orcamento orcamento = new Orcamento(
-                solicitacao,
-                funcionario,
-                dto.valor()
-        );
-
+        Orcamento orcamento = new Orcamento(solicitacao, funcionario, dto.valor());
         orcamentoRepository.save(orcamento);
 
         solicitacao.setOrcamento(orcamento);
@@ -125,92 +108,43 @@ public class FuncionarioService {
         HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "ABERTA");
 
         solicitacaoRepository.save(solicitacao);
-
         historicoRepository.save(historico);
-
-
     }
 
     public void Manutencao(RealizarManutencaoDTO dto, String token){
-
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
 
-        Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Solicitação não encontrada"
-                        )
-                );
+        Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
 
-        Orcamento orcamento = orcamentoRepository
-                .findBySolicitacaoId(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Orcamento não encontrado"
-                        )
-                );
+        Orcamento orcamento = orcamentoRepository.findBySolicitacaoId(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orcamento não encontrado"));
 
-        boolean existe = redirecionamentoRepository
-                .existsBySolicitacaoId(dto.idSolicitacao());
+        boolean existe = redirecionamentoRepository.existsBySolicitacaoId(dto.idSolicitacao());
 
         if(existe){
+            Redirecionamento ultimoRedirecionamento = redirecionamentoRepository
+                    .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(dto.idSolicitacao())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Redirecionamento não encontrado"));
 
-            Redirecionamento ultimoRedirecionamento =
-                    redirecionamentoRepository
-                            .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(
-                                    dto.idSolicitacao()
-                            )
-                            .orElseThrow(() ->
-                                    new ResponseStatusException(
-                                            HttpStatus.NOT_FOUND,
-                                            "Redirecionamento não encontrado"
-                                    )
-                            );
-
-            if(!ultimoRedirecionamento
-                    .getFuncionarioDestino()
-                    .getId()
-                    .equals(funcionario.getId())){
-
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Solicitação não pertence a esse funcionário"
-                );
+            if(!ultimoRedirecionamento.getFuncionarioDestino().getId().equals(funcionario.getId())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solicitação não pertence a esse funcionário");
             }
-
         } else {
-
             if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Orcamento não pertence a esse funcionario"
-                );
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Orcamento não pertence a esse funcionario");
             }
         }
 
-        Manutencao manutencao = new Manutencao(
-                solicitacao,
-                funcionario,
-                dto.descricao(),
-                dto.orientacao()
-        );
+        Manutencao manutencao = new Manutencao(solicitacao, funcionario, dto.descricao(), dto.orientacao());
 
         solicitacao.setStatus("ARRUMADA");
         solicitacao.setManutencao(manutencao);
 
-        HistoricoSolicitacao historico =
-                new HistoricoSolicitacao(solicitacao, "APROVADA");
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "APROVADA");
 
         manutencaoRepository.save(manutencao);
         solicitacaoRepository.save(solicitacao);
@@ -221,92 +155,42 @@ public class FuncionarioService {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário origem não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
-        Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Solicitação não encontrada"
-                        )
-                );
+        Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
 
-        Orcamento orcamento = orcamentoRepository
-                .findBySolicitacaoId(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Orcamento não encontrado"
-                        )
-                );
+        Orcamento orcamento = orcamentoRepository.findBySolicitacaoId(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Orcamento não encontrado"));
 
-        boolean existe = redirecionamentoRepository
-                .existsBySolicitacaoId(dto.idSolicitacao());
+        boolean existe = redirecionamentoRepository.existsBySolicitacaoId(dto.idSolicitacao());
 
         if(existe){
+            Redirecionamento ultimoRedirecionamento = redirecionamentoRepository
+                    .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(dto.idSolicitacao())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Redirecionamento não encontrado"));
 
-            Redirecionamento ultimoRedirecionamento =
-                    redirecionamentoRepository
-                            .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(
-                                    dto.idSolicitacao()
-                            )
-                            .orElseThrow(() ->
-                                    new ResponseStatusException(
-                                            HttpStatus.NOT_FOUND,
-                                            "Redirecionamento não encontrado"
-                                    )
-                            );
-
-            if(!ultimoRedirecionamento
-                    .getFuncionarioDestino()
-                    .getId()
-                    .equals(funcionario.getId())){
-
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Solicitação não pertence a esse funcionário"
-                );
+            if(!ultimoRedirecionamento.getFuncionarioDestino().getId().equals(funcionario.getId())){
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solicitação não pertence a esse funcionário");
             }
-
         } else {
-
             if(!funcionario.getId().equals(orcamento.getFuncionario().getId())){
-                throw new ResponseStatusException(
-                        HttpStatus.FORBIDDEN,
-                        "Orcamento não pertence a esse funcionario"
-                );
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Orcamento não pertence a esse funcionario");
             }
         }
 
         Funcionario funcionarioDestino = funcionarioRepository.findById(dto.funcionarioDestino())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário destino não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário destino não encontrado"));
 
         if(funcionario.getId().equals(funcionarioDestino.getId())){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Funcionário não pode redirecionar para si mesmo"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Funcionário não pode redirecionar para si mesmo");
         }
 
         Redirecionamento redirecionamento = new Redirecionamento(solicitacao, funcionario, funcionarioDestino);
-
         String statusAnterior = solicitacao.getStatus();
-
         solicitacao.setStatus("REDIRECIONADA");
 
-        HistoricoSolicitacao historico =
-                new HistoricoSolicitacao(solicitacao, statusAnterior);
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, statusAnterior);
 
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
@@ -317,50 +201,27 @@ public class FuncionarioService {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário origem não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
-        Solicitacao solicitacao = solicitacaoRepository
-                .findById(dto.idSolicitacao())
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Solicitação não encontrada"
-                        )
-                );
+        Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
 
         if (!solicitacao.getStatus().equals("PAGA")) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Solicitação ainda não está paga"
-            );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solicitação ainda não está paga");
         }
 
         solicitacao.setStatus("FINALIZADA");
         solicitacao.setDataFinalizacao(LocalDateTime.now());
         solicitacao.setFuncionarioFinalizacao(funcionario);
 
-        HistoricoSolicitacao historico =
-                new HistoricoSolicitacao(solicitacao, "PAGA");
-
+        HistoricoSolicitacao historico = new HistoricoSolicitacao(solicitacao, "PAGA");
 
         solicitacaoRepository.save(solicitacao);
         historicoRepository.save(historico);
-
     }
 
-
     public List<SolicitacaoAbertasDTO> SolicitacoesAbertas(int page){
-
-        return solicitacaoRepository
-                .findByStatus(
-                        "ABERTA",
-                        PageRequest.of(page, 30)
-                )
+        return solicitacaoRepository.findByStatus("ABERTA", PageRequest.of(page, 30))
                 .stream()
                 .map(s -> new SolicitacaoAbertasDTO(
                         s.getId(),
@@ -378,20 +239,14 @@ public class FuncionarioService {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário origem não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         int pageSize = 30;
         LocalDate hoje = LocalDate.now();
         LocalDateTime inicio = hoje.atStartOfDay();
         LocalDateTime fim = hoje.plusDays(1).atStartOfDay();
 
-        return solicitacaoRepository
-                .findAtuadasPorFuncionarioNoPeriodo(
+        return solicitacaoRepository.findAtuadasPorFuncionarioNoPeriodo(
                         funcionario.getId(),
                         inicio,
                         fim,
@@ -414,32 +269,35 @@ public class FuncionarioService {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário origem não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
+
+        // 🔓 Desativa o filtro do Soft Delete para ler o histórico completo (incluindo usuários deletados)
+        Session session = entityManager.unwrap(Session.class);
+        session.disableFilter("deletedUserFilter");
 
         int pageSize = 30;
 
-        return solicitacaoRepository
-                .findAtuadasPorFuncionario(
-                        funcionario.getId(),
-                        PageRequest.of(Math.max(page, 0), pageSize)
-                )
-                .stream()
-                .filter(s -> podeListarSolicitacaoTotal(s, funcionario.getId()))
-                .map(s -> new SolicitacaoAbertasDTO(
-                        s.getId(),
-                        s.getDataCriacao(),
-                        s.getCliente().getNome(),
-                        s.getDescricaoEquipamento(),
-                        s.getStatus(),
-                        s.getDescricaoDefeito(),
-                        s.getCategoria()
-                ))
-                .toList();
+        try {
+            return solicitacaoRepository.findAtuadasPorFuncionario(
+                            funcionario.getId(),
+                            PageRequest.of(Math.max(page, 0), pageSize)
+                    )
+                    .stream()
+                    .filter(s -> podeListarSolicitacaoTotal(s, funcionario.getId()))
+                    .map(s -> new SolicitacaoAbertasDTO(
+                            s.getId(),
+                            s.getDataCriacao(),
+                            s.getCliente().getNome(),
+                            s.getDescricaoEquipamento(),
+                            s.getStatus(),
+                            s.getDescricaoDefeito(),
+                            s.getCategoria()
+                    ))
+                    .toList();
+        } finally {
+            // 🔒 Garante a reativação do filtro para manter a segurança do sistema
+            session.enableFilter("deletedUserFilter");
+        }
     }
 
     private boolean podeListarSolicitacaoTotal(Solicitacao solicitacao, Long funcionarioId) {
@@ -447,14 +305,8 @@ public class FuncionarioService {
             return true;
         }
 
-        return redirecionamentoRepository
-                .findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(solicitacao.getId())
-                .map(redirecionamento ->
-                        redirecionamento
-                                .getFuncionarioDestino()
-                                .getId()
-                                .equals(funcionarioId)
-                )
+        return redirecionamentoRepository.findTopBySolicitacaoIdOrderByDataRedirecionamentoDesc(solicitacao.getId())
+                .map(redirecionamento -> redirecionamento.getFuncionarioDestino().getId().equals(funcionarioId))
                 .orElse(false);
     }
 
@@ -462,20 +314,14 @@ public class FuncionarioService {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionário origem não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         int pageSize = 30;
         int page = Math.max(dto.page(), 0);
         LocalDateTime inicio = dto.dataMin().atStartOfDay();
         LocalDateTime fim = dto.dataMax().plusDays(1).atStartOfDay();
 
-        return solicitacaoRepository
-                .findAtuadasPorFuncionarioNoPeriodo(
+        return solicitacaoRepository.findAtuadasPorFuncionarioNoPeriodo(
                         funcionario.getId(),
                         inicio,
                         fim,
@@ -506,55 +352,29 @@ public class FuncionarioService {
 
     private void validarFuncionarioLogado(String token) {
         Long userId = jwtService.extrairUserId(token);
-
         funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "FuncionÃ¡rio nÃ£o encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
     }
 
     public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {
         Long userId = jwtService.extrairUserId(token);
 
         Funcionario funcionario = funcionarioRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Funcionario não encontrado"
-                        )
-                );
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario não encontrado"));
 
-        Solicitacao solicitacao = solicitacaoRepository
-                .findById(idSolicitacao)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Solicitação não encontrada"
-                        )
-                );
+        Solicitacao solicitacao = solicitacaoRepository.findById(idSolicitacao)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solicitação não encontrada"));
 
         if (!podeVisualizarSolicitacao(funcionario, solicitacao)) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Solicitação não pertence a esse funcionário"
-            );
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solicitação não pertence a esse funcionário");
         }
 
-
-        List<HistoricoInfoDTO> historico =
-                historicoRepository.findBySolicitacaoId(idSolicitacao)
-                        .stream()
-                        .map(h -> new HistoricoInfoDTO(
-                                h.getStatus(),
-                                h.getData()
-                        ))
-                        .toList();
+        List<HistoricoInfoDTO> historico = historicoRepository.findBySolicitacaoId(idSolicitacao)
+                .stream()
+                .map(h -> new HistoricoInfoDTO(h.getStatus(), h.getData()))
+                .toList();
 
         OrcamentoInfoDTO orcamento = null;
-
         if (solicitacao.getOrcamento() != null) {
             orcamento = new OrcamentoInfoDTO(
                     solicitacao.getOrcamento().getValor(),
@@ -564,11 +384,7 @@ public class FuncionarioService {
         }
 
         ManutencaoInfoDTO manutencao = null;
-
-        Manutencao manutencaoEntity =
-                manutencaoRepository
-                        .findBySolicitacaoId(idSolicitacao)
-                        .orElse(null);
+        Manutencao manutencaoEntity = manutencaoRepository.findBySolicitacaoId(idSolicitacao).orElse(null);
 
         if (manutencaoEntity != null) {
             manutencao = new ManutencaoInfoDTO(
@@ -602,18 +418,15 @@ public class FuncionarioService {
             return true;
         }
 
-        if (solicitacao.getOrcamento() != null
-                && solicitacao.getOrcamento().getFuncionario().getId().equals(funcionarioId)) {
+        if (solicitacao.getOrcamento() != null && solicitacao.getOrcamento().getFuncionario().getId().equals(funcionarioId)) {
             return true;
         }
 
-        if (solicitacao.getManutencao() != null
-                && solicitacao.getManutencao().getFuncionario().getId().equals(funcionarioId)) {
+        if (solicitacao.getManutencao() != null && solicitacao.getManutencao().getFuncionario().getId().equals(funcionarioId)) {
             return true;
         }
 
-        if (solicitacao.getFuncionarioFinalizacao() != null
-                && solicitacao.getFuncionarioFinalizacao().getId().equals(funcionarioId)) {
+        if (solicitacao.getFuncionarioFinalizacao() != null && solicitacao.getFuncionarioFinalizacao().getId().equals(funcionarioId)) {
             return true;
         }
 
@@ -624,5 +437,4 @@ public class FuncionarioService {
                                 || redirecionamento.getFuncionarioDestino().getId().equals(funcionarioId)
                 );
     }
-
 }
