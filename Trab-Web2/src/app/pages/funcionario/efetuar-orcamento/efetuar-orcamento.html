@@ -1,5 +1,5 @@
 <div class="modal-header bg-warning text-dark">
-  <h5 class="modal-title fw-bold">Efetuar Orcamento - OS #{{ solicitacao?.id }}</h5>
+  <h5 class="modal-title fw-bold">Efetuar Orçamento - OS #{{ solicitacao?.id }}</h5>
   <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="cancelado.emit()"></button>
 </div>
 
@@ -11,7 +11,7 @@
 
   <form [formGroup]="form">
     <div class="mb-3">
-      <label class="form-label fw-bold small">VALOR DO ORCAMENTO (R$)</label>
+      <label class="form-label fw-bold small">VALOR DO ORÇAMENTO (R$)</label>
       <div class="input-group has-validation">
         <span class="input-group-text bg-light text-secondary fw-bold">R$</span>
 
@@ -27,10 +27,10 @@
         @if (form.controls['valor'].touched && form.controls['valor'].errors) {
           <div class="invalid-feedback">
             @if (form.controls['valor'].errors['required']) {
-              <small class="d-block">O valor do orcamento e obrigatorio.</small>
+              <small class="d-block">O valor do orçamento e obrigatório.</small>
             }
             @if (form.controls['valor'].errors['pattern']) {
-              <small class="d-block">Digite o valor usando virgula e duas casas decimais (Ex: 150,00).</small>
+              <small class="d-block">Digite o valor usando vírgula e duas casas decimais (Ex: 150,00).</small>
             }
           </div>
         }
@@ -44,6 +44,6 @@
   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelado.emit()">Cancelar</button>
 
   <button type="button" class="btn btn-warning fw-bold text-dark" data-bs-dismiss="modal" [disabled]="form.invalid || salvando" (click)="confirmar()">
-    {{ salvando ? 'Registrando...' : 'Registrar Orcamento' }}
+    {{ salvando ? 'Registrando...' : 'Registrar Orçamento' }}
   </button>
 </div>
