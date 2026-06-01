@@ -1,0 +1,1 @@
+import{Ea as i}from"./chunk-VFEVXD77.js";var n=class e{transform(r){if(!r)return"";let t={ORCADA:"OR\xC7ADA",EM_MANUTENCAO:"EM MANUTEN\xC7\xC3O",PAGA:"PAGA"};return t[r]?t[r]:r.toUpperCase().split("_").join(" ")}static \u0275fac=function(t){return new(t||e)};static \u0275pipe=i({name:"statusFormat",type:e,pure:!0})};export{n as a};
