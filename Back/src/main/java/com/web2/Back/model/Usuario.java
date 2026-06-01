@@ -2,10 +2,14 @@ package com.web2.Back.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "usuarios")
 @Inheritance(strategy = InheritanceType.JOINED)
+@SQLDelete(sql = "UPDATE usuarios SET ativo = false WHERE id = ?")
+@SQLRestriction("ativo = true") // <- Nova forma aqui
 public abstract class Usuario {
 
     @Id
@@ -15,13 +19,11 @@ public abstract class Usuario {
     @Column(nullable = false, unique = true)
     protected String email;
 
-
     @Column(nullable = false)
     protected String nome;
 
     @Column(nullable = false)
     protected String tipo;
-
 
     @JsonIgnore
     @Column(nullable = false)
@@ -31,6 +33,10 @@ public abstract class Usuario {
     @Column(nullable = false)
     protected String salt;
 
+    // 3. Adiciona o campo booleano com valor padrão true
+    @Column(nullable = false)
+    protected boolean ativo = true;
+
     public Usuario() {}
 
     public Usuario(String email, String senha, String nome, String tipo) {
@@ -38,6 +44,7 @@ public abstract class Usuario {
         this.senha = senha;
         this.nome = nome;
         this.tipo = tipo;
+        this.ativo = true; // Garante a inicialização como ativo
     }
 
     // getters & setters
@@ -82,13 +89,20 @@ public abstract class Usuario {
         this.tipo = tipo;
     }
 
-    // 🔐 NEW GETTERS/SETTERS FOR SALT
-
     public String getSalt() {
         return salt;
     }
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    // Getter e Setter para o campo ativo
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

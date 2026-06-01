@@ -1,10 +1,14 @@
 package com.web2.Back.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "clientes")
+// Garante que o delete disparado pelo ClienteRepository vire o UPDATE correto na tabela mãe
+@SQLDelete(sql = "UPDATE usuarios SET ativo = false WHERE id = ?")
 public class Cliente extends Usuario {
+
     @Column(nullable = false, unique = true)
     private String cpf;
 
@@ -24,6 +28,7 @@ public class Cliente extends Usuario {
         this.cpf = cpf;
         this.telefone = telefone;
         this.endereco = endereco;
+        this.ativo = true; // Inicializa o campo herdado da classe mãe
     }
 
     public String getCpf() { return cpf; }
