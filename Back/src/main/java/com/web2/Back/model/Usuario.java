@@ -34,7 +34,7 @@ public abstract class Usuario {
     protected String salt;
 
     // 3. Adiciona o campo booleano com valor padrão true
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
     protected boolean ativo = true;
 
     public Usuario() {}
