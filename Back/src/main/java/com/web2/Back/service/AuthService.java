@@ -36,7 +36,7 @@ public class AuthService {
         String email = loginDTO.email().trim();
         String senha = loginDTO.password().trim();
 
-        Optional<Cliente> cliente = clienteRepository.findByEmail(email);
+        Optional<Cliente> cliente = clienteRepository.findByEmailAndAtivoTrue(email);
 
         if (cliente.isPresent()) {
 
@@ -52,7 +52,7 @@ public class AuthService {
         }
 
         Optional<Funcionario> funcionario =
-                funcionarioRepository.findByEmail(email);
+                funcionarioRepository.findByEmailAndAtivoTrue(email);
 
         if (funcionario.isPresent()) {
 
@@ -74,7 +74,7 @@ public class AuthService {
 
         String email = loginDTO.email().trim();
 
-        Optional<Cliente> cliente = clienteRepository.findByEmail(email);
+        Optional<Cliente> cliente = clienteRepository.findByEmailAndAtivoTrue(email);
 
         if (cliente.isPresent()) {
 
@@ -87,7 +87,7 @@ public class AuthService {
         }
 
         Optional<Funcionario> funcionario =
-                funcionarioRepository.findByEmail(email);
+                funcionarioRepository.findByEmailAndAtivoTrue(email);
 
         if (funcionario.isPresent()) {
 

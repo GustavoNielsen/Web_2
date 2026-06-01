@@ -36,12 +36,12 @@ public class CrudFuncionarioController {
 
     @GetMapping
     public ResponseEntity<List<Funcionario>> listarTodos() {
-        return ResponseEntity.ok(funcionarioRepository.findAll());
+        return ResponseEntity.ok(funcionarioRepository.findByAtivoTrue());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Funcionario> buscarPorId(@PathVariable Long id) {
-        return funcionarioRepository.findById(id)
+        return funcionarioRepository.findByIdAndAtivoTrue(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -80,7 +80,7 @@ public class CrudFuncionarioController {
         validarDadosCadastro(dados);
         validarEmailDisponivel(dados.email(), id);
 
-        Funcionario funcionario = funcionarioRepository.findById(id)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(id)
                 .orElse(null);
 
         if (funcionario == null) {
@@ -102,7 +102,7 @@ public class CrudFuncionarioController {
 
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionarioRequest = funcionarioRepository.findById(userId)
+        Funcionario funcionarioRequest = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -110,7 +110,7 @@ public class CrudFuncionarioController {
                         )
                 );
 
-        Funcionario funcionario = funcionarioRepository.findById(id)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(id)
                 .orElse(null);
 
         if (funcionario == null) {
@@ -123,19 +123,20 @@ public class CrudFuncionarioController {
                     .body("Voce nao pode remover a si mesmo.");
         }
 
-        if (funcionarioRepository.count() <= 1) {
+        if (funcionarioRepository.countByAtivoTrue() <= 1) {
             return ResponseEntity
                     .badRequest()
                     .body("Nao e possivel remover o ultimo funcionario.");
         }
 
-        funcionarioRepository.delete(funcionario);
+        funcionario.setAtivo(false);
+        funcionarioRepository.save(funcionario);
 
         return ResponseEntity.ok("Funcionario removido com sucesso.");
     }
 
     private Funcionario buscarFuncionario(Long id) {
-        return funcionarioRepository.findById(id)
+        return funcionarioRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
