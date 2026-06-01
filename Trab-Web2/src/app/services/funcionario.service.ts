@@ -11,7 +11,7 @@ import { Funcionario } from '../shared/models/funcionario.model';
 })
 export class FuncionarioService {
 
-  private apiUrl = 'http://localhost:8080/api/crudfuncionarios';
+  private apiUrl = '/api/crudfuncionarios';
 
 
   constructor(private http: HttpClient) {}

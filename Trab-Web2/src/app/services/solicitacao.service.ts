@@ -84,9 +84,9 @@ export interface SolicitacaoPainelFuncionario {
 })
 export class SolicitacaoService {
 
-  private apiUrl = 'http://localhost:8080/solicitacoes';
-  private clienteApiUrl = 'http://localhost:8080/api/clientes/solicitacoes';
-  private clienteBaseUrl = 'http://localhost:8080/api/clientes';
+  private apiUrl = '/solicitacoes';
+  private clienteApiUrl = '/api/clientes/solicitacoes';
+  private clienteBaseUrl = '/api/clientes';
 
   constructor(private http: HttpClient) { }
 
@@ -138,7 +138,7 @@ export class SolicitacaoService {
 
   listarCategorias(): Observable<{ id: number; nome: string }[]> {
     return this.http.get<{ id: number; nome: string }[]>(
-      'http://localhost:8080/api/clientes/listarcategorias',
+      '/api/clientes/listarcategorias',
       { withCredentials: true }
     );
   }
@@ -207,7 +207,7 @@ export class SolicitacaoService {
       descricao: solicitacao.descricaoDefeito
     };
     return this.http.post(
-      'http://localhost:8080/api/clientes/abrirsolicitacao',
+      '/api/clientes/abrirsolicitacao',
       dto,
       { withCredentials: true }
     );
@@ -222,7 +222,7 @@ export class SolicitacaoService {
   }
 
   // Painel de Funcionário - Listar solicitações
-  private funcionarioBaseUrl = 'http://localhost:8080/api/funcionarios';
+  private funcionarioBaseUrl = '/api/funcionarios';
 
   private mapPainelFuncionario(lista: any[]): SolicitacaoPainelFuncionario[] {
     return (lista || []).map((s) => ({
