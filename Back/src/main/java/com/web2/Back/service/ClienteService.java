@@ -34,11 +34,11 @@ public class ClienteService {
     private ManutencaoRepository manutencaoRepository;
 
     public List<Cliente> listarTodos() {
-        return clienteRepository.findAll();
+        return clienteRepository.findByAtivoTrue();
     }
 
     public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id)
+        return clienteRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado com ID: " + id));
     }
 
@@ -57,7 +57,8 @@ public class ClienteService {
 
     public void deletar(Long id) {
         Cliente cliente = buscarPorId(id);
-        clienteRepository.deleteById(id);
+        cliente.setAtivo(false);
+        clienteRepository.save(cliente);
     }
 
     private void validarCliente(Cliente cliente) {
@@ -74,7 +75,7 @@ public class ClienteService {
 
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -100,7 +101,7 @@ public class ClienteService {
     public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -179,7 +180,7 @@ public class ClienteService {
 
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -215,7 +216,7 @@ public class ClienteService {
     public void aprovarOrcamentoService(AprovarRecusarDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -250,7 +251,7 @@ public class ClienteService {
     public void RejeitarOrcamentoService(RejeitarSolicitacaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -293,7 +294,7 @@ public class ClienteService {
     public GetOrcamentoClienteDTO getOrcamentoClienteService(Long idSolicitacao, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -347,7 +348,7 @@ public class ClienteService {
     public GetResgateDTO getResgateService(Long idSolicitacao, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -397,7 +398,7 @@ public class ClienteService {
     public void resgatarSolicitacaoService(AprovarRecusarDTO dto, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -439,7 +440,7 @@ public class ClienteService {
 
     public GetPagarDTO getPagarService(Long idSolicitacao, String token){
         Long userId = jwtService.extrairUserId(token);
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -488,7 +489,7 @@ public class ClienteService {
     public void PagarSolicitacao(PagarSolicitacaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Cliente cliente = clienteRepository.findById(userId)
+        Cliente cliente = clienteRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -529,3 +530,4 @@ public class ClienteService {
         historicoRepository.save(historico);
     }
 }
+

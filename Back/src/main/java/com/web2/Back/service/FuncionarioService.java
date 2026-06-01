@@ -52,11 +52,11 @@ public class FuncionarioService {
     }
 
     public List<Funcionario> listarTodos() {
-        return funcionarioRepository.findAll();
+        return funcionarioRepository.findByAtivoTrue();
     }
 
     public Funcionario buscarPorId(Long id) {
-        return funcionarioRepository.findById(id)
+        return funcionarioRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));
     }
 
@@ -75,7 +75,8 @@ public class FuncionarioService {
 
     public void deletar(Long id) {
         Funcionario funcionario = buscarPorId(id);
-        funcionarioRepository.deleteById(id);
+        funcionario.setAtivo(false);
+        funcionarioRepository.save(funcionario);
     }
 
     private void validarFuncionario(Funcionario funcionario) {
@@ -90,7 +91,7 @@ public class FuncionarioService {
     public void Orcar(OrcarSolicitacaoDTO dto, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
 
         Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
@@ -114,7 +115,7 @@ public class FuncionarioService {
     public void Manutencao(RealizarManutencaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
 
         Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
@@ -154,7 +155,7 @@ public class FuncionarioService {
     public void RedirecionarManutencao(RedirecionamentoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
@@ -179,7 +180,7 @@ public class FuncionarioService {
             }
         }
 
-        Funcionario funcionarioDestino = funcionarioRepository.findById(dto.funcionarioDestino())
+        Funcionario funcionarioDestino = funcionarioRepository.findByIdAndAtivoTrue(dto.funcionarioDestino())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário destino não encontrado"));
 
         if(funcionario.getId().equals(funcionarioDestino.getId())){
@@ -200,7 +201,7 @@ public class FuncionarioService {
     public void Finalizar(FinalizarSolicitacaoDTO dto, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         Solicitacao solicitacao = solicitacaoRepository.findById(dto.idSolicitacao())
@@ -238,7 +239,7 @@ public class FuncionarioService {
     public List<SolicitacaoAbertasDTO> SolicitacoesHoje(int page, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         int pageSize = 30;
@@ -268,7 +269,7 @@ public class FuncionarioService {
     public List<SolicitacaoAbertasDTO> SolicitacoesTotais(int page, String token){
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         // 🔓 Desativa o filtro do Soft Delete para ler o histórico completo (incluindo usuários deletados)
@@ -313,7 +314,7 @@ public class FuncionarioService {
     public List<SolicitacaoAbertasDTO> SolicitacoesPorPeriodo(SolicitacaoDataDTO dto, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário origem não encontrado"));
 
         int pageSize = 30;
@@ -352,14 +353,14 @@ public class FuncionarioService {
 
     private void validarFuncionarioLogado(String token) {
         Long userId = jwtService.extrairUserId(token);
-        funcionarioRepository.findById(userId)
+        funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionário não encontrado"));
     }
 
     public InformacoesSolicitacaoDTO visualizarSolicitacao(long idSolicitacao, String token) {
         Long userId = jwtService.extrairUserId(token);
 
-        Funcionario funcionario = funcionarioRepository.findById(userId)
+        Funcionario funcionario = funcionarioRepository.findByIdAndAtivoTrue(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Funcionario não encontrado"));
 
         Solicitacao solicitacao = solicitacaoRepository.findById(idSolicitacao)
@@ -438,3 +439,4 @@ public class FuncionarioService {
                 );
     }
 }
+
