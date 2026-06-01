@@ -56,17 +56,6 @@ export class MostrarServico implements OnInit {
 
   this.loading = true;
 
-  this.solicitacaoService.buscarOrcamentoCliente(id).subscribe({
-    next: (dados) => {
-      this.orcamento = dados;
-      this.loading = false;
-    },
-    error: (erro) => {
-      console.error('Erro ao buscar orçamento:', erro);
-      this.erroCarregamento = 'Não foi possível carregar os dados do orçamento.';
-      this.loading = false;
-    },
-  });
 }
 
   get valor(): string {
@@ -95,6 +84,8 @@ export class MostrarServico implements OnInit {
 
   this.solicitacaoService.aprovarSolicitacao(id).subscribe({
     next: () => {
+      alert(`Serviço Aprovado no Valor ${this.valor}`);
+
       this.atualizado.emit({
         id,
         backendAtualizado: true,
