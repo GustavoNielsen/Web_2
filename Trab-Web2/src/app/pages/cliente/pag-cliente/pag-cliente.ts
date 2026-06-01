@@ -33,7 +33,7 @@ export class PagCliente implements OnInit {
 
   modal: ModalCliente = null;
   solicitacaoSelecionada: Solicitacao | null = null;
-  colunaOrdenacao: ColunaOrdenacao | '' = '';
+  colunaOrdenacao: ColunaOrdenacao | '' = 'dataHora';
   direcaoOrdenacao: 'asc' | 'desc' = 'asc';
   private rotaAtual: { id: number; modal: ModalCliente } = { id: 0, modal: null };
 
@@ -110,7 +110,7 @@ abrirAcaoPorRota(acao: AcaoCliente): void { //Acao feito dentro do modal visuali
     this.solicitacaoService.listarTodos().subscribe({
     next: (data: Solicitacao[]) => {
       this.solicitacoes = [...data].sort((a, b) =>
-        b.dataHora.getTime() - a.dataHora.getTime()
+        a.dataHora.getTime() - b.dataHora.getTime()
       );
       this.atualizarModalPelaRota(this.rotaAtual.id, this.rotaAtual.modal);
       this.cdr.detectChanges();
